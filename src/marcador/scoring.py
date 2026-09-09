@@ -167,6 +167,28 @@ def score_from_db(con, model_version, market, seasons=None, outcomes=OUTCOMES_1X
     return evaluate(preds, actual, outcomes), preds, actual
 
 
+def bootstrap_diff(losses_a, losses_b, n_boot=20000, seed=0):
+    """Nucleo del bootstrap pareado, sobre dos listas de perdidas alineadas.
+
+    Se remuestrean PARTIDOS, no modelos, y cada partido se lleva las dos
+    perdidas juntas. Eso conserva el emparejamiento, que es lo que da potencia
+    cuando los dos modelos aciertan y fallan en los mismos partidos dificiles
+    — que es lo normal entre dos variantes del mismo modelo.
+
+    Devuelve (diferencia_media, lo, hi, p, n). Negativo = 'a' es mejor.
+    """
+    import numpy as np
+    a, b = np.asarray(losses_a, float), np.asarray(losses_b, float)
+    if a.shape != b.shape:
+        raise ValueError("las dos listas tienen que estar alineadas partido a partido")
+    d = a - b
+    rng = np.random.default_rng(seed)
+    boots = d[rng.integers(0, len(d), size=(n_boot, len(d)))].mean(axis=1)
+    lo, hi = np.percentile(boots, [2.5, 97.5])
+    p = 2 * min((boots <= 0).mean(), (boots >= 0).mean())
+    return float(d.mean()), float(lo), float(hi), float(p), len(d)
+
+
 def paired_bootstrap(con, model_a, model_b, market="1X2", seasons=None,
                      n_boot=20000, seed=0):
     """Compara dos modelos sobre los MISMOS partidos y dice si la diferencia
@@ -206,12 +228,6 @@ def paired_bootstrap(con, model_a, model_b, market="1X2", seasons=None,
     if len(common) < 30:
         return None
 
-    la = np.array([-math.log(max(pa[k], EPS)) for k in common])
-    lb = np.array([-math.log(max(pb[k], EPS)) for k in common])
-    d = la - lb
-
-    rng = np.random.default_rng(seed)
-    boots = d[rng.integers(0, len(d), size=(n_boot, len(d)))].mean(axis=1)
-    lo, hi = np.percentile(boots, [2.5, 97.5])
-    p = 2 * min((boots <= 0).mean(), (boots >= 0).mean())
-    return float(d.mean()), float(lo), float(hi), float(p), len(common)
+    la = [-math.log(max(pa[k], EPS)) for k in common]
+    lb = [-math.log(max(pb[k], EPS)) for k in common]
+    return bootstrap_diff(la, lb, n_boot=n_boot, seed=seed)

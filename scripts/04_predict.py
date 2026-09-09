@@ -16,10 +16,29 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from marcador import db, dixon_coles as dc, ingest, ledger  # noqa: E402
+from marcador import db, dixon_coles as dc, ingest, ledger, promotion  # noqa: E402
+from marcador.backtest import ModelConfig                   # noqa: E402
 from marcador.baseline import MARKET_1X2, OUTCOMES          # noqa: E402
-from marcador.config import (CURRENT_SEASON, LEAGUE, PRODUCTION_MODEL,  # noqa: E402
+from marcador.config import (CURRENT_SEASON, LEAGUE,        # noqa: E402
                              PRODUCTION_REG, PRODUCTION_USE_RHO, PRODUCTION_XI)
+
+
+def production_config():
+    """Que modelo emite las predicciones de hoy.
+
+    Se lee del ledger, no de una constante de este archivo. Esa es la
+    diferencia entre un sistema que se corrige solo y uno que pide permiso: si
+    el modelo en produccion fuera codigo, el gate de la F4 no podria promover
+    nada sin que una persona editara un .py y lo commiteara.
+
+    Si todavia no hay campeon (nunca corrio el gate), se usa la configuracion
+    con la que salio a produccion la F3.
+    """
+    champ = promotion.read_champion()
+    if champ:
+        return champ["config"]
+    return ModelConfig(xi=PRODUCTION_XI, reg=PRODUCTION_REG,
+                       use_rho=PRODUCTION_USE_RHO)
 
 
 def refresh_data(con):
@@ -65,7 +84,7 @@ def main():
         print("No hay partidos por jugar en la ventana disponible. Nada que hacer.")
         return 0
 
-    already = ledger.predicted_matches(PRODUCTION_MODEL)
+    already = ledger.predicted_matches(production_config().slug())
     todo = [f for f in fixtures if f["match_id"] not in already]
     print(f"{len(fixtures)} partidos por jugar · {len(todo)} sin prediccion")
     if not todo:
@@ -83,10 +102,10 @@ def main():
     train = [{"date": dt.date.fromisoformat(r["match_date"]), "home": r["home_team"],
               "away": r["away_team"], "hg": r["fthg"], "ag": r["ftag"]} for r in rows]
 
-    fit = dc.fit(train, first, xi=PRODUCTION_XI, use_rho=PRODUCTION_USE_RHO,
-                 reg=PRODUCTION_REG)
+    cfg = production_config()
+    fit = dc.fit(train, first, xi=cfg.xi, use_rho=cfg.use_rho, reg=cfg.reg)
     cutoff = max(m["date"] for m in train).isoformat()
-    print(f"Modelo {PRODUCTION_MODEL} ajustado con {fit.n_matches} partidos "
+    print(f"Modelo {cfg.slug()} ajustado con {fit.n_matches} partidos "
           f"hasta {cutoff} (converge={fit.converged})\n")
 
     now = ledger.now_iso()
@@ -99,7 +118,7 @@ def main():
             new_rows.append({
                 "match_id": f["match_id"], "match_date": f["match_date"],
                 "home_team": f["home_team"], "away_team": f["away_team"],
-                "model_version": PRODUCTION_MODEL, "market": MARKET_1X2,
+                "model_version": cfg.slug(), "market": MARKET_1X2,
                 "outcome": o, "prob": f"{probs[o]:.6f}", "mode": "live",
                 "info_cutoff": cutoff, "created_at": now,
             })

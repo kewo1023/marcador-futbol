@@ -25,6 +25,9 @@ evaluando; el reloj de GitHub, no. Cualquiera puede auditar el proyecto con
 | `results.csv` | El marcador de los partidos que se predijeron | Solo se completa; un resultado registrado no cambia |
 | `metrics.csv` | log-loss, Brier y accuracy por modelo | Sí: son derivadas, se recalculan |
 | `missed.csv` | Partidos que se jugaron sin que el sistema los predijera | Solo se agregan |
+| `champion.json` | Qué modelo está en producción y desde cuándo | Sí, cuando el gate promueve |
+| `challenges.csv` | Cada desafío al campeón, promovido o rechazado | Solo se agregan |
+| `diagnostics.csv` | Dónde pierde el campeón contra el mercado, por segmento | Sí, se recalcula |
 
 `results.csv` guarda lo mínimo para poder verificar el marcador sin bajar nada
 (equipos, goles, resultado). No lleva cuotas, corners, tiros ni árbitro: no es
@@ -38,6 +41,19 @@ git log --format="%ad %h" --date=iso -- ledger/predictions.csv | tail -5
 
 La fecha del commit que introdujo una fila es anterior al partido que esa fila
 predice. Si no lo fuera, el proyecto estaría roto.
+
+## Por qué el campeón vive aquí y no en el código
+
+Si el modelo en producción fuera una constante de Python, promover exigiría que
+una persona editara un `.py` y lo commiteara. El sistema no se estaría
+corrigiendo solo: estaría pidiendo permiso.
+
+`git log ledger/champion.json` es el historial completo de qué modelo emitió
+cada predicción y desde cuándo.
+
+`challenges.csv` guarda **todos** los desafíos, incluidos los rechazados. Los
+rechazos son la evidencia de que el gate hace algo: un historial que solo
+muestra promociones es indistinguible de un sistema sin gate.
 
 ## Por qué existe `missed.csv`
 

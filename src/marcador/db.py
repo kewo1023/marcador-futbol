@@ -42,8 +42,13 @@ CREATE TABLE IF NOT EXISTS matches (
     hst INTEGER, ast INTEGER,         -- palabra reservada en SQL)
     referee TEXT,                     -- clave para el mercado de tarjetas
 
-    -- Cuota de cierre de Pinnacle. Es el techo contra el que se mide el
-    -- modelo: representa toda la información pública más el dinero profesional.
+    -- Cuotas de CIERRE: el techo contra el que se mide el modelo, porque
+    -- representan toda la información pública más el dinero profesional.
+    -- avgc* es el promedio de todas las casas y es la referencia principal.
+    -- ps* es Pinnacle, que era la referencia original: la fuente dejo de
+    -- publicarla el 17/01/2026, asi que ya no sirve hacia adelante. Se
+    -- conserva porque es la unica disponible antes de 2019/20.
+    avgch REAL, avgcd REAL, avgca REAL,
     psch REAL, pscd REAL, psca REAL,
 
     ingested_at   TEXT NOT NULL

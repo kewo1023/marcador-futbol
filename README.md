@@ -16,7 +16,7 @@ eso solo lo da un sistema de medición que ya existía.
 | F1 | Datos y el marcador | ✅ |
 | F2 | Motor Dixon-Coles | ✅ |
 | F3 | Loop automatizado (GitHub Actions + dashboard) | ✅ |
-| F4 | Reentreno con gate de promoción | ⬜ |
+| F4 | Reentreno con gate de promoción | ✅ |
 | F5 | Mercados nuevos: corners, tarjetas, tiros | ⬜ |
 | F6 | Empaquetado y documentación | ⬜ |
 
@@ -31,12 +31,12 @@ features, entra por la decisión de qué hiperparámetro usar.
 | Modelo | log-loss ↓ | Brier ↓ | accuracy | % del espacio cubierto |
 |---|---|---|---|---|
 | Frecuencia base | 1.0679 | 0.6461 | 44.2% | — (es el piso) |
-| Poisson simple | 1.0086 | 0.6021 | 50.7% | 49.0% |
-| Elo | 0.9845 | 0.5871 | 54.3% | 68.9% |
-| Poisson + decaimiento | 0.9829 | 0.5838 | 53.3% | 70.2% |
-| Dixon-Coles (+ rho) | 0.9826 | 0.5837 | 53.3% | 70.4% |
-| **Dixon-Coles + regularización** | **0.9786** | **0.5823** | 53.2% | **73.8%** |
-| Mercado (cierre, sin margen) | 0.9468 | 0.5608 | 56.4% | — (es el techo) |
+| Poisson simple | 1.0086 | 0.6021 | 50.7% | 52.8% |
+| Elo | 0.9845 | 0.5871 | 54.3% | 74.3% |
+| Poisson + decaimiento | 0.9829 | 0.5838 | 53.3% | 75.7% |
+| Dixon-Coles (+ rho) | 0.9826 | 0.5837 | 53.3% | 75.9% |
+| **Dixon-Coles + regularización** | **0.9786** | **0.5823** | 53.2% | **79.5%** |
+| Mercado (cierre, sin margen) | 0.9556 | 0.5670 | 55.9% | — (es el techo) |
 
 `accuracy` se muestra como contexto y no decide nada — ver la regla 5 de
 [CLAUDE.md](CLAUDE.md). Nótese que el modelo final tiene *menos* accuracy que
@@ -53,7 +53,7 @@ remuestreos. Negativo = mejora.
 | Corrección `rho` de marcadores bajos | −0.0002 | [−0.0012, +0.0007] | no |
 | Regularización | −0.0040 | [−0.0093, −0.0002] | **sí** |
 | Modelo final − Elo | −0.0059 | [−0.0137, +0.0020] | no |
-| Modelo final − mercado | +0.0227 | [+0.0142, +0.0314] | **sí** (el mercado gana) |
+| Modelo final − mercado | +0.0230 | [+0.0151, +0.0309] | **sí** (el mercado gana) |
 
 **Tres cosas que vale la pena leer de esa tabla.**
 
@@ -89,6 +89,61 @@ La regularización empuja hacia el promedio de la liga a los equipos de los que
 hay pocos datos, y deja quietos a los que tienen muchos. La probabilidad
 mínima emitida pasó de 0.74% a **4.52%**.
 
+## El gate de promoción
+
+**La regla, en una línea: el campeón conserva el título salvo que lo derroten
+de forma concluyente. Un empate lo gana el campeón.**
+
+Cada lunes se busca una configuración nueva en un bloque de afinado, y se la
+enfrenta al campeón sobre tres temporadas que **ninguna de las dos vio**. Los
+dos se reajustan con el mismo procedimiento: comparar al campeón tal como está
+contra un retador recién entrenado haría ganar siempre al retador por tener
+parámetros más frescos, y el gate no estaría midiendo lo que cree medir.
+
+La decisión no se toma comparando promedios, sino con un bootstrap pareado. La
+razón está documentada en la propia F2 de este repo: allí el proyecto declaró
+que el modelo "le ganaba a Elo por 0.0018" y resultó ser ruido. Si el gate
+comparara promedios, promovería cada vez que el azar diera una décima de
+ventaja — y como promover es acumulativo, el sistema se degradaría a punta de
+mejoras imaginarias. Que es exactamente lo que esta fase existe para impedir.
+
+El primer desafío real quedó registrado y fue un **rechazo**: el retador
+(`reg=0.005`) ganaba en el bloque de afinado y perdió en el del gate. Sobreajuste
+al bloque de búsqueda, atrapado donde debía.
+
+El modelo en producción vive en `ledger/champion.json`, **no en el código**. Si
+fuera una constante de Python, promover exigiría que una persona editara un
+`.py`: el sistema no se estaría corrigiendo solo, estaría pidiendo permiso.
+`git log ledger/champion.json` es el historial de qué modelo emitió cada
+predicción y desde cuándo.
+
+## Dónde pierde el modelo
+
+`scripts/07_diagnose.py` segmenta el error contra el mercado y escribe
+`ledger/diagnostics.csv`. Compara contra el mercado y no contra un número
+suelto porque un log-loss alto en un segmento puede ser solo un segmento
+difícil; lo que importa es cuánto se pierde donde el mercado enfrenta lo mismo.
+
+Sobre 2024/25–2026/27, la brecha total contra el mercado es +0.0161, y se
+reparte así:
+
+| Segmento | Brecha | Aporta |
+|---|---|---|
+| Gana local | +0.0386 | **+0.0171** |
+| Empate | +0.0254 | +0.0064 |
+| Gana visitante | −0.0203 | −0.0066 (el modelo **gana**) |
+| Con equipo recién ascendido | +0.0100 | +0.0029 |
+| Con tarjeta roja | −0.0116 | −0.0013 (el modelo **gana**) |
+
+Dos lecturas que valen: el segmento de recién ascendidos ya casi no duele
+—confirma que la regularización de la F2 hizo su trabajo— y el modelo le gana
+al mercado en victorias visitantes y en partidos con roja. El frente abierto
+son las **victorias locales**, no los empates como parecía en la F2: contra
+Elo el problema eran los empates, contra el mercado son los locales.
+
+Esto genera hipótesis, no autoriza cambios. Cualquier idea que salga de aquí
+pasa por el gate igual que las demás.
+
 ## El loop
 
 Dos workflows de GitHub Actions, a distintas horas y con `concurrency` para que
@@ -98,6 +153,7 @@ nunca escriban a la vez:
 |---|---|---|
 | `score.yml` | 03:00 UTC diario | Ingiere resultados, los cruza con lo predicho, recalcula el marcador |
 | `predict.yml` | 05:00 y 17:00 UTC | Baja los próximos partidos, ajusta el modelo y emite predicciones |
+| `retrain.yml` | Lunes 06:00 UTC | Busca un retador, lo pasa por el gate, y diagnostica dónde falla |
 
 Los días sin partidos ninguno de los dos commitea nada.
 
@@ -153,6 +209,8 @@ El loop y el dashboard:
 ```bash
 ./.venv/bin/python scripts/04_predict.py --dry-run   # que predeciría, sin escribir
 ./.venv/bin/python scripts/05_score.py               # ingiere resultados y mide
+./.venv/bin/python scripts/06_retrain.py --dry-run   # que decidiria el gate, sin escribir
+./.venv/bin/python scripts/07_diagnose.py            # donde pierde contra el mercado
 ./.venv/bin/streamlit run dashboard/app.py           # dashboard en localhost:8501
 ```
 
@@ -179,12 +237,17 @@ src/marcador/
   baseline.py   frecuencia base, Elo, y el mercado como referencia
   dixon_coles.py  el motor: Poisson + decaimiento + rho, con gradiente analitico
   ledger.py     lectura y escritura append-only del ledger
+  backtest.py   walk-forward y ModelConfig, compartidos por el backtest y el gate
+  promotion.py  el gate: campeon, retador, y la decision
+  diagnostics.py  segmentacion del error contra el mercado
 scripts/
   01_ingest.py  baja y carga
   02_baseline.py genera predicciones walk-forward y llena el marcador
   03_dixon_coles.py ajusta xi y reg en validacion, y reporta sobre prueba
   04_predict.py   emite predicciones de los proximos partidos (loop)
   05_score.py     ingiere resultados y recalcula el marcador (loop)
+  06_retrain.py   busca retador y lo pasa por el gate (semanal)
+  07_diagnose.py  donde pierde el campeon contra el mercado
 dashboard/
   app.py          Streamlit; lee solo el ledger
 ledger/           predicciones, resultados y metricas — esto SI se versiona
@@ -193,6 +256,22 @@ ledger/           predicciones, resultados y metricas — esto SI se versiona
 
 `data/` no se versiona: la fuente permite usar los datos, no republicarlos.
 Este repo publica predicciones y métricas derivadas, nunca el volcado de datos.
+
+## Una nota sobre el techo
+
+La referencia de mercado era la cuota de cierre de **Pinnacle**. La fuente dejó
+de publicarla el **17/01/2026**: falta en 170 partidos de 2025/26 y en toda la
+temporada 2026/27. Seguir con ella habría dejado al track record en vivo sin
+techo contra el cual medirse.
+
+Ahora se usa el **promedio de cierre de todas las casas**, que cubre el 100% de
+los partidos desde 2019/20 (y Pinnacle antes, donde el promedio no existe). Es
+además una referencia mejor conceptualmente: el consenso del mercado en vez de
+la opinión de una casa. Pero es un techo algo más bajo — Pinnacle es la casa
+más afilada — y por eso los porcentajes de "espacio cubierto" de esta tabla son
+más altos que los que reportaba el README antes de la F4. El baseline viejo
+(`market-close-v1`) se conserva intacto en la base y el nuevo se registra como
+`market-avgclose-v1`: dos referencias distintas no comparten nombre.
 
 ## Fuente de datos
 

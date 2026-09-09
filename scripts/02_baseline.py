@@ -153,8 +153,13 @@ def main():
          "Frecuencia base historica, recalculada por temporada"),
         ("baseline-elo-v1", "elo", run_elo,
          "Elo k=20 home_adv=60 draw_share=0.26"),
-        ("market-close-v1", "market", run_market,
-         "Cuota de cierre Pinnacle sin margen"),
+        # market-close-v1 (Pinnacle) sigue existiendo en la base y no se toca:
+        # sus predicciones son inmutables. Esta es una version NUEVA porque
+        # usa otra referencia — el promedio de todas las casas — desde que la
+        # fuente dejo de publicar Pinnacle en enero de 2026. Dos referencias
+        # distintas no pueden compartir nombre.
+        ("market-avgclose-v1", "market", run_market,
+         "Cuota de cierre promedio de las casas, sin margen"),
     ]
 
     results = {}
@@ -173,7 +178,7 @@ def main():
               f"{r['accuracy']*100:>9.1f}% {r['n_matches']:>9}")
 
     freq = results["baseline-freq-v1"]["log_loss"]
-    mkt = results["market-close-v1"]["log_loss"]
+    mkt = results["market-avgclose-v1"]["log_loss"]
     print(f"\n  Espacio entre la frecuencia base y el mercado: "
           f"{freq - mkt:.4f} de log-loss.")
     print(f"  Ahi es donde tiene que caber el modelo de la F2.")

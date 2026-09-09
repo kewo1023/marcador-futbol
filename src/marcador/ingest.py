@@ -18,11 +18,12 @@ FIELD_MAP = {
     "HY": "hy", "AY": "ay", "HR": "hr", "AR": "ar",
     "HS": "hs", "AS": "as", "HST": "hst", "AST": "ast",
     "Referee": "referee",
+    "AvgCH": "avgch", "AvgCD": "avgcd", "AvgCA": "avgca",
     "PSCH": "psch", "PSCD": "pscd", "PSCA": "psca",
 }
 INT_COLS = {"fthg", "ftag", "hc", "ac", "hy", "ay", "hr", "ar",
             "hs", "as", "hst", "ast"}
-FLOAT_COLS = {"psch", "pscd", "psca"}
+FLOAT_COLS = {"avgch", "avgcd", "avgca", "psch", "pscd", "psca"}
 
 
 def parse_date(raw: str) -> str | None:
@@ -126,7 +127,8 @@ def upsert_matches(con, rows) -> int:
     cols = ["match_id", "league", "season", "match_date", "kickoff_utc",
             "home_team", "away_team", "fthg", "ftag", "ftr",
             "hc", "ac", "hy", "ay", "hr", "ar", "hs", "as", "hst", "ast",
-            "referee", "psch", "pscd", "psca", "ingested_at"]
+            "referee", "avgch", "avgcd", "avgca", "psch", "pscd", "psca",
+            "ingested_at"]
     # "as" es palabra reservada en SQL; entre comillas dobles SQLite la acepta
     # como nombre de columna.
     quoted = ", ".join(f'"{c}"' for c in cols)

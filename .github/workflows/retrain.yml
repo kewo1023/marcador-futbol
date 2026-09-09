@@ -1,0 +1,57 @@
+name: Reentrenar y desafiar al campeon
+
+# Semanal, los lunes. No mas seguido a proposito: reentrenar todo el tiempo no
+# hace que el modelo mejore mas rapido, solo multiplica las oportunidades de
+# que el azar produzca un retador que parezca mejor. El gate lo filtra, pero
+# la forma barata de no equivocarse es no preguntar tan seguido.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ledger
+  cancel-in-progress: false
+
+jobs:
+  reentrenar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: raw-${{ github.run_id }}
+          restore-keys: raw-
+      - run: pip install -r requirements.txt
+
+      - name: Cargar el historico
+        run: python scripts/01_ingest.py
+
+      - name: Buscar retador y pasarlo por el gate
+        run: python scripts/06_retrain.py
+
+      - name: Diagnosticar donde falla el campeon
+        run: python scripts/07_diagnose.py
+
+      - name: Guardar en el ledger
+        run: |
+          if [ -z "$(git status --porcelain ledger/)" ]; then
+            echo "Sin cambios. El campeon sigue igual y el diagnostico no se movio."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ledger/
+          # El mensaje dice el veredicto para que se lea en `git log` sin abrir
+          # el CSV. Un historial de promociones y rechazos es el registro de
+          # como evoluciono el modelo.
+          DECISION=$(python -c "import csv;r=list(csv.DictReader(open('ledger/challenges.csv')));print(r[-1]['decision'] + ' ' + r[-1]['challenger'] if r else 'sin desafios')")
+          git commit -m "gate: $DECISION ($(date -u +%Y-%m-%d))"
+          git pull --rebase origin main
+          git push origin main

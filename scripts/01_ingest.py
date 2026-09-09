@@ -25,8 +25,12 @@ def main():
         print(f"  {season_label(season)}  {n:>4} partidos  ({size/1024:.0f} KB)")
 
     total, = con.execute("SELECT COUNT(*) FROM matches").fetchone()
+    # Cuenta la cobertura EFECTIVA: el promedio de las casas, o Pinnacle donde
+    # aquel no exista. Contar solo Pinnacle daba un 95% enganoso desde que la
+    # fuente dejo de publicarla en enero de 2026.
     with_odds, = con.execute(
-        "SELECT COUNT(*) FROM matches WHERE psch IS NOT NULL").fetchone()
+        "SELECT COUNT(*) FROM matches "
+        "WHERE avgch IS NOT NULL OR psch IS NOT NULL").fetchone()
     with_ref, = con.execute(
         "SELECT COUNT(*) FROM matches WHERE referee IS NOT NULL").fetchone()
     with_corners, = con.execute(

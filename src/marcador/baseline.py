@@ -97,8 +97,15 @@ class Elo:
 
 # --- Baseline 3: el mercado --------------------------------------------------
 
+def _has(row, col):
+    try:
+        return row[col] is not None
+    except (KeyError, IndexError):
+        return False
+
+
 def market_probs(row) -> dict | None:
-    """Cuota de cierre de Pinnacle, convertida a probabilidad y sin margen.
+    """Cuota de cierre del mercado, convertida a probabilidad y sin margen.
 
     Una cuota de 2.00 significa "paga el doble", o sea 1/2.00 = 50%. Pero las
     tres probabilidades implícitas de un partido suman MÁS de 1 (típicamente
@@ -107,8 +114,24 @@ def market_probs(row) -> dict | None:
 
     Es el techo del proyecto: representa toda la información pública más el
     dinero de los profesionales. Acercarse ya es un resultado.
+
+    QUÉ COLUMNA SE USA, Y POR QUÉ CAMBIÓ. Se prefiere el promedio de todas las
+    casas (AvgC*) y se cae a Pinnacle (PSC*) si no está.
+
+    Al principio del proyecto la referencia era Pinnacle sola. La fuente dejó
+    de publicarla el 17/01/2026: falta en 170 partidos de 2025/26 y en toda la
+    temporada 2026/27. Seguir con ella habría dejado al track record en vivo
+    sin techo contra el cual medirse — justo la parte que la F3 automatizó.
+
+    El cambio además mejora la referencia: el promedio de varias casas es el
+    consenso del mercado, no la opinión de una. El costo es que las cifras
+    calculadas contra Pinnacle y contra el promedio no son directamente
+    comparables, y por eso el baseline viejo (market-close-v1) se conserva sin
+    tocar y el nuevo se registra aparte.
     """
-    h, d, a = row["psch"], row["pscd"], row["psca"]
+    h = row["avgch"] if _has(row, "avgch") else row["psch"]
+    d = row["avgcd"] if _has(row, "avgcd") else row["pscd"]
+    a = row["avgca"] if _has(row, "avgca") else row["psca"]
     if not h or not d or not a or min(h, d, a) <= 1.0:
         return None
     ph, pd_, pa = 1 / h, 1 / d, 1 / a

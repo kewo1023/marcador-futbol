@@ -26,13 +26,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from marcador import baseline, db, dixon_coles as dc, ledger, scoring  # noqa: E402
+from marcador import backtest, baseline, db, ledger, scoring  # noqa: E402
+from marcador.backtest import ModelConfig                            # noqa: E402
 from marcador.baseline import MARKET_1X2, OUTCOMES             # noqa: E402
-from marcador.config import LEAGUE, SEASONS                    # noqa: E402
+from marcador.config import LEAGUE                             # noqa: E402
 
-WARMUP = SEASONS[:3]        # 2015/16 - 2017/18
-VALIDATION = SEASONS[3:6]   # 2018/19 - 2020/21
-TEST = SEASONS[6:]          # 2021/22 - 2025/26
+# Cortes explicitos y no por indice. Cuando se agrego la temporada 2026/27,
+# TEST = SEASONS[6:] paso de 5 a 6 temporadas en silencio y con ello se movieron
+# numeros ya reportados. Escritos asi, agregar una temporada no cambia nada
+# hasta que alguien lo decida a mano.
+WARMUP = ["1516", "1617", "1718"]
+VALIDATION = ["1819", "1920", "2021"]
+TEST = ["2122", "2223", "2324", "2425", "2526"]
 
 # Cada cuantos dias se re-ajusta el modelo durante el backtest. Reajustar en
 # cada partido seria mas fino y mucho mas lento; en una semana de futbol la
@@ -54,39 +59,12 @@ def load(con):
              "hg": r["fthg"], "ag": r["ftag"], "ftr": r["ftr"]} for r in rows]
 
 
-def walk_forward(matches, target_seasons, xi, use_rho, reg=0.0, verbose=False):
-    """Recorre el tiempo hacia adelante prediciendo solo con el pasado.
-
-    Devuelve (predicciones, n_ajustes, n_equipos_desconocidos).
-    """
-    targets = [m for m in matches if m["season"] in target_seasons]
-    if not targets:
-        return [], 0, 0
-
-    out, fit, last_fit, n_fits, unknown = [], None, None, 0, 0
-    for m in targets:
-        need_refit = (fit is None or last_fit is None
-                      or (m["date"] - last_fit).days >= REFIT_DAYS)
-        if need_refit:
-            # Estrictamente ANTERIORES a la fecha del partido. El '<' es la
-            # regla 4 entera; con '<=' se colaria el propio partido.
-            train = [t for t in matches if t["date"] < m["date"]]
-            if not train:
-                continue
-            fit = dc.fit(train, m["date"], xi=xi, use_rho=use_rho, reg=reg,
-                         warm_start=fit)
-            last_fit = m["date"]
-            n_fits += 1
-            # La fecha real del dato mas reciente que vio el modelo. Es lo que
-            # se guarda como info_cutoff: siempre anterior al partido, que es
-            # justo lo que el trigger de la base verifica.
-            fit.last_data_date = max(t["date"] for t in train)
-
-        if not fit.knows(m["home"]) or not fit.knows(m["away"]):
-            unknown += 1
-        out.append((m["id"], fit.probs_1x2(m["home"], m["away"]),
-                    fit.last_data_date.isoformat()))
-    return out, n_fits, unknown
+def walk_forward(matches, target_seasons, xi, use_rho, reg=0.0):
+    """Delega en el paquete. Vivia aqui hasta que la F4 necesito lo mismo para
+    el gate de promocion; duplicarlo habria sido la forma mas facil de que las
+    dos versiones se separaran sin que nadie lo notara."""
+    cfg = ModelConfig(xi=xi, reg=reg, use_rho=use_rho, refit_days=REFIT_DAYS)
+    return backtest.walk_forward(matches, target_seasons, cfg)
 
 
 def save(con, preds, model_version):
@@ -174,7 +152,7 @@ def main():
 
     # --- El marcador, solo sobre las temporadas de prueba --------------------
     all_models = ["baseline-freq-v1", "baseline-elo-v1"] + \
-                 [s[0] for s in specs] + ["market-close-v1"]
+                 [s[0] for s in specs] + ["market-avgclose-v1"]
 
     print(f"\n{'MARCADOR (solo temporadas de prueba)':44}{'log-loss':>10}"
           f"{'Brier':>9}{'acc':>8}{'n':>7}")
@@ -204,13 +182,13 @@ def main():
 
     # --- Cuanto del espacio disponible se cubrio -----------------------------
     floor = results["baseline-freq-v1"]["log_loss"]
-    ceil = results["market-close-v1"]["log_loss"]
+    ceil = results["market-avgclose-v1"]["log_loss"]
     span = floor - ceil
     print(f"\n  Piso (frecuencia base) {floor:.4f} · techo (mercado) {ceil:.4f}"
           f" · espacio {span:.4f}")
     print(f"\n  {'modelo':42}{'% del espacio cubierto':>24}")
     for version in all_models:
-        if version in ("baseline-freq-v1", "market-close-v1"):
+        if version in ("baseline-freq-v1", "market-avgclose-v1"):
             continue
         pct = (floor - results[version]["log_loss"]) / span * 100
         print(f"  {version:42}{pct:>23.1f}%")
@@ -227,7 +205,7 @@ def main():
              (specs[2][0], specs[1][0], "aporte de rho (marcadores bajos)"),
              (specs[3][0], specs[2][0], "aporte de la regularizacion"),
              (final, "baseline-elo-v1", "modelo final  -  Elo"),
-             (final, "market-close-v1", "modelo final  -  mercado")]
+             (final, "market-avgclose-v1", "modelo final  -  mercado")]
     verdicts = {}
     for a, b, label in pairs:
         out = scoring.paired_bootstrap(con, a, b, MARKET_1X2, seasons=TEST)

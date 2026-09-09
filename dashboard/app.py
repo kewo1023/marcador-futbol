@@ -14,8 +14,8 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from marcador import ledger                        # noqa: E402
-from marcador.config import LEAGUE, PRODUCTION_MODEL  # noqa: E402
+from marcador import ledger, promotion              # noqa: E402
+from marcador.config import LEAGUE                  # noqa: E402
 
 st.set_page_config(page_title="Marcador", page_icon="⚽", layout="wide")
 
@@ -28,15 +28,63 @@ def load():
 
 
 preds, results, metrics = load()
+champ = promotion.read_champion()
+PRODUCTION_MODEL = champ["raw"]["model_version"] if champ else "(sin campeon)"
 
 st.title("Marcador antes que modelo")
 st.caption(f"Liga {LEAGUE} · modelo en producción `{PRODUCTION_MODEL}` · "
            "todo lo que se ve sale del ledger versionado en git")
 
+# --- El campeon y sus desafios ----------------------------------------------
+st.subheader("Campeón y desafíos")
+st.caption("Cada semana se busca una configuración nueva y se la enfrenta al "
+           "campeón sobre partidos que ninguna de las dos vio. El campeón "
+           "conserva el título salvo que lo derroten de forma concluyente: un "
+           "empate estadístico lo gana el campeón. Los rechazos se muestran "
+           "porque son la prueba de que el gate hace algo.")
+if champ:
+    c = champ["raw"]
+    st.markdown(f"**En producción:** `{c['model_version']}` · "
+                f"desde {c['promoted_at'][:10]} · _{c['promoted_because']}_")
+challenges = pd.DataFrame(promotion.read_challenges())
+if challenges.empty:
+    st.write("Todavía no se ha corrido ningún desafío.")
+else:
+    view = challenges[["decided_at", "challenger", "champion", "diff",
+                       "ci_low", "ci_high", "p_value", "decision", "n_matches"]].copy()
+    view["decided_at"] = view["decided_at"].str[:10]
+    view = view.rename(columns={"decided_at": "fecha", "challenger": "retador",
+                                "champion": "campeón", "diff": "diferencia",
+                                "p_value": "p", "decision": "veredicto",
+                                "n_matches": "partidos"})
+    st.dataframe(view.iloc[::-1], use_container_width=True, hide_index=True)
+
+# --- Donde falla ------------------------------------------------------------
+diag_path = ledger.LEDGER_DIR / "diagnostics.csv"
+if diag_path.exists():
+    st.subheader("Dónde pierde contra el mercado")
+    st.caption("`brecha` es cuánto peor que el mercado en ese grupo. `aporta` "
+               "es cuánto de la brecha total viene de ahí (brecha × tamaño). "
+               "El grupo que hay que atacar es el que más aporta, no el de "
+               "mayor brecha. Esto genera hipótesis; no autoriza cambios: "
+               "cualquier idea que salga de aquí pasa por el gate igual.")
+    diag = pd.DataFrame(ledger._read(diag_path))
+    if not diag.empty:
+        diag = diag.astype({"n": int, "modelo": float, "mercado": float,
+                            "brecha": float, "peso": float})
+        seg = st.selectbox("Segmento", sorted(diag["segmento"].unique()))
+        sub = diag[diag["segmento"] == seg].sort_values("peso", ascending=False)
+        st.dataframe(sub[["grupo", "n", "modelo", "mercado", "brecha", "peso"]]
+                     .rename(columns={"peso": "aporta"}),
+                     use_container_width=True, hide_index=True)
+
+st.divider()
+
 if preds.empty:
-    st.info("El ledger todavía no tiene predicciones. El loop las escribe "
-            "cuando los próximos partidos entren en la ventana de la fuente, "
-            "que es de pocos días.")
+    st.info("El ledger todavía no tiene predicciones en vivo. El loop las "
+            "escribe cuando los próximos partidos entren en la ventana de la "
+            "fuente, que es de pocos días. Lo de arriba no depende de eso: "
+            "sale del backtest.")
     st.stop()
 
 preds["prob"] = preds["prob"].astype(float)
