@@ -1,0 +1,128 @@
+#!/usr/bin/env python3
+"""F3 · Ingiere resultados, los cruza con lo predicho y recalcula el marcador.
+
+    ./.venv/bin/python scripts/05_score.py
+
+Es la otra mitad del ciclo. Corre a diario en GitHub Actions, despues de que se
+juegan los partidos.
+
+Lo que mide aqui es el TRACK RECORD EN VIVO: predicciones emitidas antes del
+kickoff, sin saber el resultado. Es distinto del backtest, y vale mas: un
+backtest lo puede inflar cualquiera sin darse cuenta, un track record en vivo
+no, porque las predicciones ya estaban escritas y versionadas.
+"""
+import datetime as dt
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from marcador import db, ingest, ledger, scoring          # noqa: E402
+from marcador.baseline import MARKET_1X2, OUTCOMES        # noqa: E402
+from marcador.config import CURRENT_SEASON, LEAGUE        # noqa: E402
+
+
+def refresh(con):
+    path = ingest.download_season(CURRENT_SEASON, force=True)
+    return ingest.upsert_matches(
+        con, ingest.rows_from_csv(path, LEAGUE, CURRENT_SEASON))
+
+
+def collect_results(con, predicted_ids):
+    """Los resultados de los partidos que ya habiamos predicho.
+
+    Solo esos. El ledger no es una copia de la fuente: guarda lo minimo para
+    que cualquiera pueda verificar el marcador sin bajarse nada (regla 2).
+    """
+    if not predicted_ids:
+        return []
+    out, ids = [], sorted(predicted_ids)
+    now = ledger.now_iso()
+    for i in range(0, len(ids), 500):
+        chunk = ids[i:i + 500]
+        q = ",".join("?" * len(chunk))
+        for r in con.execute(
+                f"""SELECT match_id, match_date, home_team, away_team,
+                           fthg, ftag, ftr
+                    FROM matches WHERE ftr IS NOT NULL AND match_id IN ({q})""",
+                chunk):
+            out.append({"match_id": r["match_id"], "match_date": r["match_date"],
+                        "home_team": r["home_team"], "away_team": r["away_team"],
+                        "fthg": r["fthg"], "ftag": r["ftag"], "ftr": r["ftr"],
+                        "recorded_at": now})
+    return out
+
+
+def score_live():
+    """Calcula el marcador leyendo SOLO el ledger, sin tocar la base.
+
+    Es a proposito: el ledger es lo que esta versionado y lo que cualquiera
+    puede auditar. Si el marcador se pudiera calcular solo con la base local,
+    nadie de afuera podria comprobarlo.
+    """
+    preds = [p for p in ledger.read_predictions() if p["mode"] == "live"]
+    results = {r["match_id"]: r["ftr"] for r in ledger.read_results()}
+
+    by_model = {}
+    for p in preds:
+        if p["match_id"] not in results:
+            continue                      # todavia no se juega: no cuenta
+        slot = by_model.setdefault(p["model_version"], {})
+        m = slot.setdefault(p["match_id"], {"probs": {}, "ftr": results[p["match_id"]]})
+        m["probs"][p["outcome"]] = float(p["prob"])
+
+    out = []
+    for model_version, matches in by_model.items():
+        pairs = [(m["probs"], m["ftr"]) for m in matches.values()
+                 if len(m["probs"]) == len(OUTCOMES)]
+        if not pairs:
+            continue
+        res = scoring.evaluate([p for p, _ in pairs], [a for _, a in pairs])
+        out.append({"model_version": model_version, "market": MARKET_1X2,
+                    "eval_set": "live", "n_matches": res["n_matches"],
+                    "log_loss": f"{res['log_loss']:.6f}",
+                    "brier": f"{res['brier']:.6f}",
+                    "accuracy": f"{res['accuracy']:.6f}",
+                    "computed_at": ledger.now_iso()})
+    return out, by_model
+
+
+def main():
+    con = db.init_db()
+    n = refresh(con)
+    print(f"Temporada en curso re-ingestada: {n} partidos\n")
+
+    predicted = ledger.predicted_matches()
+    added = ledger.upsert_results(collect_results(con, predicted))
+    pending = len(predicted) - len(ledger.read_results())
+    print(f"Resultados: {added} nuevos registrados · "
+          f"{len(ledger.read_results())} en total · {pending} partidos aun sin jugar")
+
+    metrics, by_model = score_live()
+    if not metrics:
+        print("\nTodavia no hay ningun partido predicho Y jugado. "
+              "El marcador en vivo arranca cuando se juegue el primero.")
+        return 0
+
+    ledger.upsert_metrics(metrics)
+    print(f"\n{'TRACK RECORD EN VIVO':40}{'log-loss':>10}{'Brier':>9}"
+          f"{'acc':>8}{'n':>6}")
+    print("  " + "-" * 71)
+    for m in sorted(metrics, key=lambda r: float(r["log_loss"])):
+        print(f"  {m['model_version']:38}{float(m['log_loss']):>10.4f}"
+              f"{float(m['brier']):>9.4f}{float(m['accuracy'])*100:>7.1f}%"
+              f"{m['n_matches']:>6}")
+
+    # Contexto: sin una referencia, un log-loss suelto no dice nada.
+    ref = {r["eval_set"] + "|" + r["model_version"]: r
+           for r in ledger._read(ledger.LEDGER_METRICS)}
+    base = ref.get("test|baseline-elo-v1")
+    if base:
+        print(f"\n  Referencia del backtest — Elo: {float(base['log_loss']):.4f}")
+    print("  Ojo: con pocos partidos este numero se mueve muchisimo. "
+          "No significa nada hasta tener ~100.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

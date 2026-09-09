@@ -7,6 +7,13 @@ data/
 *.db
 *.csv
 
+# ...con UNA excepcion: el ledger. No es el volcado de la fuente, son
+# predicciones, resultados minimos y metricas — datos derivados, que es
+# justo lo que la regla 2 si permite publicar. Y tiene que estar versionado
+# para sobrevivir al runner de GitHub Actions, que se destruye al terminar.
+!ledger/
+!ledger/*.csv
+
 # --- Python ---
 .venv/
 venv/

@@ -15,7 +15,7 @@ eso solo lo da un sistema de medición que ya existía.
 | F0 | Fundaciones y alcance | ✅ |
 | F1 | Datos y el marcador | ✅ |
 | F2 | Motor Dixon-Coles | ✅ |
-| F3 | Loop automatizado (GitHub Actions + dashboard) | ⬜ |
+| F3 | Loop automatizado (GitHub Actions + dashboard) | ✅ |
 | F4 | Reentreno con gate de promoción | ⬜ |
 | F5 | Mercados nuevos: corners, tarjetas, tiros | ⬜ |
 | F6 | Empaquetado y documentación | ⬜ |
@@ -89,6 +89,38 @@ La regularización empuja hacia el promedio de la liga a los equipos de los que
 hay pocos datos, y deja quietos a los que tienen muchos. La probabilidad
 mínima emitida pasó de 0.74% a **4.52%**.
 
+## El loop
+
+Dos workflows de GitHub Actions, a distintas horas y con `concurrency` para que
+nunca escriban a la vez:
+
+| Workflow | Cuándo | Qué hace |
+|---|---|---|
+| `score.yml` | 03:00 UTC diario | Ingiere resultados, los cruza con lo predicho, recalcula el marcador |
+| `predict.yml` | 05:00 UTC diario | Baja los próximos partidos, ajusta el modelo y emite predicciones |
+
+Los días sin partidos ninguno de los dos commitea nada: la ventana de fixtures
+de la fuente cubre pocos días y en parón de selecciones puede no traer una liga
+entera. Eso es normal, no un error, y los scripts lo tratan como tal.
+
+### Dónde viven las predicciones, y por qué importa
+
+En `ledger/`, en texto plano y versionado — no en la base de datos, que está
+en `.gitignore` y que además se destruye con el runner de Actions al terminar
+el job.
+
+Esa decisión, tomada por una razón de infraestructura, resultó ser la mejor
+propiedad del proyecto: **la fecha del commit que agregó una predicción es
+prueba externa de cuándo se emitió.** Una columna `created_at` la escribe el
+mismo sistema que se está evaluando; el reloj de GitHub, no.
+
+```bash
+git log --format="%ad %h" --date=iso -- ledger/predictions.csv
+```
+
+Cualquiera puede auditar el track record sin tener que confiar en nosotros. Ver
+[ledger/README.md](ledger/README.md).
+
 ## Cómo correrlo
 
 Requiere Python 3.11 o superior. La F1 corre solo con la librería estándar.
@@ -104,6 +136,17 @@ La F2 necesita scipy, así que corre en un entorno virtual:
 python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
 ./.venv/bin/python scripts/03_dixon_coles.py   # ajusta, hace backtest y compara
 ```
+
+El loop y el dashboard:
+
+```bash
+./.venv/bin/python scripts/04_predict.py --dry-run   # que predeciría, sin escribir
+./.venv/bin/python scripts/05_score.py               # ingiere resultados y mide
+./.venv/bin/streamlit run dashboard/app.py           # dashboard en localhost:8501
+```
+
+El dashboard lee **solo el ledger**, nunca la base local. Si necesitara la base,
+nadie de afuera podría reproducir lo que muestra.
 
 La primera corrida baja ~1.6 MB de la fuente y tarda menos de un minuto. Las
 siguientes usan la copia en `data/raw/`; con `--force` se vuelve a bajar todo.
@@ -124,10 +167,17 @@ src/marcador/
   scoring.py    log-loss, Brier, accuracy, curva de calibración
   baseline.py   frecuencia base, Elo, y el mercado como referencia
   dixon_coles.py  el motor: Poisson + decaimiento + rho, con gradiente analitico
+  ledger.py     lectura y escritura append-only del ledger
 scripts/
   01_ingest.py  baja y carga
   02_baseline.py genera predicciones walk-forward y llena el marcador
   03_dixon_coles.py ajusta xi y reg en validacion, y reporta sobre prueba
+  04_predict.py   emite predicciones de los proximos partidos (loop)
+  05_score.py     ingiere resultados y recalcula el marcador (loop)
+dashboard/
+  app.py          Streamlit; lee solo el ledger
+ledger/           predicciones, resultados y metricas — esto SI se versiona
+.github/workflows/  los dos cron jobs
 ```
 
 `data/` no se versiona: la fuente permite usar los datos, no republicarlos.

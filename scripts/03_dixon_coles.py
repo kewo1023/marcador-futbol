@@ -26,7 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from marcador import baseline, db, dixon_coles as dc, scoring  # noqa: E402
+from marcador import baseline, db, dixon_coles as dc, ledger, scoring  # noqa: E402
 from marcador.baseline import MARKET_1X2, OUTCOMES             # noqa: E402
 from marcador.config import LEAGUE, SEASONS                    # noqa: E402
 
@@ -191,6 +191,16 @@ def main():
                                  scoring.calibration_bins(preds, actual))
         print(f"  {version:42}{res['log_loss']:>10.4f}{res['brier']:>9.4f}"
               f"{res['accuracy']*100:>7.1f}%{res['n_matches']:>7}")
+
+    # Al ledger tambien: es la referencia contra la que el dashboard compara el
+    # track record en vivo, y tiene que estar versionada para que se pueda leer
+    # sin la base local.
+    ledger.upsert_metrics([
+        {"model_version": v, "market": MARKET_1X2, "eval_set": "test",
+         "n_matches": r["n_matches"], "log_loss": f"{r['log_loss']:.6f}",
+         "brier": f"{r['brier']:.6f}", "accuracy": f"{r['accuracy']:.6f}",
+         "computed_at": ledger.now_iso()}
+        for v, r in results.items()])
 
     # --- Cuanto del espacio disponible se cubrio -----------------------------
     floor = results["baseline-freq-v1"]["log_loss"]

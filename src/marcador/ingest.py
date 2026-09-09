@@ -151,3 +151,77 @@ def ingest_all(con, seasons=SEASONS, league: str = LEAGUE, force: bool = False):
         n = upsert_matches(con, rows_from_csv(path, league, season))
         summary.append((season, n, path.stat().st_size))
     return summary
+
+
+# --- Partidos por jugar ------------------------------------------------------
+
+def download_fixtures(raw_dir: Path = RAW_DIR) -> Path:
+    """Baja el archivo de proximos partidos. Siempre se re-baja: es el unico
+    dato que cambia de un dia para otro."""
+    from .config import FIXTURES_URL
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    dest = raw_dir / "fixtures.csv"
+    req = urllib.request.Request(FIXTURES_URL, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        dest.write_bytes(resp.read())
+    return dest
+
+
+def fixture_rows(path: Path, league: str = LEAGUE, season: str | None = None):
+    """Los proximos partidos de nuestra liga, con formato de fila de `matches`.
+
+    Van a la MISMA tabla que los partidos jugados, con el resultado en NULL.
+    Es a proposito: el match_id es deterministico a partir de fecha y equipos,
+    asi que cuando el resultado llegue caera sobre la misma fila y la
+    prediccion que ya se emitio quedara conectada sola.
+
+    El archivo cubre una ventana de pocos dias y trae todas las ligas juntas.
+    Que no venga ninguna fila de nuestra liga es normal (paron de selecciones),
+    no un error.
+    """
+    from .config import CURRENT_SEASON
+    season = season or CURRENT_SEASON
+    text = path.read_text(encoding="utf-8-sig", errors="replace")
+    now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+
+    for r in csv.DictReader(io.StringIO(text)):
+        r = {(k or "").strip(): v for k, v in r.items()}
+        if (r.get("Div") or "").strip() != league:
+            continue
+        date_iso = parse_date(r.get("Date"))
+        home = (r.get("HomeTeam") or "").strip()
+        away = (r.get("AwayTeam") or "").strip()
+        if not date_iso or not home or not away:
+            continue
+        row = {
+            "match_id": make_match_id(league, date_iso, home, away),
+            "league": league, "season": season, "match_date": date_iso,
+            "kickoff_utc": parse_kickoff(date_iso, r.get("Time")),
+            "home_team": home, "away_team": away,
+            "referee": _clean(r.get("Referee"), "referee"),
+            "ingested_at": now,
+        }
+        # Todo lo demas queda en None: el partido no se ha jugado.
+        for col in FIELD_MAP.values():
+            row.setdefault(col, None)
+        yield row
+
+
+def upsert_fixtures(con, rows) -> int:
+    """Inserta partidos por jugar SIN pisar un resultado ya registrado.
+
+    El DO NOTHING importa: si el partido ya se jugo y se ingesto, volver a
+    verlo en el archivo de fixtures no puede borrar su marcador.
+    """
+    cols = ["match_id", "league", "season", "match_date", "kickoff_utc",
+            "home_team", "away_team", "referee", "ingested_at"]
+    quoted = ", ".join(f'"{c}"' for c in cols)
+    placeholders = ", ".join(f":{c}" for c in cols)
+    sql = (f"INSERT INTO matches ({quoted}) VALUES ({placeholders}) "
+           f"ON CONFLICT(match_id) DO NOTHING")
+    n = 0
+    for row in rows:
+        cur = con.execute(sql, {c: row[c] for c in cols})
+        n += cur.rowcount
+    con.commit()
+    return n

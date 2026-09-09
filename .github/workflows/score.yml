@@ -1,0 +1,54 @@
+name: Ingerir resultados y recalcular el marcador
+
+# Dos horas antes que el de predecir, para que si los dos caen el mismo dia el
+# marcador ya este al dia cuando se emitan las predicciones nuevas.
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ledger
+  cancel-in-progress: false
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # La fuente es gratuita y de una sola persona. Cachear los CSV historicos
+      # evita volver a pedirle 12 archivos cada corrida; solo la temporada en
+      # curso se re-baja siempre, porque es la unica que cambia.
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: raw-${{ github.run_id }}
+          restore-keys: raw-
+
+      - run: pip install -r requirements.txt
+
+      - name: Cargar el historico
+        run: python scripts/01_ingest.py
+
+      - name: Ingerir resultados y medir
+        run: python scripts/05_score.py
+
+      - name: Guardar en el ledger
+        run: |
+          if [ -z "$(git status --porcelain ledger/)" ]; then
+            echo "Sin resultados nuevos. No hay nada que commitear."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ledger/
+          git commit -m "resultados y marcador: $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
+          git push origin main
