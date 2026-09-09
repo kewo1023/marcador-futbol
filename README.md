@@ -17,7 +17,7 @@ eso solo lo da un sistema de medición que ya existía.
 | F2 | Motor Dixon-Coles | ✅ |
 | F3 | Loop automatizado (GitHub Actions + dashboard) | ✅ |
 | F4 | Reentreno con gate de promoción | ✅ |
-| F5 | Mercados nuevos: corners, tarjetas, tiros | ⬜ |
+| F5 | Mercados nuevos: corners, tarjetas, tiros | ✅ |
 | F6 | Empaquetado y documentación | ⬜ |
 
 ## El marcador hoy
@@ -88,6 +88,86 @@ estimaban sobre nada y se iban al extremo.
 La regularización empuja hacia el promedio de la liga a los equipos de los que
 hay pocos datos, y deja quietos a los que tienen muchos. La probabilidad
 mínima emitida pasó de 0.74% a **4.52%**.
+
+## Cuatro mercados sobre un motor
+
+Cambiar de mercado es cambiar de qué columna salen los dos conteos. El motor no
+sabe si cuenta goles, corners, tarjetas o tiros. Esa era la razón para escribir
+Dixon-Coles a mano en la F2, y aquí se cobra.
+
+Se cobra **con dos matices que solo aparecen al medirlo.**
+
+### Matiz 1: Poisson no basta en todos lados
+
+Poisson exige varianza = media. Medida la dispersión residual sobre 790
+partidos, ya descontada la fuerza de los equipos:
+
+| Evento | Dispersión residual | ¿Poisson? |
+|---|---|---|
+| Goles | 0.86 | Sí |
+| Amarillas | 0.86 | Sí |
+| Tiros a puerta | 0.99 | Sí |
+| **Corners** | **1.34** | No |
+| **Tiros totales** | **1.46** | No |
+
+En los dos últimos la realidad se abre más de lo que Poisson representa, y un
+Poisson daría probabilidades demasiado seguras cerca de la media y demasiado
+flacas en las colas — justo donde viven los over/under. No hizo falta otro
+modelo: la media la sigue estimando el mismo motor y solo la distribución
+predictiva pasa a binomial negativa, con la dispersión estimada de los
+residuos. Un parámetro, no un rediseño.
+
+### Matiz 2: el modelo crudo pierde contra la frecuencia base en corners
+
+La señal existe —correlación 0.119 entre el total predicho y el real,
+comparable a la de goles (0.137)— pero es débil frente al ruido: el modelo
+varía con desviación 0.93 cuando la realidad varía 3.39. La confianza de más
+cuesta más de lo que aporta la señal.
+
+Se corrige encogiendo hacia la base: `p = w·modelo + (1−w)·base`, con `w`
+elegido por mercado en el bloque de afinado. El valor que sale **mide cuánto se
+le puede creer al modelo en ese mercado**, y reproduce por una vía
+independiente el orden de la señal:
+
+| Mercado | Correlación | `w*` |
+|---|---|---|
+| Tarjetas | 0.196 | 0.8–0.9 |
+| Tiros a puerta | 0.163 | 0.6–0.7 |
+| Goles | 0.137 | 0.5–0.8 |
+| Corners | 0.119 | 0.4–0.6 |
+
+### El resultado, sin adornos
+
+Temporadas 2024/25–2025/26, con `w` elegido en 2021/22–2023/24:
+
+| Mercado | ¿Le gana a la frecuencia base? | p |
+|---|---|---|
+| **Tarjetas 2.5 / 3.5 / 4.5** | **Sí, las tres** | 0.038 / 0.000 / 0.029 |
+| Corners (4 líneas) | Positivo, no concluyente | 0.12 – 0.94 |
+| Goles over/under (3 líneas) | Positivo, no concluyente | 0.39 – 0.59 |
+| Tiros a puerta (3 líneas) | Positivo, no concluyente | 0.16 – 0.76 |
+
+**De cuatro mercados, uno funciona de forma demostrable.** Las tarjetas, que
+son justo el mercado que el plan original daba por más difícil.
+
+### Sobre el árbitro, que el plan daba por decisivo
+
+El plan decía que las tarjetas dependerían del árbitro tanto como de los
+equipos. El rango entre árbitros es real y grande: 3.98 amarillas por partido
+el más tarjetero contra 2.63 el que menos, sobre una media de 3.47.
+
+**No sirve para predecir.** El historial de un árbitro correlaciona +0.0245 con
+las tarjetas del partido que va a pitar, contra +0.196 del modelo de equipos.
+Confiar del todo en él empeora el log-loss en 0.0509, y el mejor ajuste posible
+es el que casi lo ignora. El motor tiene la puerta abierta (`context_scale`)
+por si aparece una covariable de partido que sí prediga, pero esta no lo hace.
+
+### El techo, donde lo hay
+
+La fuente publica cuotas de cierre para 1X2 y para over/under 2.5 goles, y para
+nada más. Corners, tarjetas y tiros se miden **solo contra la frecuencia
+base**: se sabe si el modelo aporta, no cuánto le falta para lo alcanzable. Es
+una medición más débil y no hay que tratarla como si fuera equivalente.
 
 ## El gate de promoción
 
@@ -211,6 +291,7 @@ El loop y el dashboard:
 ./.venv/bin/python scripts/05_score.py               # ingiere resultados y mide
 ./.venv/bin/python scripts/06_retrain.py --dry-run   # que decidiria el gate, sin escribir
 ./.venv/bin/python scripts/07_diagnose.py            # donde pierde contra el mercado
+./.venv/bin/python scripts/08_markets.py             # los cuatro mercados
 ./.venv/bin/streamlit run dashboard/app.py           # dashboard en localhost:8501
 ```
 
@@ -240,6 +321,7 @@ src/marcador/
   backtest.py   walk-forward y ModelConfig, compartidos por el backtest y el gate
   promotion.py  el gate: campeon, retador, y la decision
   diagnostics.py  segmentacion del error contra el mercado
+  markets.py    que mercados existen y con que se mide cada uno
 scripts/
   01_ingest.py  baja y carga
   02_baseline.py genera predicciones walk-forward y llena el marcador
@@ -248,6 +330,7 @@ scripts/
   05_score.py     ingiere resultados y recalcula el marcador (loop)
   06_retrain.py   busca retador y lo pasa por el gate (semanal)
   07_diagnose.py  donde pierde el campeon contra el mercado
+  08_markets.py   backtest de corners, tarjetas y tiros
 dashboard/
   app.py          Streamlit; lee solo el ledger
 ledger/           predicciones, resultados y metricas — esto SI se versiona

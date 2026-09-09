@@ -113,3 +113,54 @@ def evaluate_config(matches, target_seasons, cfg: ModelConfig):
     preds, _, _ = walk_forward(matches, target_seasons, cfg)
     targets = [m for m in matches if m["season"] in target_seasons]
     return per_match_logloss(preds, targets)
+
+
+def load_market_matches(con, league, market):
+    """Los partidos con la columna del evento que pide el mercado.
+
+    El motor no sabe que esta contando: recibe hg/ag y ajusta. Cambiar de
+    mercado es cambiar de que columna salen esos dos numeros, y nada mas. Ese
+    era el argumento para escribir Dixon-Coles a mano en la F2, y esta funcion
+    es donde se cobra.
+    """
+    rows = con.execute(
+        f'''SELECT match_id, match_date, season, home_team, away_team,
+                   "{market.home_col}" AS hg, "{market.away_col}" AS ag,
+                   avgc_o25, avgc_u25
+            FROM matches
+            WHERE league = ? AND ftr IS NOT NULL
+              AND "{market.home_col}" IS NOT NULL AND "{market.away_col}" IS NOT NULL
+            ORDER BY match_date, home_team''', (league,)).fetchall()
+    return [{"id": r["match_id"], "date": dt.date.fromisoformat(r["match_date"]),
+             "season": r["season"], "home": r["home_team"], "away": r["away_team"],
+             "hg": r["hg"], "ag": r["ag"], "total": r["hg"] + r["ag"],
+             "avgc_o25": r["avgc_o25"], "avgc_u25": r["avgc_u25"]} for r in rows]
+
+
+def walk_forward_market(matches, target_seasons, cfg: ModelConfig, lines):
+    """Walk-forward para over/under de cualquier evento.
+
+    Un solo ajuste sirve para todas las lineas: la distribucion de conteos ya
+    esta completa, y cada linea es solo una forma distinta de sumar sus
+    celdas. Por eso agregar lineas es gratis y agregar mercados cuesta un
+    backtest.
+    """
+    targets = [m for m in matches if m["season"] in target_seasons]
+    if not targets:
+        return {}, 0
+
+    out = {line: {} for line in lines}
+    fit, last_fit, n_fits = None, None, 0
+    for m in targets:
+        if (fit is None or last_fit is None
+                or (m["date"] - last_fit).days >= cfg.refit_days):
+            train = [t for t in matches if t["date"] < m["date"]]
+            if not train:
+                continue
+            fit = dc.fit(train, m["date"], xi=cfg.xi, use_rho=cfg.use_rho,
+                         reg=cfg.reg, warm_start=fit)
+            last_fit = m["date"]
+            n_fits += 1
+        for line in lines:
+            out[line][m["id"]] = fit.probs_over_under_line(m["home"], m["away"], line)
+    return out, n_fits

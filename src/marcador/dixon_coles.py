@@ -52,12 +52,27 @@ aporta cada uno por su cuenta.
 """
 import numpy as np
 from scipy.optimize import minimize
-from scipy.stats import poisson
+from scipy.stats import nbinom, poisson
 
 # Cotas de rho. Fuera de este rango la correccion empieza a producir
 # probabilidades negativas en las casillas bajas.
 RHO_BOUNDS = (-0.25, 0.25)
 TAU_FLOOR = 1e-10
+
+
+def _count_pmf(k, mean, phi):
+    """P(X = k) para la media dada. Poisson si phi<=1, binomial negativa si no.
+
+    La binomial negativa se parametriza para que su varianza sea phi*mean, que
+    es exactamente lo que mide el indice de dispersion. Con phi -> 1 converge a
+    Poisson, asi que no hay discontinuidad entre los dos casos.
+    """
+    if phi <= 1.0 + 1e-9:
+        return poisson.pmf(k, mean)
+    # var = mean + mean^2/n = phi*mean  ->  n = mean/(phi-1)
+    n = mean / (phi - 1.0)
+    p = n / (n + mean)
+    return nbinom.pmf(k, n, p)
 
 
 class DixonColesFit:
@@ -89,13 +104,64 @@ class DixonColesFit:
         pueda diagnosticarla en vez de que se pierda en el promedio general.
         """
         ih, ia = self.index.get(home), self.index.get(away)
+        # context_scale es la puerta por la que entra cualquier covariable del
+        # PARTIDO y no del equipo: el arbitro en tarjetas es el caso claro. Se
+        # aplica a las dos tasas por igual porque un arbitro tarjetero lo es
+        # para los dos equipos. Vale 1.0 mientras nadie la use.
+        scale = getattr(self, "context_scale", 1.0)
         att_h = self.attack[ih] if ih is not None else 0.0
         def_h = self.defense[ih] if ih is not None else 0.0
         att_a = self.attack[ia] if ia is not None else 0.0
         def_a = self.defense[ia] if ia is not None else 0.0
-        lam = np.exp(att_h + def_a + self.home_adv)
-        mu = np.exp(att_a + def_h)
+        lam = np.exp(att_h + def_a + self.home_adv) * scale
+        mu = np.exp(att_a + def_h) * scale
         return float(lam), float(mu)
+
+    def count_matrix(self, home, away, max_count=10):
+        """La distribucion conjunta de conteos, para CUALQUIER evento.
+
+        Es score_matrix generalizada: la celda [x][y] es la probabilidad de que
+        el local registre x y el visitante y, sean goles, corners, tarjetas o
+        tiros. El motor no sabe que esta contando.
+
+        SOBREDISPERSION. Poisson exige varianza = media, y eso se cumple en
+        goles (dispersion residual 0.86), amarillas (0.86) y tiros a puerta
+        (0.99). NO se cumple en corners (1.34) ni en tiros totales (1.46):
+        ahi la realidad se abre mas de lo que Poisson puede representar, y un
+        Poisson produciria probabilidades demasiado seguras cerca de la media
+        y demasiado flacas en las colas — justo donde viven los over/under.
+
+        La correccion es cuasi-verosimilitud: la MEDIA la sigue estimando el
+        mismo motor sin tocar una linea, y solo la distribucion predictiva se
+        cambia por una binomial negativa con la misma media y varianza
+        phi*lambda. Un parametro extra, estimado de los residuos, en vez de un
+        modelo nuevo por mercado.
+        """
+        lam, mu = self.rates(home, away)
+        k = np.arange(max_count + 1)
+        phi = getattr(self, "dispersion", 1.0)
+        px, py = _count_pmf(k, lam, phi), _count_pmf(k, mu, phi)
+        m = np.outer(px, py)
+
+        if self.rho:
+            m[0, 0] *= 1.0 - lam * mu * self.rho
+            m[0, 1] *= 1.0 + lam * self.rho
+            m[1, 0] *= 1.0 + mu * self.rho
+            m[1, 1] *= 1.0 - self.rho
+            m = np.clip(m, 0.0, None)
+        return m / m.sum()
+
+    def probs_over_under_line(self, home, away, line, max_count=None):
+        """Over/under de cualquier evento, en cualquier linea."""
+        if max_count is None:
+            lam, mu = self.rates(home, away)
+            # Holgura suficiente para que la cola truncada sea despreciable.
+            max_count = int(max(10, 3 * max(lam, mu) + 12))
+        m = self.count_matrix(home, away, max_count)
+        idx = np.arange(max_count + 1)
+        totals = idx[:, None] + idx[None, :]
+        over = float(m[totals > line].sum())
+        return {"OVER": over, "UNDER": 1.0 - over}
 
     def score_matrix(self, home, away, max_goals=10):
         """La distribucion completa de marcadores, como una matriz 11x11.
@@ -105,25 +171,8 @@ class DixonColesFit:
         la diagonal es el empate, el triangulo inferior es victoria local, y
         las anti-diagonales son los over/under.
         """
-        lam, mu = self.rates(home, away)
-        # Producto exterior: P(x goles del local) x P(y goles del visitante),
-        # asumiendo independencia. El paso siguiente corrige esa suposicion.
-        px = poisson.pmf(np.arange(max_goals + 1), lam)
-        py = poisson.pmf(np.arange(max_goals + 1), mu)
-        m = np.outer(px, py)
-
-        if self.rho:
-            # La correccion Dixon-Coles toca SOLO las cuatro casillas bajas.
-            m[0, 0] *= 1.0 - lam * mu * self.rho
-            m[0, 1] *= 1.0 + lam * self.rho
-            m[1, 0] *= 1.0 + mu * self.rho
-            m[1, 1] *= 1.0 - self.rho
-            m = np.clip(m, 0.0, None)
-
-        # La correccion rompe la normalizacion (las celdas ya no suman 1), y
-        # truncar en max_goals tambien deja fuera una cola diminuta. Se
-        # renormaliza para que lo que salga sean probabilidades de verdad.
-        return m / m.sum()
+        # Caso particular de count_matrix: el evento contado son los goles.
+        return self.count_matrix(home, away, max_goals)
 
     def probs_1x2(self, home, away, max_goals=10):
         m = self.score_matrix(home, away, max_goals)
@@ -352,6 +401,14 @@ def fit(matches, cutoff, xi=0.0, use_rho=True, reg=0.0,
                            rho if use_rho else 0.0, xi,
                            len(matches), cutoff, bool(res.success))
     fitted.reg = reg
+    # Dispersion de Pearson sobre los datos de entrenamiento: promedio de
+    # (observado - esperado)^2 / esperado. Vale 1 si Poisson es suficiente.
+    # Se estima DESPUES de ajustar, con los mismos pesos temporales, y solo
+    # se usa para la distribucion predictiva: la media no se toca.
+    lam_f = np.exp(attack[hi] + defense[ai] + home_adv)
+    mu_f = np.exp(attack[ai] + defense[hi])
+    pearson = (w * ((x - lam_f) ** 2 / lam_f + (y - mu_f) ** 2 / mu_f)).sum()
+    fitted.dispersion = max(1.0, float(pearson / (2 * w.sum())))
     # Peso efectivo por equipo: cuantos "partidos equivalentes" sostienen cada
     # par de parametros. Es el numero que explica por que un ascendido produce
     # predicciones extremas, y la F4 lo va a necesitar para diagnosticar.

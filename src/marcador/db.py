@@ -49,6 +49,10 @@ CREATE TABLE IF NOT EXISTS matches (
     -- publicarla el 17/01/2026, asi que ya no sirve hacia adelante. Se
     -- conserva porque es la unica disponible antes de 2019/20.
     avgch REAL, avgcd REAL, avgca REAL,
+    -- Cierre promedio del over/under 2.5 goles. Es la UNICA cuota que la
+    -- fuente publica para un mercado distinto del 1X2: no hay de corners ni
+    -- de tarjetas, y por eso esos mercados se miden sin techo.
+    avgc_o25 REAL, avgc_u25 REAL,
     psch REAL, pscd REAL, psca REAL,
 
     ingested_at   TEXT NOT NULL

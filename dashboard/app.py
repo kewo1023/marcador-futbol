@@ -174,6 +174,31 @@ if played:
         st.dataframe(grp.style.format({"prometio": "{:.1%}", "ocurrio": "{:.1%}"}),
                      use_container_width=True, hide_index=True)
 
+# --- Los otros mercados -----------------------------------------------------
+mk_path = ledger.LEDGER_DIR / "markets.csv"
+if mk_path.exists():
+    st.subheader("Otros mercados")
+    st.caption("El mismo motor apuntado a otra columna. `w` es cuánto se le "
+               "cree al modelo frente a la frecuencia base: bajo significa que "
+               "la señal es débil en ese mercado. Corners, tarjetas y tiros no "
+               "tienen cuota en la fuente, así que se miden solo contra la "
+               "base — se sabe si aportan, no cuánto les falta.")
+    mk = pd.DataFrame(ledger._read(mk_path))
+    if not mk.empty:
+        mk = mk.astype({"linea": float, "n": int, "w": float,
+                        "log_loss_base": float, "log_loss_encogido": float,
+                        "gana_a_base": float, "p_value": float})
+        mk["veredicto"] = ["gana a la base" if (c == "si" and g > 0) else "no concluyente"
+                           for c, g in zip(mk["concluyente"], mk["gana_a_base"])]
+        st.dataframe(mk[["etiqueta", "linea", "w", "log_loss_base",
+                         "log_loss_encogido", "gana_a_base", "p_value",
+                         "veredicto"]]
+                     .rename(columns={"etiqueta": "mercado",
+                                      "log_loss_base": "base",
+                                      "log_loss_encogido": "modelo",
+                                      "gana_a_base": "gana", "p_value": "p"}),
+                     use_container_width=True, hide_index=True)
+
 # --- Referencia del backtest ------------------------------------------------
 if not test.empty:
     st.subheader("Referencia del backtest")
