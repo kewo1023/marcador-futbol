@@ -126,3 +126,92 @@ def save_calibration(con, model_version, market, eval_set, bins):
             (model_version, market, eval_set, b["low"], b["high"],
              b["n"], b["mean_pred"], b["observed_rate"]))
     con.commit()
+
+
+def score_from_db(con, model_version, market, seasons=None, outcomes=OUTCOMES_1X2):
+    """Mide un modelo leyendo lo que quedo REGISTRADO, no lo que el script creyo.
+
+    `seasons` restringe la evaluacion a un conjunto de temporadas. Sirve para
+    separar el bloque donde se eligen los hiperparametros del bloque donde se
+    reporta el resultado: elegir xi mirando las mismas temporadas que luego se
+    reportan es una forma sutil de leakage, y produce un numero que no se
+    sostiene en vivo.
+
+    Devuelve (metricas, predicciones, resultados) para poder reutilizar las dos
+    ultimas en la curva de calibracion sin volver a consultar.
+    """
+    sql = """SELECT p.match_id, p.outcome, p.prob, m.ftr
+             FROM predictions p JOIN matches m ON m.match_id = p.match_id
+             WHERE p.model_version = ? AND p.market = ? AND m.ftr IS NOT NULL"""
+    args = [model_version, market]
+    if seasons:
+        sql += f" AND m.season IN ({','.join('?' * len(seasons))})"
+        args += list(seasons)
+
+    by_match = {}
+    for r in con.execute(sql, args):
+        slot = by_match.setdefault(r["match_id"], {"probs": {}, "ftr": r["ftr"]})
+        slot["probs"][r["outcome"]] = r["prob"]
+
+    preds, actual = [], []
+    for slot in by_match.values():
+        # Un partido con menos de tres probabilidades esta incompleto y se
+        # descarta entero: puntuarlo a medias inventaria una comparacion.
+        if len(slot["probs"]) != len(outcomes):
+            continue
+        preds.append(slot["probs"])
+        actual.append(slot["ftr"])
+
+    if not actual:
+        return None, [], []
+    return evaluate(preds, actual, outcomes), preds, actual
+
+
+def paired_bootstrap(con, model_a, model_b, market="1X2", seasons=None,
+                     n_boot=20000, seed=0):
+    """Compara dos modelos sobre los MISMOS partidos y dice si la diferencia
+    se distingue del ruido.
+
+    Por que hace falta. Dos modelos pueden separarse por 0.002 de log-loss y
+    que eso no signifique nada: con 1730 partidos, esa diferencia cabe holgada
+    dentro de la variacion que produce el azar de que temporada tocó. Declarar
+    ganador sin medir eso es la forma mas facil de promover un modelo peor —
+    y es exactamente lo que el gate de la F4 tiene que impedir.
+
+    El remuestreo es PAREADO: se remuestrean partidos, no modelos, y cada
+    partido se lleva las dos predicciones juntas. Eso conserva el
+    emparejamiento y es lo que da potencia cuando los dos modelos aciertan y
+    fallan en los mismos partidos difíciles, que es justo lo que pasa aqui.
+
+    Devuelve (diferencia_media, lo, hi, p). Negativo = model_a es mejor.
+    Si el intervalo [lo, hi] contiene 0, la diferencia no es concluyente.
+    """
+    import numpy as np
+
+    sql = """SELECT p.match_id, p.prob FROM predictions p
+             JOIN matches m ON m.match_id = p.match_id
+             WHERE p.model_version = ? AND p.market = ? AND p.outcome = m.ftr
+               AND m.ftr IS NOT NULL"""
+    args_tail = []
+    if seasons:
+        sql += f" AND m.season IN ({','.join('?' * len(seasons))})"
+        args_tail = list(seasons)
+
+    def hit_probs(mv):
+        return {r["match_id"]: r["prob"]
+                for r in con.execute(sql, [mv, market] + args_tail)}
+
+    pa, pb = hit_probs(model_a), hit_probs(model_b)
+    common = sorted(set(pa) & set(pb))
+    if len(common) < 30:
+        return None
+
+    la = np.array([-math.log(max(pa[k], EPS)) for k in common])
+    lb = np.array([-math.log(max(pb[k], EPS)) for k in common])
+    d = la - lb
+
+    rng = np.random.default_rng(seed)
+    boots = d[rng.integers(0, len(d), size=(n_boot, len(d)))].mean(axis=1)
+    lo, hi = np.percentile(boots, [2.5, 97.5])
+    p = 2 * min((boots <= 0).mean(), (boots >= 0).mean())
+    return float(d.mean()), float(lo), float(hi), float(p), len(common)

@@ -53,6 +53,17 @@ que permite apuntar a otra columna en la F5 sin reescribir nada.
 resultado pero no la distribución de marcadores, así que cada mercado nuevo de
 la F5 exigiría empezar de cero.
 
+**Actualización tras construirlo (F2).** De los dos ajustes que le dan nombre
+al modelo, solo uno sirve en esta liga. El decaimiento temporal aporta casi
+toda la mejora; la corrección `rho` de marcadores bajos no aporta nada medible
+(−0.0002, p = 0.62). La pieza que sí hizo falta y no estaba en el plan es la
+**regularización**: sin ella los equipos recién ascendidos reciben parámetros
+extremos y el modelo emite probabilidades de 0.74% a resultados que ocurren.
+
+La decisión de escribirlo a mano se paga aquí: diagnosticar eso y corregirlo
+exigió entrar a la función de verosimilitud, que con una librería cerrada no
+habría sido posible.
+
 ## Mercado inicial: 1X2
 
 Los demás (over/under 2.5, BTTS, corners, tarjetas, tiros) salen de la misma
