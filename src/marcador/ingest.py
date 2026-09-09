@@ -175,9 +175,15 @@ def fixture_rows(path: Path, league: str = LEAGUE, season: str | None = None):
     asi que cuando el resultado llegue caera sobre la misma fila y la
     prediccion que ya se emitio quedara conectada sola.
 
-    El archivo cubre una ventana de pocos dias y trae todas las ligas juntas.
-    Que no venga ninguna fila de nuestra liga es normal (paron de selecciones),
-    no un error.
+    El archivo cubre una ventana corta y trae todas las ligas juntas, asi que
+    puede no traer ninguna fila de la nuestra: significa que su siguiente
+    jornada cae fuera de la ventana, no que no se juegue.
+
+    Observado el 2026-09-09: 18 partidos de 6 ligas, todos entre el 08/09 y el
+    10/09. La Premier no estaba porque su jornada era el sabado 12.
+
+    Es UNA observacion, no una garantia. Que la ventana alcance a cubrir cada
+    jornada antes del kickoff se COMPRUEBA en 05_score.py, no se asume.
     """
     from .config import CURRENT_SEASON
     season = season or CURRENT_SEASON

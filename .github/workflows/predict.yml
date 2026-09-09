@@ -1,11 +1,16 @@
 name: Predecir la proxima jornada
 
-# Diario. La ventana de fixtures de la fuente cubre pocos dias, asi que correr
-# a diario es lo que garantiza no perderse una jornada; los dias sin partidos
-# el script no escribe nada y el job termina sin commit.
+# Dos veces al dia. La ventana de fixtures de la fuente es corta (observado el
+# 2026-09-09: tres dias), asi que un partido solo es visible durante unas pocas
+# corridas antes de jugarse. Correr dos veces cubre el caso de que una falle.
+#
+# El costo es despreciable: el job tarda 40s y GitHub factura por minuto
+# empezado, o sea 2 min/dia = ~60 min/mes de los 2000 gratuitos.
+#
+# Los dias sin partidos el script no escribe nada y el job termina sin commit.
 on:
   schedule:
-    - cron: "0 5 * * *"
+    - cron: "0 5,17 * * *"
   workflow_dispatch:
 
 # Los dos workflows escriben en el mismo ledger y empujan al mismo branch.

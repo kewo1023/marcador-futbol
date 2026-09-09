@@ -28,8 +28,8 @@ import csv
 import datetime as dt
 from pathlib import Path
 
-from .config import (LEDGER_DIR, LEDGER_METRICS, LEDGER_PREDICTIONS,
-                     LEDGER_RESULTS)
+from .config import (LEDGER_DIR, LEDGER_METRICS, LEDGER_MISSED,
+                     LEDGER_PREDICTIONS, LEDGER_RESULTS)
 
 PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                "model_version", "market", "outcome", "prob", "mode",
@@ -38,6 +38,8 @@ RESULT_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                  "fthg", "ftag", "ftr", "recorded_at"]
 METRIC_FIELDS = ["model_version", "market", "eval_set", "n_matches",
                  "log_loss", "brier", "accuracy", "computed_at"]
+MISSED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
+                 "ftr", "detected_at"]
 
 
 def _read(path: Path):
@@ -146,3 +148,25 @@ def upsert_metrics(rows):
 
 def now_iso():
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+
+
+def read_missed():
+    return _read(LEDGER_MISSED)
+
+
+def record_missed(rows) -> int:
+    """Registra partidos que se jugaron SIN que el sistema los predijera.
+
+    Se guardan en vez de solo avisarse, y se versionan, por la misma razon que
+    las predicciones: un agujero en el track record que solo existe en el log
+    de un job que ya expiro no es un agujero documentado, es un agujero
+    invisible. Quien audite el proyecto tiene que poder ver que faltan estos
+    partidos y no suponer que se predijo todo.
+    """
+    known = {r["match_id"] for r in read_missed()}
+    fresh = [r for r in rows if r["match_id"] not in known]
+    if not fresh:
+        return 0
+    _write(LEDGER_MISSED, MISSED_FIELDS,
+           sorted(read_missed() + fresh, key=lambda r: r["match_date"]))
+    return len(fresh)

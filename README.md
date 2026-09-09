@@ -97,11 +97,22 @@ nunca escriban a la vez:
 | Workflow | Cuándo | Qué hace |
 |---|---|---|
 | `score.yml` | 03:00 UTC diario | Ingiere resultados, los cruza con lo predicho, recalcula el marcador |
-| `predict.yml` | 05:00 UTC diario | Baja los próximos partidos, ajusta el modelo y emite predicciones |
+| `predict.yml` | 05:00 y 17:00 UTC | Baja los próximos partidos, ajusta el modelo y emite predicciones |
 
-Los días sin partidos ninguno de los dos commitea nada: la ventana de fixtures
-de la fuente cubre pocos días y en parón de selecciones puede no traer una liga
-entera. Eso es normal, no un error, y los scripts lo tratan como tal.
+Los días sin partidos ninguno de los dos commitea nada.
+
+**La ventana de la fuente es corta y eso condiciona el diseño.** `fixtures.csv`
+es el único archivo de próximos partidos que publica football-data.co.uk, y
+cubre pocos días: el 2026-09-09 traía 18 partidos de 6 ligas, todos entre el
+08/09 y el 10/09. Que una liga no aparezca significa que su siguiente jornada
+cae fuera de esa ventana, no que no se juegue.
+
+Eso es **una observación, no una garantía**, así que el sistema no asume que la
+ventana alcanza. Después de cada jornada, `05_score.py` comprueba si algún
+partido se jugó sin haber sido predicho y lo registra en
+`ledger/missed.csv`. Si encuentra alguno, el workflow queda en rojo: un partido
+sin predecir es un agujero en el track record, y un agujero silencioso vale
+menos que ninguno.
 
 ### Dónde viven las predicciones, y por qué importa
 

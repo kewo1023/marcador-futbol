@@ -28,9 +28,16 @@ CURRENT_SEASON = SEASONS[-1]
 # programáticas. El dominio pelado sí responde. Verificado al construir F1.
 BASE_URL = "https://football-data.co.uk/mmz4281"
 
-# Partidos por jugar de los proximos dias, todas las ligas en un solo archivo.
-# Solo trae una ventana corta: en parones de seleccion puede venir sin una liga
-# entera, y eso es normal, no un error.
+# Partidos por jugar, todas las ligas en un solo archivo. Es el UNICO archivo
+# de proximos partidos que publica la fuente: no hay version con mas horizonte.
+#
+# La ventana es corta. Observado el 2026-09-09: el archivo traia 18 partidos
+# de 6 ligas, todos entre el 08/09 y el 10/09 — tres dias. La Premier no
+# aparecia porque su siguiente jornada era el sabado 12, fuera de la ventana.
+# 
+# NO se sabe si esa ventana es siempre de tres dias; es UNA observacion. Por eso
+# el sistema no asume que alcanza: 05_score.py comprueba despues de cada jornada
+# si algun partido se jugo sin haber sido predicho, y lo registra.
 FIXTURES_URL = "https://football-data.co.uk/fixtures.csv"
 
 # Muchos servidores rechazan un user-agent de librería. Este es el mínimo que
@@ -60,6 +67,7 @@ LEDGER_DIR = Path(os.environ.get("MARCADOR_LEDGER_DIR", ROOT / "ledger"))
 LEDGER_PREDICTIONS = LEDGER_DIR / "predictions.csv"
 LEDGER_RESULTS = LEDGER_DIR / "results.csv"
 LEDGER_METRICS = LEDGER_DIR / "metrics.csv"
+LEDGER_MISSED = LEDGER_DIR / "missed.csv"
 
 # Modelo que emite las predicciones en vivo. Se cambia solo cuando la F4
 # promueva uno nuevo, y ese cambio queda en el historial de git.

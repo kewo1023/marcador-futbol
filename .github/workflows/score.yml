@@ -37,8 +37,16 @@ jobs:
       - name: Cargar el historico
         run: python scripts/01_ingest.py
 
+      # El script devuelve 3 cuando hizo su trabajo pero encontro partidos que
+      # se jugaron sin prediccion. Se captura el codigo para poder commitear
+      # PRIMERO (si no, se perderian las metricas de esta corrida) y fallar
+      # despues, para que el agujero de cobertura se vea en rojo.
       - name: Ingerir resultados y medir
-        run: python scripts/05_score.py
+        id: medir
+        run: |
+          set +e
+          python scripts/05_score.py
+          echo "codigo=$?" >> $GITHUB_OUTPUT
 
       - name: Guardar en el ledger
         run: |
@@ -52,3 +60,9 @@ jobs:
           git commit -m "resultados y marcador: $(date -u +%Y-%m-%d)"
           git pull --rebase origin main
           git push origin main
+
+      - name: Fallar si hubo partidos sin predecir
+        if: steps.medir.outputs.codigo == '3'
+        run: |
+          echo "::error::Se jugaron partidos que el sistema nunca predijo. Ver ledger/missed.csv"
+          exit 1

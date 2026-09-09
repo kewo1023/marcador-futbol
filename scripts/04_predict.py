@@ -59,8 +59,9 @@ def main():
 
     fixtures = pending_fixtures(con, today)
     if not fixtures:
-        # Caso normal, no error: el archivo de fixtures cubre pocos dias y en
-        # parones de seleccion puede no traer ninguno de esta liga.
+        # No es error: el archivo de fixtures cubre una ventana corta y la
+        # siguiente jornada de esta liga puede caer fuera de ella. Que eso no
+        # se convierta en un partido sin predecir lo verifica 05_score.py.
         print("No hay partidos por jugar en la ventana disponible. Nada que hacer.")
         return 0
 

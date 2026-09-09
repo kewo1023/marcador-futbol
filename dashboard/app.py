@@ -35,8 +35,8 @@ st.caption(f"Liga {LEAGUE} · modelo en producción `{PRODUCTION_MODEL}` · "
 
 if preds.empty:
     st.info("El ledger todavía no tiene predicciones. El loop las escribe "
-            "cuando la fuente publique los próximos partidos "
-            "(en parón de selecciones no hay ninguno).")
+            "cuando los próximos partidos entren en la ventana de la fuente, "
+            "que es de pocos días.")
     st.stop()
 
 preds["prob"] = preds["prob"].astype(float)

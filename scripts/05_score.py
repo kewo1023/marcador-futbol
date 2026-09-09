@@ -87,6 +87,40 @@ def score_live():
     return out, by_model
 
 
+def find_missed(con, preds):
+    """Partidos jugados que el sistema nunca predijo.
+
+    ES LA COMPROBACION QUE FALTABA. La ventana de fixtures de la fuente cubre
+    pocos dias, asi que el loop depende de correr con suficiente frecuencia
+    para agarrar cada partido mientras esta dentro de esa ventana. Esa
+    dependencia no se puede dar por buena: hay que medirla.
+
+    El alcance arranca en la fecha del primer partido que SI se predijo en
+    vivo. Antes de eso el sistema no existia y no tiene sentido reclamarle
+    cobertura.
+    """
+    live = [p for p in preds if p["mode"] == "live"]
+    if not live:
+        return []
+    since = min(p["match_date"] for p in live)
+    predicted = {p["match_id"] for p in live}
+    rows = con.execute(
+        """SELECT match_id, match_date, home_team, away_team, ftr
+           FROM matches
+           WHERE league = ? AND ftr IS NOT NULL AND match_date >= ?
+           ORDER BY match_date""", (LEAGUE, since)).fetchall()
+    now = ledger.now_iso()
+    return [{"match_id": r["match_id"], "match_date": r["match_date"],
+             "home_team": r["home_team"], "away_team": r["away_team"],
+             "ftr": r["ftr"], "detected_at": now}
+            for r in rows if r["match_id"] not in predicted]
+
+
+# Codigo de salida propio: el trabajo se hizo, pero hay un agujero de cobertura
+# que alguien tiene que ver. El workflow commitea primero y falla despues.
+EXIT_MISSED = 3
+
+
 def main():
     con = db.init_db()
     n = refresh(con)
@@ -97,6 +131,9 @@ def main():
     pending = len(predicted) - len(ledger.read_results())
     print(f"Resultados: {added} nuevos registrados · "
           f"{len(ledger.read_results())} en total · {pending} partidos aun sin jugar")
+
+    missed = find_missed(con, ledger.read_predictions())
+    n_missed = ledger.record_missed(missed) if missed else 0
 
     metrics, by_model = score_live()
     if not metrics:
@@ -121,6 +158,19 @@ def main():
         print(f"\n  Referencia del backtest — Elo: {float(base['log_loss']):.4f}")
     print("  Ojo: con pocos partidos este numero se mueve muchisimo. "
           "No significa nada hasta tener ~100.")
+
+    if missed:
+        print(f"\n  {'!' * 60}")
+        print(f"  {len(missed)} PARTIDOS SE JUGARON SIN PREDICCION "
+              f"({n_missed} nuevos)")
+        for m in missed[:10]:
+            print(f"    {m['match_date']}  {m['home_team']} vs {m['away_team']}")
+        print(f"\n  Quedaron registrados en ledger/missed.csv. Un agujero en el")
+        print(f"  track record no se puede tapar despues: el partido ya se jugo.")
+        print(f"  Causa mas probable: la ventana de fixtures de la fuente no los")
+        print(f"  cubrio a tiempo, o el job de predecir fallo ese dia.")
+        print(f"  {'!' * 60}")
+        return EXIT_MISSED
     return 0
 
 

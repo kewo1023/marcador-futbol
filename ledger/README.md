@@ -24,6 +24,7 @@ evaluando; el reloj de GitHub, no. Cualquiera puede auditar el proyecto con
 | `predictions.csv` | Una fila por (partido, modelo, mercado, resultado posible) | **Nunca.** Solo se agregan filas |
 | `results.csv` | El marcador de los partidos que se predijeron | Solo se completa; un resultado registrado no cambia |
 | `metrics.csv` | log-loss, Brier y accuracy por modelo | Sí: son derivadas, se recalculan |
+| `missed.csv` | Partidos que se jugaron sin que el sistema los predijera | Solo se agregan |
 
 `results.csv` guarda lo mínimo para poder verificar el marcador sin bajar nada
 (equipos, goles, resultado). No lleva cuotas, corners, tiros ni árbitro: no es
@@ -37,3 +38,16 @@ git log --format="%ad %h" --date=iso -- ledger/predictions.csv | tail -5
 
 La fecha del commit que introdujo una fila es anterior al partido que esa fila
 predice. Si no lo fuera, el proyecto estaría roto.
+
+## Por qué existe `missed.csv`
+
+La fuente publica los próximos partidos en una ventana de pocos días, así que
+el loop depende de correr con suficiente frecuencia para agarrar cada partido
+mientras está visible. Esa dependencia no se da por buena: después de cada
+jornada se comprueba si algún partido se jugó sin haber sido predicho, y si lo
+hubo se registra aquí y el workflow queda en rojo.
+
+Se registra en vez de solo avisarse porque un agujero que solo existe en el log
+de un job que ya expiró no es un agujero documentado, es uno invisible. Quien
+audite el track record tiene que poder ver qué partidos faltan en vez de
+suponer que se predijeron todos.
