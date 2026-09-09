@@ -1,0 +1,23 @@
+# --- Contexto local: datos personales. NUNCA se versiona. ---
+CONTEXTO-LOCAL.md
+
+# --- Datos: no se redistribuyen (ver CLAUDE.md, seccion Datos) ---
+data/
+*.sqlite
+*.db
+*.csv
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- Sistema ---
+.DS_Store
+.env
+
+# --- Bitacora de trabajo: contexto personal, no va al repo ---
+BITACORA.md

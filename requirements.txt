@@ -1,0 +1,7 @@
+# F1 corre solo con la libreria estandar de Python.
+# Estas se necesitan a partir de F2 (Dixon-Coles) y F3 (dashboard).
+requests==2.32.3
+pandas==2.2.3
+numpy==2.1.3
+scipy==1.14.1
+matplotlib==3.9.2
