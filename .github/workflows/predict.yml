@@ -1,16 +1,28 @@
 name: Predecir la proxima jornada
 
-# Dos veces al dia. La ventana de fixtures de la fuente es corta (observado el
+# Cada cuatro horas. La ventana de fixtures de la fuente es corta (observado el
 # 2026-09-09: tres dias), asi que un partido solo es visible durante unas pocas
-# corridas antes de jugarse. Correr dos veces cubre el caso de que una falle.
+# corridas antes de jugarse.
 #
-# El costo es despreciable: el job tarda 40s y GitHub factura por minuto
-# empezado, o sea 2 min/dia = ~60 min/mes de los 2000 gratuitos.
+# POR QUE SUBIO DE DOS A SEIS (2026-09-10). Con dos corridas, entre una y otra
+# pasan 12 horas, y lo que decide si una jornada entra o no es el momento en
+# que la FUENTE regenera su archivo — un momento que no anuncia y que no sigue
+# ningun horario. Ese dia el archivo llevaba 34 h sin regenerarse, cubria hasta
+# el 10 de septiembre, y la jornada de las cinco ligas arrancaba el 11: tres
+# corridas terminaron en verde sin nada que emitir. Correr cada cuatro horas no
+# arregla que la foto sea vieja —eso solo lo arregla cambiar de fuente para los
+# fixtures— pero recorta la espera entre que la fuente escribe y nosotros lo
+# vemos, de hasta 12 h a hasta 4 h.
 #
-# Los dias sin partidos el script no escribe nada y el job termina sin commit.
+# El costo sigue siendo despreciable: el job tarda 40s y GitHub factura por
+# minuto empezado, o sea 6 min/dia = ~180 min/mes de los 2000 gratuitos.
+#
+# Los dias sin partidos el script no escribe nada y el job termina sin commit,
+# pero desde el 2026-09-10 su log SI distingue "no hay jornada" de "la fuente
+# esta congelada", que antes se leian igual.
 on:
   schedule:
-    - cron: "0 5,17 * * *"
+    - cron: "0 1,5,9,13,17,21 * * *"
   workflow_dispatch:
 
 # Los dos workflows escriben en el mismo ledger y empujan al mismo branch.

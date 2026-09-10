@@ -5,8 +5,10 @@ match_id determinístico y se usa INSERT ... ON CONFLICT DO UPDATE.
 """
 import csv
 import datetime as dt
+import email.utils
 import io
 import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
 
 from .config import LEAGUE, RAW_DIR, SEASONS, USER_AGENT, season_url
@@ -187,16 +189,88 @@ def ingest_leagues(con, leagues, seasons=SEASONS, force: bool = False):
 
 # --- Partidos por jugar ------------------------------------------------------
 
-def download_fixtures(raw_dir: Path = RAW_DIR) -> Path:
+@dataclass(frozen=True)
+class FixturesSnapshot:
+    """El archivo de proximos partidos, con lo que se sabe de su frescura.
+
+    `download_fixtures` devolvia solo la ruta, y con la ruta sola no hay forma
+    de distinguir un archivo recien escrito de uno congelado hace tres dias:
+    los dos se leen igual y los dos producen cero partidos cuando la jornada
+    cae fuera de la foto. El `last-modified` de la respuesta es el unico dato
+    que separa los dos casos, y se estaba tirando.
+    """
+    path: Path
+    last_modified: dt.datetime | None
+    fetched_at: dt.datetime
+
+    @property
+    def age_hours(self) -> float | None:
+        """Horas desde que la fuente escribio el archivo. None si no lo dice."""
+        if self.last_modified is None:
+            return None
+        return (self.fetched_at - self.last_modified).total_seconds() / 3600
+
+    @property
+    def is_stale(self) -> bool:
+        """Sin cabecera se asume rancio: no poder comprobarlo no es estar bien."""
+        from .config import FIXTURES_STALE_HOURS
+        age = self.age_hours
+        return age is None or age > FIXTURES_STALE_HOURS
+
+    def describe(self) -> str:
+        if self.last_modified is None:
+            return "la fuente no dice cuando escribio el archivo"
+        stamp = self.last_modified.strftime("%Y-%m-%d %H:%M UTC")
+        return f"escrito {stamp}, hace {self.age_hours:.0f} h"
+
+
+def download_fixtures(raw_dir: Path = RAW_DIR) -> FixturesSnapshot:
     """Baja el archivo de proximos partidos. Siempre se re-baja: es el unico
-    dato que cambia de un dia para otro."""
+    dato que cambia de un dia para otro.
+
+    Devuelve un FixturesSnapshot, no una ruta: quien lo use necesita saber si
+    el archivo esta fresco tanto como necesita leerlo.
+    """
     from .config import FIXTURES_URL
     raw_dir.mkdir(parents=True, exist_ok=True)
     dest = raw_dir / "fixtures.csv"
     req = urllib.request.Request(FIXTURES_URL, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=60) as resp:
         dest.write_bytes(resp.read())
-    return dest
+        header = resp.headers.get("Last-Modified")
+    last_mod = None
+    if header:
+        try:
+            last_mod = email.utils.parsedate_to_datetime(header)
+            if last_mod.tzinfo is None:                 # RFC 2822 sin zona
+                last_mod = last_mod.replace(tzinfo=dt.timezone.utc)
+        except (TypeError, ValueError):
+            last_mod = None                             # cabecera malformada
+    return FixturesSnapshot(path=dest, last_modified=last_mod,
+                            fetched_at=dt.datetime.now(dt.timezone.utc))
+
+
+def fixtures_summary(path: Path) -> dict:
+    """Que ligas y que rango de fechas trae el archivo, sin filtrar por liga.
+
+    Existe para que el log pueda responder «por que no esta mi partido» sin que
+    nadie tenga que bajar el archivo a mano: si trae seis ligas y ninguna es la
+    nuestra, eso se ve de un vistazo.
+    """
+    text = path.read_text(encoding="utf-8-sig", errors="replace")
+    leagues, dates = {}, []
+    for r in csv.DictReader(io.StringIO(text)):
+        r = {(k or "").strip(): v for k, v in r.items()}
+        div = (r.get("Div") or "").strip()
+        if not div:
+            continue
+        leagues[div] = leagues.get(div, 0) + 1
+        iso = parse_date(r.get("Date"))
+        if iso:
+            dates.append(iso)
+    return {"leagues": leagues, "n": sum(leagues.values()),
+            "first": min(dates) if dates else None,
+            "last": max(dates) if dates else None}
 
 
 def fixture_rows(path: Path, league: str = LEAGUE, season: str | None = None):
@@ -213,10 +287,12 @@ def fixture_rows(path: Path, league: str = LEAGUE, season: str | None = None):
     no que no se juegue.
 
     Medido el 2026-09-10 a las 03:12 UTC: last-modified del martes 08/09 18:07
-    UTC, cubriendo del 08 al 10 de septiembre.
+    UTC, cubriendo del 08 al 10 de septiembre — 34 horas sin regenerarse, con
+    la jornada de las cinco ligas arrancando el 11.
 
-    Que la foto alcance a cubrir cada jornada antes del kickoff se COMPRUEBA en
-    05_score.py, no se asume.
+    Que la foto este fresca lo comprueba `FixturesSnapshot.is_stale` ANTES del
+    kickoff; que ninguna jornada se haya caido lo comprueba 05_score.py
+    DESPUES. Ninguna de las dos cosas se asume.
     """
     from .config import CURRENT_SEASON
     season = season or CURRENT_SEASON

@@ -460,7 +460,7 @@ nunca escriban a la vez:
 | Workflow | Cuándo | Qué hace |
 |---|---|---|
 | `score.yml` | 03:00 UTC diario | Ingiere resultados, los cruza con lo predicho, recalcula el marcador |
-| `predict.yml` | 05:00 y 17:00 UTC | Baja los próximos partidos, ajusta el modelo y emite predicciones |
+| `predict.yml` | cada 4 h (01, 05, 09, 13, 17, 21 UTC) | Baja los próximos partidos, ajusta el modelo y emite predicciones |
 | `retrain.yml` | Lunes 06:00 UTC | Busca un retador, lo pasa por el gate, y diagnostica dónde falla |
 
 Los días sin partidos ninguno de los dos commitea nada.
@@ -475,12 +475,43 @@ Medido el 2026-09-10 a las 03:12 UTC: el archivo tenía fecha de modificación d
 septiembre. Que una liga no aparezca significa que su siguiente jornada cae
 fuera de esa foto, no que no se juegue.
 
-Por eso el job de predecir corre **dos veces al día**: para recoger la foto
+Por eso el job de predecir corre **cada cuatro horas**: para recoger la foto
 nueva poco después de que la fuente la escriba. Y por eso, después de cada
 jornada, `05_score.py` comprueba si algún partido se jugó sin haber sido
 predicho y lo registra en `ledger/missed.csv`. Si encuentra alguno, el workflow
 queda en rojo: un partido sin predecir es un agujero en el track record, y un
 agujero silencioso vale menos que ninguno.
+
+**El punto ciego que tenía esta parte, y cómo se cerró.** Hasta el 2026-09-10,
+una corrida sin partidos imprimía «No hay partidos por jugar sin predicción» y
+terminaba en verde. Ese mensaje era **idéntico** en los dos casos que hay que
+distinguir:
+
+- no juega nadie en los próximos días → correcto, nada que hacer;
+- la fuente lleva días sin regenerar el archivo → se están perdiendo jornadas.
+
+Ese día el archivo llevaba 34 horas congelado y cubría hasta el 10, con la
+jornada de las cinco ligas arrancando el 11. Tres corridas terminaron en verde
+sin que nada lo dijera. Un proyecto cuya tesis es que el sistema de medición se
+construye antes que el modelo tenía el punto ciego en su propia entrada.
+
+Ahora `download_fixtures()` devuelve un `FixturesSnapshot` que conserva el
+`Last-Modified` de la respuesta, y el log reporta **siempre** la edad de la
+foto, qué ligas trae y qué rango cubre:
+
+```
+Fuente de fixtures: escrito 2026-09-08 18:07 UTC, hace 34 h · 18 partidos del 2026-09-08 al 2026-09-10
+  ligas en el archivo: E1:9, E2:1, G1:1, N1:3, P1:2, SC0:2
+  NINGUNA de las nuestras (E0, SP1, D1, I1, F1) esta en la foto.
+  AVISO: la foto lleva 34 h sin regenerarse.
+```
+
+El umbral es `FIXTURES_STALE_HOURS`, 24 h. **Sin cabecera `Last-Modified` se
+asume rancio**: no poder comprobar la frescura no es lo mismo que estar fresco,
+y esa es la misma lógica de fallar cerrado que usa el guardia de pre-commit.
+
+Esto no arregla que la foto sea vieja —eso solo lo arregla cambiar de fuente
+para los fixtures— pero convierte un fallo silencioso en uno que se ve.
 
 ### Dónde viven las predicciones, y por qué importa
 

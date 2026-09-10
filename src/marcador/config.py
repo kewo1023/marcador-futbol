@@ -64,6 +64,25 @@ BASE_URL = "https://football-data.co.uk/mmz4281"
 # cada jornada si algun partido se jugo sin prediccion.
 FIXTURES_URL = "https://football-data.co.uk/fixtures.csv"
 
+# Cuantas horas puede llevar el archivo sin regenerarse antes de considerarlo
+# rancio.
+#
+# POR QUE HACE FALTA UN UMBRAL. Hasta el 2026-09-10, una corrida sin partidos
+# imprimia "No hay partidos por jugar sin prediccion" y terminaba en verde, y
+# ese mensaje era IDENTICO en los dos casos que hay que distinguir:
+#
+#   · no juega nadie en los proximos dias         -> correcto, nada que hacer
+#   · la fuente lleva dias sin regenerar el archivo -> se estan perdiendo jornadas
+#
+# Medido ese dia: el archivo llevaba 34 horas con el mismo last-modified y
+# cubria hasta el 10 de septiembre, con la jornada de las cinco ligas
+# arrancando el 11. Tres corridas en verde, ninguna capaz de decirlo.
+#
+# 24 h porque la foto observada cubre unos tres dias: mientras se regenere a
+# diario, ninguna jornada se cae. Pasado ese punto el margen empieza a comerse
+# la ventana y hay que enterarse.
+FIXTURES_STALE_HOURS = 24
+
 # Muchos servidores rechazan un user-agent de librería. Este es el mínimo que
 # la fuente acepta.
 USER_AGENT = (

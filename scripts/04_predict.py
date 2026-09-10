@@ -35,9 +35,9 @@ def refresh_data(con):
         n_played += ingest.upsert_matches(
             con, ingest.rows_from_csv(path, league, CURRENT_SEASON))
     fx = ingest.download_fixtures()
-    n_new = sum(ingest.upsert_fixtures(con, ingest.fixture_rows(fx, lg))
+    n_new = sum(ingest.upsert_fixtures(con, ingest.fixture_rows(fx.path, lg))
                 for lg in LEAGUES)
-    return n_played, n_new
+    return n_played, n_new, fx
 
 
 def pending_fixtures(con, today, league):
@@ -102,9 +102,29 @@ def main():
     today = dt.date.today()
     con = db.init_db()
 
-    n_played, n_new = refresh_data(con)
+    n_played, n_new, fx = refresh_data(con)
     print(f"Datos: {n_played} partidos de la temporada en curso · "
           f"{n_new} fixtures nuevos")
+
+    # El estado de la fuente se reporta SIEMPRE, haya partidos o no. Es la
+    # unica forma de que el log distinga "no juega nadie" de "la foto de la
+    # fuente lleva dias congelada" (ver FIXTURES_STALE_HOURS en config).
+    resumen = ingest.fixtures_summary(fx.path)
+    ligas = ", ".join(f"{k}:{v}" for k, v in sorted(resumen["leagues"].items()))
+    print(f"Fuente de fixtures: {fx.describe()} · {resumen['n']} partidos"
+          + (f" del {resumen['first']} al {resumen['last']}"
+             if resumen["first"] else ""))
+    print(f"  ligas en el archivo: {ligas or '(ninguna)'}")
+    nuestras = [lg for lg in LEAGUES if lg in resumen["leagues"]]
+    if not nuestras:
+        print(f"  NINGUNA de las nuestras ({', '.join(LEAGUES)}) esta en la foto.")
+    if fx.is_stale:
+        edad = (f"{fx.age_hours:.0f} h" if fx.age_hours is not None
+                else "un tiempo que la fuente no declara")
+        print(f"  AVISO: la foto lleva {edad} sin regenerarse. Mientras no la "
+              f"regenere,")
+        print(f"  ninguna jornada nueva puede entrar por mucho que corra "
+              f"este job.")
 
     champ = promotion.read_champion()
     cfg = champ["config"] if champ else ModelConfig(
@@ -114,16 +134,26 @@ def main():
 
     todo_by_league = {}
     for league in LEAGUES:
-        fx = pending_fixtures(con, today, league)
+        pend = pending_fixtures(con, today, league)
         already = ledger.predicted_matches(version)
-        todo = [f for f in fx if f["match_id"] not in already]
+        todo = [f for f in pend if f["match_id"] not in already]
         if todo:
             todo_by_league[league] = todo
     if not todo_by_league:
-        # No es error: el archivo de fixtures cubre una ventana corta y la
-        # siguiente jornada puede caer fuera de ella. Que eso no se convierta
-        # en un partido sin predecir lo verifica 05_score.py.
-        print("No hay partidos por jugar sin prediccion. Nada que hacer.")
+        # Los dos casos se leian igual hasta el 2026-09-10, y no son el mismo:
+        # uno es el sistema funcionando y el otro es el sistema perdiendo
+        # jornadas en silencio. Que un partido llegue a jugarse sin prediccion
+        # lo verifica ademas 05_score.py, pero eso se sabe DESPUES del kickoff;
+        # esto se sabe antes.
+        if fx.is_stale:
+            print("Sin partidos que predecir, y la foto de la fuente esta "
+                  "rancia: NO se puede")
+            print("concluir que no haya jornada. Revisar si la fuente se "
+                  "destrabo.")
+        else:
+            print("No hay partidos por jugar sin prediccion, y la foto de la "
+                  "fuente esta al dia:")
+            print("no hay jornada en la ventana. Nada que hacer.")
         return 0
 
     layer = train_recalibration(con, cfg, spec) if spec else None
