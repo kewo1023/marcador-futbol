@@ -168,17 +168,26 @@ LEDGER_MISSED = LEDGER_DIR / "missed.csv"
 LEDGER_FIXTURES = LEDGER_DIR / "fixtures.csv"
 
 # --- Mercados en vivo ademas del 1X2 ----------------------------------------
-# Solo tarjetas amarillas, y por una razon medida: en la F5 (08_markets.py,
-# Premier 2024/25-2025/26) es el UNICO mercado que le gana a la frecuencia base
-# de forma concluyente en sus tres lineas (+0.018 a +0.032 de log-loss,
-# p<0.04). Goles, corners y tiros no. Corners y tiros totales ademas exigen
-# binomial negativa; amarillas no.
+# Solo tarjetas amarillas, por ahora. La razon original era medida sobre una
+# liga: en la F5 (08_markets.py, Premier) era el UNICO mercado que le ganaba a
+# la frecuencia base de forma concluyente. Al medir sobre las cinco ligas
+# (12_markets_multi.py, 2026-09-10) los cuatro mercados resultaron ganarle,
+# con ~3500 partidos donde antes habia 760 — el corolario de la regla 6, otra
+# vez. Tarjetas sigue siendo el de mayor ganancia (+0.028 en 3.5); tiros a
+# puerta (+0.021 en 9.5) es el siguiente candidato a emitirse en vivo.
 #
 # `w` es cuanto se le cree al modelo frente a la base: p = w*modelo +
-# (1-w)*base. Los valores son los que la F5 eligio en el bloque de afinado,
-# SOBRE UNA LIGA. No se han re-afinado en cinco. Se transfieren porque son un
-# paso de grid entre si y la direccion (creerle mucho al modelo) fue la misma
-# en las tres lineas; queda pendiente medirlos en cinco ligas.
+# (1-w)*base. Se eligio con las perdidas de las CINCO ligas juntas en el
+# bloque de afinado (12_markets_multi.py, 2026-09-10).
+#
+# HISTORIA DEL w, porque cambio el mismo dia que salio a produccion. La F5 lo
+# habia elegido sobre la Premier: 0.9 / 0.8 / 0.8. Al re-afinar por liga, la
+# Premier volvio a elegir exactamente eso — y las otras cuatro eligieron entre
+# 0.3 y 0.7. El w heredado no era 'el del mercado', era el de la unica liga
+# que se habia mirado, y sobreconfiaba en el modelo en las demas. Las
+# primeras 43 predicciones de tarjetas salieron con el viejo (`w-f5`) y son
+# inmutables; desde el cambio se emite con `w-5l`, y 05_score evalua a los
+# dos. Los w por liga estan en ledger/markets_multi.csv.
 #
 # Este mercado NO tiene gate: no hay retador de tarjetas ni promocion. Por eso
 # vive aqui y no en champion.json, que es lo que el gate escribe. Y NO tiene
@@ -188,8 +197,8 @@ LEDGER_FIXTURES = LEDGER_DIR / "fixtures.csv"
 LIVE_MARKETS = {
     "tarjetas": {
         "lines": (2.5, 3.5, 4.5),
-        "w": {2.5: 0.9, 3.5: 0.8, 4.5: 0.8},
-        "version_suffix": "w-f5",
+        "w": {2.5: 0.7, 3.5: 0.6, 4.5: 0.6},
+        "version_suffix": "w-5l",
     },
 }
 BASE_MODEL_VERSION = "base-freq-v1"

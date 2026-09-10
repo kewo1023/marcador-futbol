@@ -34,8 +34,9 @@ El modelo final saca **0.9786** de log-loss. Elo saca 0.9845 y el mercado
 (p = 0.147): **es un empate con ventaja, no una victoria**, y así se reporta.
 Contra el mercado pierde, y eso sí es concluyente.
 
-De cuatro mercados construidos sobre el mismo motor, **uno** le gana a su
-frecuencia base de forma demostrable.
+De cuatro mercados construidos sobre el mismo motor, con una liga solo **uno**
+le ganaba a su frecuencia base de forma demostrable; con cinco ligas le ganan
+**los cuatro**. Tarjetas amarillas, el de mayor ganancia, se emite en vivo.
 
 ## Estado
 
@@ -573,11 +574,34 @@ Tres cosas que este mercado hace distinto del 1X2, y por qué:
   evalúa con el mismo código que a cualquier modelo, y el dashboard puede decir
   «modelo contra base, mismos N partidos» sin un cálculo aparte que nadie pueda
   auditar desde el ledger.
-- **El `w` viene de una liga y no se ha re-afinado en cinco.** Los valores
-  (0.9 / 0.8 / 0.8) salieron del bloque de afinado de la F5 sobre la Premier.
-  Se transfieren porque están a un paso de grid entre sí y la dirección fue la
-  misma en las tres líneas; medirlos sobre las cinco ligas queda pendiente y
-  está anotado.
+- **El `w` se re-afinó en cinco ligas el mismo día, y cambió.** Los valores
+  con los que salió (0.9 / 0.8 / 0.8) venían de la F5 sobre la Premier.
+  `scripts/12_markets_multi.py` repite el afinado con las pérdidas de las cinco
+  ligas juntas y escribe `ledger/markets_multi.csv`. Resultado: **0.7 / 0.6 /
+  0.6**. Y el detalle que lo explica: por liga, la Premier vuelve a elegir
+  exactamente 0.9 / 0.8 / 0.8 — las otras cuatro eligen entre 0.3 y 0.7. El `w`
+  heredado no era "el del mercado", era el de la única liga que se había
+  mirado, y sobreconfiaba en el modelo en las demás. Las primeras 43
+  predicciones salieron con `w-f5` y son inmutables; desde entonces se emite
+  con `w-5l`, y `05_score.py` evalúa a las dos.
+
+**Y lo que el afinado en cinco ligas dijo de los otros tres mercados.** Con una
+liga, solo tarjetas le ganaba a la base de forma concluyente. Con cinco —~3.500
+partidos en el bloque de prueba en vez de 760— **le ganan los cuatro**, cada
+línea con p < 0.001:
+
+| Mercado | mejor línea | gana a la base | IC 95% |
+|---|---|---|---|
+| Tarjetas amarillas | 3.5 | +0.0278 | [+0.0221, +0.0335] |
+| Tiros a puerta | 9.5 | +0.0213 | [+0.0150, +0.0276] |
+| Goles | 3.5 | +0.0116 | [+0.0066, +0.0166] |
+| Corners | 8.5 | +0.0095 | [+0.0052, +0.0137] |
+
+Es el corolario de la regla 6 por tercera vez en el proyecto: los "no
+concluyentes" de la F5 no decían que el modelo no aportara en goles, corners y
+tiros; decían que 760 partidos no alcanzaban para verlo. Tarjetas sigue siendo
+el mercado de mayor ganancia y por eso sigue siendo el único en vivo; tiros a
+puerta es el siguiente candidato.
 
 `results.csv` guarda ahora `yellows` (el total del partido) junto al marcador, y
 `metrics.csv` lleva una fila por (modelo, mercado, `live`). En el dashboard hay
@@ -627,6 +651,7 @@ El loop y el dashboard:
 ./.venv/bin/python scripts/07_diagnose.py            # donde pierde contra el mercado
 ./.venv/bin/python scripts/08_markets.py             # los cuatro mercados
 ./.venv/bin/python scripts/11_diagnose_multi.py      # lo mismo en 5 ligas, con intervalos
+./.venv/bin/python scripts/12_markets_multi.py       # los 4 mercados en 5 ligas, re-afina w
 ./.venv/bin/streamlit run dashboard/app.py           # dashboard en localhost:8501
 ```
 
@@ -667,6 +692,7 @@ scripts/
   07_diagnose.py  donde pierde el campeon contra el mercado (1 liga)
   08_markets.py   backtest de corners, tarjetas y tiros
   11_diagnose_multi.py  lo mismo en 5 ligas, y si la brecha es demostrable
+  12_markets_multi.py   los cuatro mercados en 5 ligas; re-afina el w de tarjetas
 dashboard/
   app.py          Streamlit; lee solo el ledger
 ledger/           predicciones, resultados y metricas — esto SI se versiona

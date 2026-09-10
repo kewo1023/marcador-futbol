@@ -14,7 +14,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from marcador import ledger, promotion              # noqa: E402
+from marcador import ledger, live_markets, promotion  # noqa: E402
 from marcador.config import BASE_MODEL_VERSION as BASE_MODEL, LEAGUES  # noqa: E402
 
 st.set_page_config(page_title="Marcador", page_icon="⚽", layout="wide")
@@ -55,6 +55,10 @@ ORDER_1X2 = ["gana local", "empate", "gana visitante"]
 preds, results, metrics, fixtures = load()
 champ = promotion.read_champion()
 PRODUCTION_MODEL = champ["raw"]["model_version"] if champ else "(sin campeon)"
+# El modelo de tarjetas en produccion. Puede convivir en el ledger con
+# versiones anteriores (el w cambio el 10/09); aqui se muestra solo esta y
+# 05_score evalua a todas.
+YC_MODEL = live_markets.market_version(champ["config"], "tarjetas") if champ else ""
 
 st.title("Marcador antes que modelo")
 st.caption(f"{len(LEAGUES)} ligas · modelo en producción `{PRODUCTION_MODEL}` · "
@@ -255,6 +259,7 @@ if played:
 # emite como un modelo mas (base-freq-v1) para que se compare igual.
 if not yc.empty:
     st.subheader("Tarjetas amarillas")
+    st.caption(f"Modelo en produccion para tarjetas: `{YC_MODEL}`")
     st.caption("Mismo motor, otra columna. `>3.5` es la probabilidad de que el "
                "partido tenga cuatro amarillas o más. La referencia es la "
                "frecuencia base de la liga —no hay cuota de tarjetas en la "
@@ -265,7 +270,7 @@ if not yc.empty:
     yc["linea"] = yc["market"].str.replace("TARJETAS_OU", "", regex=False)
     yc["linea"] = ">" + yc["linea"].str[0] + "." + yc["linea"].str[1]
     lines = sorted(yc["linea"].unique())
-    yc_model = yc[(yc["model_version"] != BASE_MODEL) & (yc["outcome"] == "OVER")]
+    yc_model = yc[(yc["model_version"] == YC_MODEL) & (yc["outcome"] == "OVER")]
     yc_base = yc[(yc["model_version"] == BASE_MODEL) & (yc["outcome"] == "OVER")]
 
     # Marcador de tarjetas: modelo contra base por linea, sobre lo jugado.
@@ -274,7 +279,7 @@ if not yc.empty:
         cols = st.columns(len(lines))
         for col, line in zip(cols, lines):
             code = "TARJETAS_OU" + line[1] + line[3]
-            m = live_yc[(live_yc["market"] == code) & (live_yc["model_version"] != BASE_MODEL)]
+            m = live_yc[(live_yc["market"] == code) & (live_yc["model_version"] == YC_MODEL)]
             b = live_yc[(live_yc["market"] == code) & (live_yc["model_version"] == BASE_MODEL)]
             if m.empty or b.empty:
                 continue
@@ -349,6 +354,32 @@ if mk_path.exists():
                                       "log_loss_encogido": "modelo",
                                       "gana_a_base": "gana", "p_value": "p"}),
                      use_container_width=True, hide_index=True)
+
+    # La misma medicion sobre las cinco ligas. La tabla de arriba es de una
+    # sola y se deja como se publico; esta es la que manda, y dice otra cosa.
+    mm_path = ledger.LEDGER_DIR / "markets_multi.csv"
+    if mm_path.exists():
+        mm = pd.DataFrame(ledger._read(mm_path))
+        if not mm.empty:
+            mm = mm.astype({"linea": float, "n": int, "w": float,
+                            "log_loss_base": float, "log_loss_encogido": float,
+                            "gana_a_base": float, "p_value": float})
+            mm["veredicto"] = ["gana a la base" if (c == "si" and g > 0) else "no concluyente"
+                               for c, g in zip(mm["concluyente"], mm["gana_a_base"])]
+            st.caption("**Sobre las cinco ligas** (~3.500 partidos en vez de "
+                       "760). Con una liga solo tarjetas era concluyente; con "
+                       "cinco lo son los cuatro mercados. `w por liga` muestra "
+                       "cuánto se le cree al modelo en cada una: la Premier es "
+                       "la que más, y de ahí venía el `w` original.")
+            st.dataframe(mm[["etiqueta", "linea", "w", "w_por_liga", "n",
+                             "log_loss_base", "log_loss_encogido",
+                             "gana_a_base", "p_value", "veredicto"]]
+                         .rename(columns={"etiqueta": "mercado",
+                                          "w_por_liga": "w por liga",
+                                          "log_loss_base": "base",
+                                          "log_loss_encogido": "modelo",
+                                          "gana_a_base": "gana", "p_value": "p"}),
+                         use_container_width=True, hide_index=True)
 
 # --- Referencia del backtest ------------------------------------------------
 if not test.empty:
