@@ -34,8 +34,14 @@ from .config import (LEDGER_DIR, LEDGER_FIXTURES, LEDGER_METRICS,
 PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                "model_version", "market", "outcome", "prob", "mode",
                "info_cutoff", "created_at"]
+# market_*: la probabilidad implicita de la cuota de CIERRE (promedio de casas,
+# sin margen), no la cuota. Es el techo contra el que se mide el modelo, y
+# guardarlo junto al resultado es lo que permite decir, partido a partido y
+# desde el ledger solo, si el modelo puso mas o menos que el mercado en lo que
+# paso. Es un dato derivado (regla 2): ni la cuota cruda ni la de ninguna casa.
 RESULT_FIELDS = ["match_id", "match_date", "home_team", "away_team",
-                 "fthg", "ftag", "ftr", "recorded_at"]
+                 "fthg", "ftag", "ftr", "market_h", "market_d", "market_a",
+                 "recorded_at"]
 METRIC_FIELDS = ["model_version", "market", "eval_set", "n_matches",
                  "log_loss", "brier", "accuracy", "computed_at"]
 MISSED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
@@ -114,14 +120,18 @@ def upsert_results(rows) -> int:
     changed = 0
     for r in rows:
         old = by_id.get(r["match_id"])
-        if old and (old["ftr"], old["fthg"], old["ftag"]) == \
+        if old and (old["ftr"], old["fthg"], old["ftag"]) != \
                    (r["ftr"], str(r["fthg"]), str(r["ftag"])):
-            continue
-        if old:
             raise ValueError(
                 f"El resultado de {r['match_id']} ya estaba registrado como "
                 f"{old['fthg']}-{old['ftag']} y ahora llega "
                 f"{r['fthg']}-{r['ftag']}. Revisar la fuente a mano.")
+        if old:
+            # Mismo resultado. Lo unico que puede completarse despues es el
+            # mercado, si la fuente lo publico mas tarde que el marcador.
+            # Filas anteriores a la columna no la tienen (get, no []).
+            if old.get("market_h") or not r.get("market_h"):
+                continue
         by_id[r["match_id"]] = r
         changed += 1
     if changed:

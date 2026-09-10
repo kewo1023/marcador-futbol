@@ -18,8 +18,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from marcador import db, ingest, ledger, scoring          # noqa: E402
-from marcador.baseline import MARKET_1X2, OUTCOMES        # noqa: E402
+from marcador.baseline import MARKET_1X2, OUTCOMES, market_probs  # noqa: E402
 from marcador.config import CURRENT_SEASON, LEAGUES       # noqa: E402
+
+# El mismo nombre con el que 02_baseline registra el mercado en el backtest,
+# para que 'test' y 'live' de la misma referencia se lean uno al lado del otro.
+MARKET_REFERENCE = "market-avgclose-v1"
 
 
 def refresh(con):
@@ -47,12 +51,21 @@ def collect_results(con, predicted_ids):
         q = ",".join("?" * len(chunk))
         for r in con.execute(
                 f"""SELECT match_id, match_date, home_team, away_team,
-                           fthg, ftag, ftr
+                           fthg, ftag, ftr,
+                           avgch, avgcd, avgca, psch, pscd, psca
                     FROM matches WHERE ftr IS NOT NULL AND match_id IN ({q})""",
                 chunk):
+            # La probabilidad del mercado va con el resultado, no con la
+            # prediccion: es la cuota de CIERRE, y solo existe cuando el
+            # partido ya se jugo. Sin ella, el dashboard solo podria comparar
+            # contra Elo del backtest, que no es el techo de nada.
+            mkt = market_probs(r) or {}
             out.append({"match_id": r["match_id"], "match_date": r["match_date"],
                         "home_team": r["home_team"], "away_team": r["away_team"],
                         "fthg": r["fthg"], "ftag": r["ftag"], "ftr": r["ftr"],
+                        "market_h": f"{mkt['H']:.6f}" if mkt else "",
+                        "market_d": f"{mkt['D']:.6f}" if mkt else "",
+                        "market_a": f"{mkt['A']:.6f}" if mkt else "",
                         "recorded_at": now})
     return out
 
@@ -65,7 +78,8 @@ def score_live():
     nadie de afuera podria comprobarlo.
     """
     preds = [p for p in ledger.read_predictions() if p["mode"] == "live"]
-    results = {r["match_id"]: r["ftr"] for r in ledger.read_results()}
+    rows = {r["match_id"]: r for r in ledger.read_results()}
+    results = {k: r["ftr"] for k, r in rows.items()}
 
     by_model = {}
     for p in preds:
@@ -74,6 +88,23 @@ def score_live():
         slot = by_model.setdefault(p["model_version"], {})
         m = slot.setdefault(p["match_id"], {"probs": {}, "ftr": results[p["match_id"]]})
         m["probs"][p["outcome"]] = float(p["prob"])
+
+    # El mercado se evalua sobre EXACTAMENTE los partidos que el modelo tiene
+    # completos y con cuota, y con el mismo nombre que ya usa la referencia
+    # del backtest. Es el techo del proyecto; sin el, 'log-loss en vivo' es un
+    # numero suelto que solo se puede comparar con Elo, y Elo no es el techo
+    # de nada.
+    for model_version, matches in list(by_model.items()):
+        mk = {}
+        for mid, m in matches.items():
+            r = rows[mid]
+            if len(m["probs"]) == len(OUTCOMES) and r.get("market_h"):
+                mk[mid] = {"probs": {"H": float(r["market_h"]),
+                                     "D": float(r["market_d"]),
+                                     "A": float(r["market_a"])},
+                           "ftr": m["ftr"]}
+        if mk:
+            by_model[MARKET_REFERENCE] = mk
 
     out = []
     for model_version, matches in by_model.items():
@@ -155,14 +186,26 @@ def main():
               f"{float(m['brier']):>9.4f}{float(m['accuracy'])*100:>7.1f}%"
               f"{m['n_matches']:>6}")
 
-    # Contexto: sin una referencia, un log-loss suelto no dice nada.
+    # Contexto: sin una referencia, un log-loss suelto no dice nada. La que
+    # importa es el mercado sobre ESTOS partidos (ya esta en la tabla de
+    # arriba si hubo cuota); Elo del backtest queda como segunda referencia.
+    live = {m["model_version"]: m for m in metrics}
+    mkt = live.get(MARKET_REFERENCE)
+    models = [m for m in metrics if m["model_version"] != MARKET_REFERENCE]
+    if mkt and models:
+        for m in models:
+            d = float(m["log_loss"]) - float(mkt["log_loss"])
+            print(f"\n  {m['model_version']} contra el mercado, mismos "
+                  f"{mkt['n_matches']} partidos: {d:+.4f} "
+                  f"({'pierde' if d > 0 else 'gana'})")
     ref = {r["eval_set"] + "|" + r["model_version"]: r
            for r in ledger._read(ledger.LEDGER_METRICS)}
     base = ref.get("test|baseline-elo-v1")
     if base:
-        print(f"\n  Referencia del backtest — Elo: {float(base['log_loss']):.4f}")
+        print(f"  Referencia del backtest — Elo: {float(base['log_loss']):.4f}")
     print("  Ojo: con pocos partidos este numero se mueve muchisimo. "
-          "No significa nada hasta tener ~100.")
+          "No significa nada hasta tener ~100, y la diferencia contra el")
+    print("  mercado no es concluyente hasta que pase por el bootstrap (regla 6).")
 
     if missed:
         print(f"\n  {'!' * 60}")

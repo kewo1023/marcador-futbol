@@ -130,12 +130,23 @@ if not live.empty:
     row = live[live["model_version"] == PRODUCTION_MODEL]
     if not row.empty:
         ll = float(row.iloc[0]["log_loss"])
+        # La referencia que importa es el mercado sobre ESTOS mismos partidos.
+        # Elo del backtest solo se muestra si el mercado aun no tiene filas.
+        mkt = live[live["model_version"] == "market-avgclose-v1"]
         ref = test[test["model_version"] == "baseline-elo-v1"]
         delta = None
-        if not ref.empty:
-            delta = f"{ll - float(ref.iloc[0]['log_loss']):+.4f} vs Elo"
+        if not mkt.empty:
+            delta = f"{ll - float(mkt.iloc[0]['log_loss']):+.4f} vs mercado"
+        elif not ref.empty:
+            delta = f"{ll - float(ref.iloc[0]['log_loss']):+.4f} vs Elo (backtest)"
         c3.metric("log-loss en vivo", f"{ll:.4f}", delta, delta_color="inverse")
         c4.metric("Acierto", f"{float(row.iloc[0]['accuracy'])*100:.0f}%")
+        if not mkt.empty:
+            st.caption(f"Mercado sobre los mismos {mkt.iloc[0]['n_matches']} "
+                       f"partidos: {float(mkt.iloc[0]['log_loss']):.4f}. "
+                       "Negativo = el modelo va por delante. Con pocos partidos "
+                       "cambia de signo de una jornada a otra; no es concluyente "
+                       "hasta que pase por el bootstrap.")
 
 if len(played) < 100:
     st.warning(f"Solo {len(played)} partidos jugados. Un log-loss con tan pocos "
@@ -178,17 +189,32 @@ if played:
         for _, r in merged.iterrows()]
     merged["resultado"] = merged["ftr"].map({"H": "local", "D": "empate",
                                               "A": "visitante"})
+    # El mercado, si el ledger lo trae para ese partido: cuanta probabilidad
+    # le dio la cuota de cierre a lo que paso, y la diferencia con el modelo.
+    # Es la comparacion que define el proyecto, partido a partido.
+    def _mkt(r):
+        v = r.get("market_" + r["ftr"].lower(), "")
+        return float(v) if v not in ("", None) and v == v else None
+    merged["mercado le dio"] = [_mkt(r) for _, r in merged.iterrows()]
+    merged["vs mercado"] = merged["le dio al resultado"] - merged["mercado le dio"]
     merged = with_kickoff(merged.rename(columns=COLS_1X2), fixtures)
     view = (merged.sort_values(["match_date", "fecha"], ascending=False)
             .rename(columns={"home_team": "local", "away_team": "visitante"})
             [["fecha", "local", "visitante", "marcador", "resultado", "acerto"]
-             + ORDER_1X2 + ["le dio al resultado"]])
+             + ORDER_1X2 + ["le dio al resultado", "mercado le dio", "vs mercado"]])
     st.caption("`acertó` es si el resultado real era el más probable. Es "
-               "contexto, no criterio: la columna que cuenta es `le dio al "
-               "resultado` — cuánta probabilidad puso el modelo en lo que "
-               "pasó. Eso es lo que entra al log-loss.")
+               "contexto, no criterio. Las que cuentan son las tres últimas: "
+               "cuánta probabilidad puso el modelo en lo que pasó, cuánta puso "
+               "la cuota de cierre, y la diferencia. **Positivo = el modelo vio "
+               "más que el mercado en ese partido.** Sumado sobre cientos de "
+               "partidos, eso es el log-loss de arriba.")
     st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}
-                                   | {"le dio al resultado": "{:.1%}"}),
+                                   | {"le dio al resultado": "{:.1%}",
+                                      "mercado le dio": "{:.1%}",
+                                      "vs mercado": "{:+.1%}"}, na_rep="—")
+                 .map(lambda v: ("color: #3fb950" if v > 0 else "color: #f85149")
+                      if isinstance(v, float) and v == v else "",
+                      subset=["vs mercado"]),
                  use_container_width=True, hide_index=True)
 
     # --- Calibración --------------------------------------------------------
