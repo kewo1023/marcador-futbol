@@ -658,6 +658,13 @@ El loop y el dashboard:
 El dashboard lee **solo el ledger**, nunca la base local. Si necesitara la base,
 nadie de afuera podría reproducir lo que muestra.
 
+**Sobre el despliegue en Streamlit Cloud.** Cada push a `main` lo redespliega
+solo, pero **sin reiniciar el proceso de Python**: los módulos de `src/` que ya
+estaban importados se quedan en memoria con su versión anterior. Un push que
+añada un módulo nuevo, o que cambie lo que un módulo exporta, se rompe con un
+`ImportError` hasta que se haga **Reboot app** desde «Manage app». Pasó el
+2026-09-10 con `live_markets.py`; un clon limpio importaba sin problema.
+
 La primera corrida baja ~1.6 MB de la fuente y tarda menos de un minuto. Las
 siguientes usan la copia en `data/raw/`; con `--force` se vuelve a bajar todo.
 
