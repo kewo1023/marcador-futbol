@@ -6,7 +6,9 @@ Es a proposito: si el dashboard necesitara la base de datos, nadie de afuera
 podria reproducir lo que muestra. Leyendo del ledger, cualquiera que clone el
 repo ve exactamente los mismos numeros sin bajar un solo dato de la fuente.
 """
+import datetime as dt
 import sys
+import zoneinfo
 from pathlib import Path
 
 import pandas as pd
@@ -28,8 +30,24 @@ def load():
             pd.DataFrame(ledger.read_fixtures()))
 
 
-def with_kickoff(df, fixtures):
-    """Cambia la columna `fecha` por fecha y hora UTC cuando el ledger la tiene.
+def viewer_tz():
+    """La zona horaria del navegador de quien mira, o UTC si no se sabe.
+
+    A proposito NO hay ninguna zona escrita aqui: el ledger guarda UTC y cada
+    persona ve la hora en la suya. Escribir una zona en el codigo seria decir
+    donde vive el autor, que es justo lo que la regla 1 impide. Streamlit la
+    trae desde 1.43 (`st.context.timezone`); antes de eso, o si el navegador
+    no la manda, se cae a UTC y se dice.
+    """
+    try:
+        name = st.context.timezone
+        return zoneinfo.ZoneInfo(name) if name else zoneinfo.ZoneInfo("UTC")
+    except Exception:                                   # noqa: BLE001
+        return zoneinfo.ZoneInfo("UTC")
+
+
+def with_kickoff(df, fixtures, tz=None):
+    """Cambia la columna `fecha` por fecha y hora local cuando el ledger la tiene.
 
     La hora vive en ledger/fixtures.csv, aparte de las predicciones, porque
     cambia (aplazamientos) y las predicciones no. Un partido sin hora en el
@@ -38,12 +56,17 @@ def with_kickoff(df, fixtures):
     """
     if fixtures.empty or "kickoff_utc" not in fixtures:
         return df
+    tz = tz or viewer_tz()
     hours = fixtures.set_index("match_id")["kickoff_utc"]
     ko = df["match_id"].map(hours).fillna("")
     df = df.copy()
-    df["fecha"] = [
-        (k.replace("T", " ") + " UTC") if k else d
-        for k, d in zip(ko, df["match_date"])]
+
+    def fmt(k, d):
+        if not k:
+            return d
+        utc = dt.datetime.fromisoformat(k).replace(tzinfo=dt.timezone.utc)
+        return utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
+    df["fecha"] = [fmt(k, d) for k, d in zip(ko, df["match_date"])]
     return df
 
 
@@ -62,7 +85,8 @@ YC_MODEL = live_markets.market_version(champ["config"], "tarjetas") if champ els
 
 st.title("Marcador antes que modelo")
 st.caption(f"{len(LEAGUES)} ligas · modelo en producción `{PRODUCTION_MODEL}` · "
-           "todo lo que se ve sale del ledger versionado en git")
+           "todo lo que se ve sale del ledger versionado en git · "
+           f"horas en {viewer_tz().key}")
 
 # --- El campeon y sus desafios ----------------------------------------------
 st.subheader("Campeón y desafíos")

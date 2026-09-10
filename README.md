@@ -229,6 +229,58 @@ cuatro ligas grandes multiplicaría por cinco el bloque del gate y pondría esta
 mejoras dentro de lo verificable. Cambiar de liga es una constante en
 `config.py`; era el argumento de la F0 y aquí es donde se cobra.
 
+## Atacando los empates: cinco candidatos, cinco rechazos, y una lección
+
+Con cinco ligas, el diagnóstico dejó **una sola pista reforzada**: la brecha
+contra el mercado en partidos que terminan en empate pasó de +0.0103 (Premier)
+a +0.0207, concluyente. `scripts/13_draws.py` la atacó con la misma disciplina
+que a los locales, y ahora con el gate de 3.650 partidos que aquel intento no
+tenía.
+
+**Primero, confirmar.** En 2122–2324 —temporadas que el diagnóstico no miró—
+la brecha en empates es +0.0176, IC [+0.0108, +0.0243]. Real.
+
+**Segundo, ¿nivel o discriminación?** Ni lo uno ni lo otro con claridad, y eso
+ya era una señal:
+
+| | empates reales | modelo p(D) | mercado p(D) | corr. modelo | corr. mercado |
+|---|---|---|---|---|---|
+| Cinco ligas | 25.5% | 24.6% | 25.0% | 0.114 | 0.121 |
+
+El modelo pone 0.9 puntos menos de empate del que ocurre (el mercado, 0.5
+menos), y discrimina apenas peor. Pero por liga la foto es otra: **Serie A**
+subestima el empate en 2.8 puntos mientras la Premier lo clava, y
+**Bundesliga** discrimina bastante peor que el mercado (0.098 contra 0.135)
+mientras las demás casi igualan. Cinco enfermedades distintas bajo un mismo
+síntoma.
+
+**Tercero, los candidatos**, afinados en 2122–2324 y juzgados en 2425–2627
+contra el campeón completo (motor + capa):
+
+| Candidato | Qué es | dif. | IC 95% | brecha en empates después |
+|---|---|---|---|---|
+| A · desplazamiento | un parámetro que sube el logit de empate | −0.0002 | [−0.0008, +0.0005] | **−0.0055** |
+| B · forma | dos features derivadas del motor (paridad, logit de empate) | −0.0004 | [−0.0015, +0.0006] | +0.0360 |
+| C · A + B | | −0.0007 | [−0.0019, +0.0005] | +0.0018 |
+| D · desplazamiento por liga | cinco parámetros, uno por liga | **+0.0002** | [−0.0009, +0.0013] | −0.0073 |
+| E · D + B | | −0.0005 | [−0.0019, +0.0009] | −0.0005 |
+
+**Los cinco rechazados.** Y la fila A es la que enseña: **cierra la brecha de
+empates de +0.0300 a −0.0055 —el modelo pasa a ganarle al mercado en
+empates— y el total se mueve 0.0002.** Lo que gana en empates lo devuelve en
+locales y visitantes. Es el intento 2 de los locales al revés: mover masa, no
+separar partidos. D, el de mejor pinta en el afinado, directamente pierde en el
+gate: el +0.15 que Serie A eligió en 2122–2324 no se sostuvo en 2425–2627.
+Cinco parámetros en vez de uno, y el primero que sobreajustó.
+
+**La lección.** La brecha en empates no era una ineficiencia que se pudiera
+cerrar reasignando probabilidad; era el *síntoma* de que el modelo sabe un poco
+menos que el mercado en todo, y el empate —el resultado menos probable casi
+siempre— es donde saber menos cuesta más caro en log-loss. Ni siquiera el
+mercado discrimina empates bien (0.121). Cerrar ese frente exige información
+que prediga empates, no una palanca de calibración. Los cinco desafíos están en
+`ledger/challenges.csv`, con sus intervalos.
+
 ## ¿Hay valor real contra el mercado? (F7)
 
 **No.** Y la forma en que no lo hay es más interesante que el titular.
@@ -652,6 +704,7 @@ El loop y el dashboard:
 ./.venv/bin/python scripts/08_markets.py             # los cuatro mercados
 ./.venv/bin/python scripts/11_diagnose_multi.py      # lo mismo en 5 ligas, con intervalos
 ./.venv/bin/python scripts/12_markets_multi.py       # los 4 mercados en 5 ligas, re-afina w
+./.venv/bin/python scripts/13_draws.py --dry-run     # ataque a los empates, contra el gate
 ./.venv/bin/streamlit run dashboard/app.py           # dashboard en localhost:8501
 ```
 
@@ -700,6 +753,7 @@ scripts/
   08_markets.py   backtest de corners, tarjetas y tiros
   11_diagnose_multi.py  lo mismo en 5 ligas, y si la brecha es demostrable
   12_markets_multi.py   los cuatro mercados en 5 ligas; re-afina el w de tarjetas
+  13_draws.py     ataque a los empates: diagnostico, cinco candidatos, gate
 dashboard/
   app.py          Streamlit; lee solo el ledger
 ledger/           predicciones, resultados y metricas — esto SI se versiona

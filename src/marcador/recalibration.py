@@ -78,14 +78,40 @@ def rolling_features(rows, window=10):
     return out
 
 
-def design_matrix(match_ids, model_probs, feats, mean=None, std=None):
-    """Filas = partidos. Columnas = las 8 features estandarizadas.
+def shape_features(model_probs):
+    """Features derivadas de las propias probabilidades del motor.
+
+    No traen informacion nueva: le dan a la capa una palanca para RE-ESCALAR
+    lo que el motor ya dice. `parity` es que tan parejo ve el motor al
+    partido (1 = local y visitante iguales); `pd_logit` es el logit de la
+    probabilidad de empate. Con peso por resultado, la segunda es una
+    temperatura para el empate: permite estirar o comprimir esa probabilidad
+    segun cuanto valga, que es lo que un motor Poisson no puede hacer solo.
+
+    Se calculan desde model_probs, asi que respetan la regla 4 por
+    construccion: el motor ya la respetaba.
+    """
+    out = {}
+    for i, p in model_probs.items():
+        pd_ = min(max(p["D"], EPS), 1 - EPS)
+        out[i] = {"parity": 1.0 - abs(p["H"] - p["A"]),
+                  "pd_logit": float(np.log(pd_ / (1 - pd_)))}
+    return out
+
+
+def design_matrix(match_ids, model_probs, feats, mean=None, std=None,
+                  features=None):
+    """Filas = partidos. Columnas = las features estandarizadas.
 
     Las log-probabilidades del modelo NO van como columna: entran como offset,
     que es lo que mantiene a esta capa siendo una correccion y no un modelo
     nuevo que compite con el motor.
+
+    `features` permite otra lista que la de forma reciente (por defecto). La
+    capa del campeon usa FEATURES; los candidatos pueden sumar otras.
     """
-    X = np.array([[feats[i][f] for f in FEATURES] for i in match_ids], float)
+    features = features or FEATURES
+    X = np.array([[feats[i][f] for f in features] for i in match_ids], float)
     if mean is None:
         mean, std = X.mean(0), X.std(0)
         std[std < 1e-9] = 1.0
