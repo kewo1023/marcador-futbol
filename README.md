@@ -10,6 +10,8 @@ mismo y contra el mercado, y **decide solo** si cambiar de modelo.
 Un modelo que "se corrige solo" necesita saber en qué dirección corregirse, y
 eso solo lo da un sistema de medición que ya existía.
 
+**Dashboard en vivo:** https://marcador-futbol-2rs4efqkkrvipztze7k5mr.streamlit.app/
+
 ### Por dónde empezar a leer
 
 | Si quieres… | Ve a |
@@ -41,7 +43,8 @@ frecuencia base de forma demostrable.
 | F3 | Loop automatizado (GitHub Actions + dashboard) | ✅ |
 | F4 | Reentreno con gate de promoción | ✅ |
 | F5 | Mercados nuevos: corners, tarjetas, tiros | ✅ |
-| F6 | Empaquetado y documentación | ⬜ |
+| F6 | Empaquetado y documentación | ✅ |
+| F7 | Valor contra el mercado (opcional) | ✅ · sin ventaja |
 
 ## El marcador hoy
 
@@ -111,6 +114,65 @@ estimaban sobre nada y se iban al extremo.
 La regularización empuja hacia el promedio de la liga a los equipos de los que
 hay pocos datos, y deja quietos a los que tienen muchos. La probabilidad
 mínima emitida pasó de 0.74% a **4.52%**.
+
+## ¿Hay valor real contra el mercado? (F7)
+
+**No.** Y la forma en que no lo hay es más interesante que el titular.
+
+> Esto es análisis, no una recomendación de apuesta. Mide si las
+> probabilidades del modelo contienen información que el precio no tenga ya.
+
+La expectativa estaba fijada de antemano: el modelo pierde contra el mercado por
+0.0230 de log-loss, y eso es concluyente. Un modelo peor que el mercado no puede
+batirlo de forma sistemática. Se midió igual, porque medir no es lo mismo que
+suponer.
+
+Se apuesta 1 unidad plana cuando el modelo ve valor esperado positivo, sobre las
+5 temporadas de prueba, y se liquida con los resultados reales:
+
+| Estrategia (cuota media, escenario realista) | Apuestas | ROI | IC 95% |
+|---|---|---|---|
+| EV > 0% | 2127 | **−8.50%** | [−15.86%, −0.87%] |
+| EV > 2% | 1889 | −10.11% | [−17.78%, −2.19%] |
+| EV > 5% | 1586 | −12.03% | [−20.71%, −3.19%] |
+| EV > 10% | 1153 | −16.55% | [−26.69%, −5.95%] |
+| *control: apostar a todo, sin criterio* | 5700 | *−6.03%* | *[−10.12%, −1.85%]* |
+
+**Tres lecturas, y la tercera es la que importa.**
+
+**El filtro de valor destruye dinero.** No es que no aporte: apostar según el
+modelo (−8.50%) es *peor* que apostar a todos los partidos a ciegas (−6.03%). El
+filtro selecciona precisamente los partidos donde el modelo más discrepa del
+precio, y ahí el mercado tiene razón.
+
+**Cuanto más exigente el filtro, peor.** De −8.50% a −16.55% al subir el umbral
+de EV. Un umbral más alto no concentra el valor, concentra el error.
+
+**La línea se mueve en contra.** El CLV medio es −1.31%: entre tomar el precio y
+el cierre, el mercado se aleja de las selecciones del modelo. El CLV es el
+indicador adelantado —no depende de si los resultados cayeron de cara o de
+cruz— y dice lo mismo que el ROI.
+
+### Una trampa que casi me como
+
+El primer análisis usaba `Max*`, la mejor cuota entre todas las casas, y daba
+apenas 0.67% de margen. Demasiado bueno: **el 28.6% de los partidos tenía margen
+negativo, o sea arbitraje puro**. Un arbitraje real dura segundos; que apareciera
+en uno de cada tres partidos delata que `Max*` no es un conjunto de precios
+simultáneo, sino el máximo de cada resultado por separado a lo largo de todo el
+pre-partido.
+
+Se reportan los dos escenarios a propósito: **el modelo pierde incluso con
+precios imposiblemente favorables**, lo que hace la conclusión mucho más firme
+que si solo se hubiera probado con precios realistas.
+
+### La hipótesis del diagnóstico, probada limpiamente
+
+La F4 encontró que el modelo le gana al mercado en victorias visitantes. Probada
+como estrategia sobre 2021/22–2023/24 —temporadas que el diagnóstico no miró—:
+ROI −7.62%, intervalo [−23.73%, +9.85%]. **La ventaja en log-loss no se traduce
+en dinero.** Ser un poco mejor calibrado en un segmento no alcanza para pagar el
+margen.
 
 ## Cuatro mercados sobre un motor
 

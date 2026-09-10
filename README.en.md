@@ -10,6 +10,8 @@ matches are played, ingests the results, measures itself against the market, and
 model. Anything that "corrects itself" needs to know in which direction to
 correct, and only a measurement system that already exists can tell it that.
 
+**Live dashboard:** https://marcador-futbol-2rs4efqkkrvipztze7k5mr.streamlit.app/
+
 ### Where to start reading
 
 | If you want to… | Go to |
@@ -96,6 +98,52 @@ block and lost on the gate block.
 The production model lives in `ledger/champion.json`, **not in the code**. If it
 were a Python constant, promoting would require a human to edit a `.py` — the
 system wouldn't be correcting itself, it would be asking permission.
+
+## Is there real edge against the market? (Phase 7)
+
+**No.** And *how* there isn't is more interesting than the headline.
+
+> This is analysis, not betting advice. It measures whether the model's
+> probabilities carry information the price doesn't already have.
+
+The expectation was set in advance: the model loses to the market by 0.0230 log
+loss, conclusively. A model worse than the market cannot systematically beat it.
+It was measured anyway, because measuring isn't the same as assuming.
+
+Flat 1-unit stakes whenever the model sees positive expected value, across the 5
+test seasons, settled on actual results:
+
+| Strategy (average odds, realistic scenario) | Bets | ROI | 95% CI |
+|---|---|---|---|
+| EV > 0% | 2127 | **−8.50%** | [−15.86%, −0.87%] |
+| EV > 2% | 1889 | −10.11% | [−17.78%, −2.19%] |
+| EV > 5% | 1586 | −12.03% | [−20.71%, −3.19%] |
+| EV > 10% | 1153 | −16.55% | [−26.69%, −5.95%] |
+| *control: bet everything, no filter* | 5700 | *−6.03%* | *[−10.12%, −1.85%]* |
+
+**The value filter destroys money.** It isn't merely useless: betting the model
+(−8.50%) is *worse* than betting every match blindly (−6.03%). The filter selects
+precisely the matches where the model disagrees most with the price — and there,
+the market is right.
+
+**Tightening the filter makes it worse**, from −8.50% to −16.55%. A higher EV
+threshold doesn't concentrate value, it concentrates error.
+
+**The line moves against us.** Mean closing-line value is −1.31%: between taking
+the price and the close, the market moves away from the model's picks. CLV is the
+leading indicator — it doesn't depend on how results happened to fall — and it
+says the same thing as the ROI.
+
+A trap worth flagging: the first pass used best-available odds and showed only
+0.67% overround. Too good — **28.6% of matches showed negative overround, i.e.
+pure arbitrage**. Real arbitrage lasts seconds; appearing in one match in three
+means those aren't simultaneously available prices. Both scenarios are reported
+on purpose: **the model loses even at impossibly favourable prices**, which makes
+the conclusion far firmer.
+
+The Phase 4 diagnostic found the model beats the market on away wins. Tested as a
+strategy on seasons the diagnostic never saw: ROI −7.62%, CI [−23.73%, +9.85%].
+**A log-loss edge in a segment does not turn into money.**
 
 ## Four markets on one engine
 

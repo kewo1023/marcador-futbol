@@ -18,13 +18,18 @@ FIELD_MAP = {
     "HY": "hy", "AY": "ay", "HR": "hr", "AR": "ar",
     "HS": "hs", "AS": "as", "HST": "hst", "AST": "ast",
     "Referee": "referee",
+    "AvgH": "avgh", "AvgD": "avgd", "AvgA": "avga",
+    "MaxH": "maxh", "MaxD": "maxd", "MaxA": "maxa",
+    "MaxCH": "maxch", "MaxCD": "maxcd", "MaxCA": "maxca",
     "AvgCH": "avgch", "AvgCD": "avgcd", "AvgCA": "avgca",
     "AvgC>2.5": "avgc_o25", "AvgC<2.5": "avgc_u25",
     "PSCH": "psch", "PSCD": "pscd", "PSCA": "psca",
 }
 INT_COLS = {"fthg", "ftag", "hc", "ac", "hy", "ay", "hr", "ar",
             "hs", "as", "hst", "ast"}
-FLOAT_COLS = {"avgch", "avgcd", "avgca", "avgc_o25", "avgc_u25",
+FLOAT_COLS = {"avgh", "avgd", "avga", "maxh", "maxd", "maxa",
+              "maxch", "maxcd", "maxca",
+              "avgch", "avgcd", "avgca", "avgc_o25", "avgc_u25",
               "psch", "pscd", "psca"}
 
 
@@ -129,7 +134,9 @@ def upsert_matches(con, rows) -> int:
     cols = ["match_id", "league", "season", "match_date", "kickoff_utc",
             "home_team", "away_team", "fthg", "ftag", "ftr",
             "hc", "ac", "hy", "ay", "hr", "ar", "hs", "as", "hst", "ast",
-            "referee", "avgch", "avgcd", "avgca", "avgc_o25", "avgc_u25",
+            "referee", "avgh", "avgd", "avga", "maxh", "maxd", "maxa",
+            "maxch", "maxcd", "maxca",
+            "avgch", "avgcd", "avgca", "avgc_o25", "avgc_u25",
             "psch", "pscd", "psca", "ingested_at"]
     # "as" es palabra reservada en SQL; entre comillas dobles SQLite la acepta
     # como nombre de columna.

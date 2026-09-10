@@ -48,6 +48,14 @@ CREATE TABLE IF NOT EXISTS matches (
     -- ps* es Pinnacle, que era la referencia original: la fuente dejo de
     -- publicarla el 17/01/2026, asi que ya no sirve hacia adelante. Se
     -- conserva porque es la unica disponible antes de 2019/20.
+    -- Cuotas PRE-PARTIDO: las que un apostador podria haber tomado de verdad.
+    -- max* es la mejor de todas las casas (comparando precios); avg* el
+    -- promedio. La distincion es el centro de la fase 7: medir el valor contra
+    -- la cuota de cierre mide si el modelo sabe algo; medirlo contra la cuota
+    -- disponible mide si eso se puede cobrar, que no es lo mismo.
+    avgh REAL, avgd REAL, avga REAL,
+    maxh REAL, maxd REAL, maxa REAL,
+    maxch REAL, maxcd REAL, maxca REAL,
     avgch REAL, avgcd REAL, avgca REAL,
     -- Cierre promedio del over/under 2.5 goles. Es la UNICA cuota que la
     -- fuente publica para un mercado distinto del 1X2: no hay de corners ni

@@ -95,6 +95,20 @@ con desviación 0.93 cuando la realidad varía 3.39.
 goles (dispersión residual 0.86), amarillas (0.86) y tiros a puerta (0.99). No
 se cumple en corners (1.34) ni en tiros totales (1.46).
 
+**Cualquier intento de convertir el modelo en dinero.** Apostando 1 unidad
+plana cuando el modelo ve valor esperado positivo, sobre 2127 apuestas: ROI
+**−8.50%**, con el intervalo entero por debajo de cero. Peor que apostar a todos
+los partidos a ciegas (−6.03%).
+
+El filtro de valor no es neutro, es **activamente dañino**: selecciona los
+partidos donde el modelo más discrepa del precio, que son justo donde el mercado
+tiene razón. Subir el umbral de EV empeora el resultado hasta −16.55%. Y el
+movimiento de la línea lo confirma por otra vía: CLV medio −1.31%, el mercado se
+aleja de las selecciones entre tomar el precio y el cierre.
+
+Era lo que anticipaba el log-loss, y por eso se midió con la expectativa escrita
+antes de mirar: un modelo peor que el mercado no puede batir al mercado.
+
 **Tres de los cuatro mercados nuevos.** De goles over/under, corners, tarjetas y
 tiros a puerta, solo **tarjetas** le gana a la frecuencia base de forma
 concluyente (p = 0.038 / 0.000 / 0.029). Los otros tres dan mejoras positivas
@@ -138,6 +152,15 @@ sí. Una dejó el esquema de la base sin dos columnas: funcionaba en local por u
 migración manual, pero **un clon nuevo habría fallado al ingerir**. Se detectó
 creando una base desde cero, que es lo que hace el runner de CI en cada corrida.
 
+**Casi acepté un precio que no existía.** El primer análisis de valor usaba la
+mejor cuota entre todas las casas y daba 0.67% de margen — demasiado bueno. El
+**28.6% de los partidos tenía margen negativo**, o sea arbitraje puro. Un
+arbitraje real dura segundos; que apareciera en uno de cada tres partidos
+delataba que ese "precio" no era un conjunto simultáneo, sino el máximo de cada
+resultado a lo largo de todo el pre-partido. Se reportan los dos escenarios: el
+modelo pierde incluso con precios imposibles, y eso hace la conclusión más
+firme, no más débil.
+
 **Cortes de datos definidos por índice.** El bloque de prueba estaba escrito
 como `SEASONS[6:]`. Al agregar una temporada nueva pasó de 5 a 6 temporadas sin
 que nada avisara, moviendo números ya reportados. Ahora van explícitos.
@@ -167,6 +190,8 @@ devuelve todo en **victorias locales** (+0.0386). Ese es el frente abierto.
 - **Corners, tarjetas y tiros se miden sin techo.** La fuente no publica cuotas
   para esos mercados, así que solo se sabe si el modelo aporta algo, no cuánto
   le falta para lo alcanzable. Es una medición más débil que la de goles.
+- **F7 se midió sobre backtest, no sobre apuestas reales.** Nadie apostó un
+  peso: es una simulación con los precios históricos que publica la fuente.
 - **El track record en vivo todavía no existe.** El sistema está construido y
   verificado de punta a punta con el reloj retrocedido sobre datos reales, pero
   no ha emitido aún su primer lote de predicciones sobre partidos futuros. Hasta

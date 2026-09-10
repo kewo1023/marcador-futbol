@@ -96,6 +96,19 @@ with a standard deviation of 0.93 while reality varies by 3.39.
 for goals (residual dispersion 0.86), yellow cards (0.86) and shots on target
 (0.99). It does not hold for corners (1.34) or total shots (1.46).
 
+**Any attempt to turn the model into money.** Flat 1-unit stakes whenever the
+model saw positive expected value, over 2,127 bets: ROI **−8.50%**, with the
+entire interval below zero. Worse than betting every match blindly (−6.03%).
+
+The value filter isn't merely useless, it's **actively harmful**: it selects the
+matches where the model disagrees most with the price, which is exactly where the
+market is right. Raising the EV threshold makes it worse, down to −16.55%. The
+line movement confirms it independently: mean CLV −1.31%, the market drifts away
+from the model's picks between taking the price and the close.
+
+This is what the log loss predicted, which is why the expectation was written
+down before looking: a model worse than the market cannot beat the market.
+
 **Three of the four new markets.** Of goals over/under, corners, cards and shots
 on target, only **cards** beats its base rate conclusively (p = 0.038 / 0.000 /
 0.029). The other three show positive but noise-indistinguishable gains over 760
@@ -139,6 +152,14 @@ missing two columns: it worked locally thanks to a manual migration, but **a
 fresh clone would have failed on ingest**. It surfaced by building a database
 from scratch, which is what CI does on every run.
 
+**I nearly accepted a price that didn't exist.** The first value analysis used
+best-available odds across bookmakers and showed just 0.67% overround — too good.
+**28.6% of matches had negative overround**, i.e. pure arbitrage. Real arbitrage
+lasts seconds; appearing in one match in three revealed that this "price" was not
+a simultaneous set but the maximum of each outcome taken separately across the
+whole pre-match window. Both scenarios are reported: the model loses even at
+impossible prices, which makes the conclusion firmer, not weaker.
+
 **Data splits defined by index.** The test block was written as `SEASONS[6:]`.
 Adding a new season silently moved it from 5 to 6 seasons, shifting numbers that
 had already been reported. They're explicit now.
@@ -169,6 +190,8 @@ gives it all back on **home wins** (+0.0386). That's the open front.
   publishes no odds for those markets, so I can tell whether the model adds
   something, not how far it is from what's achievable. That's a weaker
   measurement than the one for goals.
+- **Phase 7 was measured on backtest, not on real bets.** No money was staked:
+  it's a simulation using the historical prices the source publishes.
 - **There is no live track record yet.** The system is built and verified
   end-to-end with the clock rolled back over real data, but it hasn't yet emitted
   its first batch of predictions on future matches. Until it does and accumulates
