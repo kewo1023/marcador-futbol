@@ -1,5 +1,7 @@
 # marcador-futbol
 
+*[English version](README.en.md)*
+
 Sistema de pronóstico de fútbol que se autoevalúa: registra sus predicciones
 antes de que se jueguen los partidos, ingiere los resultados, se mide contra sí
 mismo y contra el mercado, y **decide solo** si cambiar de modelo.

@@ -1,5 +1,7 @@
 # Qué aprendí construyendo esto
 
+*[English version](LEARNINGS.md)*
+
 Un modelo de pronóstico de fútbol que se autoevalúa: registra sus predicciones
 antes de que se jueguen los partidos, ingiere los resultados, se mide contra el
 mercado y decide solo si cambiar de modelo.
