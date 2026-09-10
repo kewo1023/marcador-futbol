@@ -1,12 +1,34 @@
 {
-  "model_version": "dc-xi0020-reg002-rho",
+  "model_version": "dc-xi0020-reg002-rho+recal1000",
   "config": {
     "xi": 0.002,
     "reg": 0.002,
     "use_rho": true,
     "refit_days": 7
   },
-  "promoted_at": "2026-09-09T15:56:54+00:00",
-  "promoted_because": "inicializacion: configuracion con la que salio a produccion la F3",
-  "previous": null
+  "recalibration": {
+    "lam": 1000,
+    "window": 10,
+    "features": [
+      "sot_dif_h",
+      "sot_dif_a",
+      "sh_dif_h",
+      "sh_dif_a",
+      "cor_dif_h",
+      "cor_dif_a",
+      "gol_dif_h",
+      "gol_dif_a"
+    ],
+    "train_seasons": [
+      "2122",
+      "2223",
+      "2324",
+      "2425",
+      "2526",
+      "2627"
+    ]
+  },
+  "promoted_at": "2026-09-10T02:57:43+00:00",
+  "promoted_because": "gana por 0.0033 de log-loss y el intervalo 95% [-0.0054, -0.0011] no cruza cero",
+  "previous": "dc-xi0020-reg002-rho"
 }

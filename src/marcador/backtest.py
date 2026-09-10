@@ -164,3 +164,28 @@ def walk_forward_market(matches, target_seasons, cfg: ModelConfig, lines):
         for line in lines:
             out[line][m["id"]] = fit.probs_over_under_line(m["home"], m["away"], line)
     return out, n_fits
+
+
+def evaluate_config_multi(con, leagues, target_seasons, cfg: ModelConfig,
+                          progress=None):
+    """Evalua una configuracion en VARIAS ligas y junta las perdidas.
+
+    Cada liga se ajusta por separado: los equipos no se solapan, asi que un
+    ajuste conjunto exigiria efectos de liga y estaria mezclando cosas que no
+    se comparan. Lo que se junta son las PERDIDAS por partido, que si son
+    comparables — un log-loss es un log-loss venga de donde venga.
+
+    Y juntarlas es justo el punto: el gate de la F4 rechazo una mejora real
+    (-0.0026) por no tener potencia con 790 partidos de una liga. Con cinco, el
+    mismo bloque supera los 5000 y esa diferencia entra en lo verificable.
+    """
+    ids, losses, per_league = [], [], {}
+    for league in leagues:
+        matches = load_matches(con, league)
+        li, ll = evaluate_config(matches, target_seasons, cfg)
+        per_league[league] = (li, ll)
+        ids += li
+        losses += ll
+        if progress:
+            progress(league, len(li), sum(ll) / len(ll) if ll else float("nan"))
+    return ids, losses, per_league

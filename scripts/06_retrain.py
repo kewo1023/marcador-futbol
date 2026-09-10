@@ -26,8 +26,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from marcador import backtest, db, promotion                    # noqa: E402
 from marcador.backtest import ModelConfig                       # noqa: E402
-from marcador.config import (LEAGUE, PRODUCTION_REG,            # noqa: E402
-                             PRODUCTION_USE_RHO, PRODUCTION_XI, SEASONS)
+from marcador.config import (LEAGUES, PRODUCTION_REG,          # noqa: E402
+                             PRODUCTION_USE_RHO, PRODUCTION_XI,
+                             league_label)
 
 # Cortes explicitos y no por indice: agregar una temporada nueva no debe mover
 # en silencio un bloque y con el los numeros ya reportados.
@@ -42,8 +43,8 @@ def mean(xs):
     return sum(xs) / len(xs) if xs else float("nan")
 
 
-def search_challenger(matches):
-    """Busca la mejor configuracion en el bloque de afinado."""
+def search_challenger(con):
+    """Busca la mejor configuracion en el bloque de afinado, sobre las 5 ligas."""
     print(f"Buscando retador en {len(TUNE_SEASONS)} temporadas de afinado "
           f"({TUNE_SEASONS[0]}-{TUNE_SEASONS[-1]}).")
     print("  Cada celda es el log-loss walk-forward de ese bloque.\n")
@@ -53,7 +54,8 @@ def search_challenger(matches):
         cells = []
         for reg in REG_GRID:
             cfg = ModelConfig(xi=xi, reg=reg, use_rho=PRODUCTION_USE_RHO)
-            _, losses = backtest.evaluate_config(matches, TUNE_SEASONS, cfg)
+            _, losses, _ = backtest.evaluate_config_multi(
+                con, LEAGUES, TUNE_SEASONS, cfg)
             ll = mean(losses)
             cells.append(ll)
             if ll < best_ll:
@@ -76,9 +78,12 @@ def align(a_ids, a_losses, b_ids, b_losses):
 def main():
     dry = "--dry-run" in sys.argv
     con = db.init_db()
-    matches = backtest.load_matches(con, LEAGUE)
-    n_gate = sum(1 for m in matches if m["season"] in GATE_SEASONS)
-    print(f"{len(matches)} partidos · bloque del gate: {n_gate} "
+    n_gate, = con.execute(
+        f"""SELECT COUNT(*) FROM matches WHERE ftr IS NOT NULL
+            AND league IN ({','.join('?' * len(LEAGUES))})
+            AND season IN ({','.join('?' * len(GATE_SEASONS))})""",
+        list(LEAGUES) + GATE_SEASONS).fetchone()
+    print(f"{len(LEAGUES)} ligas · bloque del gate: {n_gate} partidos "
           f"({GATE_SEASONS[0]} a {GATE_SEASONS[-1]})\n")
 
     champ = promotion.read_champion()
@@ -98,25 +103,41 @@ def main():
         champ_cfg = champ["config"]
         print(f"Campeon actual: {champ_cfg.slug()}\n")
 
-    challenger = search_challenger(matches)
+    challenger = search_challenger(con)
 
     if challenger == champ_cfg:
         print(f"El retador es identico al campeon. No hay nada que decidir.")
         return 0
 
-    print(f"Evaluando a los dos sobre el bloque del gate, con el mismo "
-          f"procedimiento de reajuste:")
-    c_ids, c_losses = backtest.evaluate_config(matches, GATE_SEASONS, champ_cfg)
-    r_ids, r_losses = backtest.evaluate_config(matches, GATE_SEASONS, challenger)
+    print(f"Evaluando a los dos sobre el bloque del gate, liga por liga y con "
+          f"el mismo procedimiento de reajuste:\n")
+    print(f"  {'liga':16}{'n':>7}{'campeon':>10}{'retador':>10}{'dif.':>9}")
+    c_ids, c_losses, c_per = backtest.evaluate_config_multi(
+        con, LEAGUES, GATE_SEASONS, champ_cfg)
+    r_ids, r_losses, r_per = backtest.evaluate_config_multi(
+        con, LEAGUES, GATE_SEASONS, challenger)
+    for lg in LEAGUES:
+        ci, cl = c_per[lg]
+        ri, rl = r_per[lg]
+        k, cl2, rl2 = align(ci, cl, ri, rl)
+        if not k:
+            continue
+        print(f"  {league_label(lg):16}{len(k):>7}{mean(cl2):>10.4f}"
+              f"{mean(rl2):>10.4f}{mean(rl2) - mean(cl2):>+9.4f}")
     common, c_losses, r_losses = align(c_ids, c_losses, r_ids, r_losses)
-    print(f"  campeon  {champ_cfg.slug():28} {mean(c_losses):.4f}")
-    print(f"  retador  {challenger.slug():28} {mean(r_losses):.4f}")
-    print(f"  sobre {len(common)} partidos que ninguno de los dos vio al afinarse\n")
+    print(f"  {'TODAS':16}{len(common):>7}{mean(c_losses):>10.4f}"
+          f"{mean(r_losses):>10.4f}{mean(r_losses) - mean(c_losses):>+9.4f}\n")
 
     decision, reason, st = promotion.decide(c_losses, r_losses)
 
     print(f"  diferencia {st['diff']:+.4f}  IC 95% "
           f"[{st['ci_low']:+.4f}, {st['ci_high']:+.4f}]  p={st['p_value']:.3f}")
+    import math as _m
+    import numpy as _np
+    sd = float(_np.std(_np.array(r_losses) - _np.array(c_losses), ddof=1))
+    mde = 1.96 * sd / _m.sqrt(len(common))
+    print(f"  potencia: con {len(common)} partidos detecta diferencias "
+          f"de {mde:.4f} o mayores")
     print(f"\n  VEREDICTO: {decision}")
     print(f"  {reason}")
 

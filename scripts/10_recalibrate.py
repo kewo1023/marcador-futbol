@@ -21,7 +21,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from marcador import backtest, db, promotion, recalibration    # noqa: E402
-from marcador.config import LEAGUE                             # noqa: E402
+from marcador.config import LEAGUES, league_label              # noqa: E402
 from marcador.scoring import bootstrap_diff                     # noqa: E402
 
 TUNE = ["2122", "2223", "2324"]
@@ -31,12 +31,12 @@ LAM_GRID = [1, 3, 10, 30, 100, 300, 1000]
 EPS = 1e-12
 
 
-def load_rows(con):
+def load_rows(con, league):
     return con.execute(
         """SELECT match_id, match_date, season, home_team, away_team, ftr,
                   fthg, ftag, hs, "as", hst, ast, hc, ac
            FROM matches WHERE league = ? AND ftr IS NOT NULL
-           ORDER BY match_date, home_team""", (LEAGUE,)).fetchall()
+           ORDER BY match_date, home_team""", (league,)).fetchall()
 
 
 def losses(probs, actual):
@@ -50,16 +50,25 @@ def main():
     cfg = champ["config"]
     print(f"Campeon: {cfg.slug()}")
 
-    rows = load_rows(con)
-    feats = recalibration.rolling_features(rows)
-    by_id = {r["match_id"]: r for r in rows}
-
-    ms = backtest.load_matches(con, LEAGUE)
-    preds, _, _ = backtest.walk_forward(ms, ALL, cfg)
-    P = {i: p for i, p, _ in preds}
-    order = [m for m in ms if m["season"] in ALL and m["id"] in P]
-    print(f"{len(order)} partidos con prediccion del modelo "
-          f"({ALL[0]}-{ALL[-1]})\n")
+    # Las features de forma se calculan por liga (una racha es de un equipo
+    # dentro de su competicion), y el modelo tambien se ajusta por liga. Lo que
+    # se junta despues son las probabilidades y las perdidas, que si son
+    # comparables entre ligas.
+    feats, by_id, P, order, league_of = {}, {}, {}, [], {}
+    for lg in LEAGUES:
+        rows = load_rows(con, lg)
+        feats.update(recalibration.rolling_features(rows))
+        by_id.update({r["match_id"]: r for r in rows})
+        ms = backtest.load_matches(con, lg)
+        preds, _, _ = backtest.walk_forward(ms, ALL, cfg)
+        P.update({i: p for i, p, _ in preds})
+        sel = [m for m in ms if m["season"] in ALL and m["id"] in P]
+        order += sel
+        for m in sel:
+            league_of[m["id"]] = lg
+    order.sort(key=lambda m: (m["season"], m["date"]))
+    print(f"{len(order)} partidos con prediccion del modelo, "
+          f"{len(LEAGUES)} ligas ({ALL[0]}-{ALL[-1]})\n")
 
     y_idx = {o: i for i, o in enumerate(recalibration.OUTCOMES)}
 
@@ -99,7 +108,7 @@ def main():
     # --- El gate: la capa se reajusta con TODO lo anterior a cada temporada.
     print("Evaluando en el bloque del gate, temporada por temporada.")
     print("  La capa se reentrena con todo lo anterior a cada una.\n")
-    cand_probs, champ_probs, actual = [], [], []
+    cand_probs, champ_probs, actual, cand_ids = [], [], [], []
     for season in GATE:
         train_s = [s for s in ALL if s < season]
         tr_ids, tr_y = block(train_s)
@@ -114,16 +123,28 @@ def main():
             cand_probs.append(dict(zip(recalibration.OUTCOMES, row)))
             champ_probs.append(P[i])
             actual.append(by_id[i]["ftr"])
+            cand_ids.append(i)
         ll_c = np.mean([-math.log(max(d[a], EPS)) for d, a in
                         zip(cand_probs[-len(te_ids):], actual[-len(te_ids):])])
         ll_m = np.mean([-math.log(max(P[i][by_id[i]["ftr"]], EPS)) for i in te_ids])
-        print(f"  {season}  n={len(te_ids):>4}  campeon {ll_m:.4f}  "
+        print(f"  {season}  n={len(te_ids):>5}  campeon {ll_m:.4f}  "
               f"candidato {ll_c:.4f}  {ll_m - ll_c:+.4f}")
 
     lc = losses(cand_probs, actual)
     lm = losses(champ_probs, actual)
-    print(f"\n  TOTAL   n={len(actual):>4}  campeon {np.mean(lm):.4f}  "
+    print(f"\n  TOTAL   n={len(actual):>5}  campeon {np.mean(lm):.4f}  "
           f"candidato {np.mean(lc):.4f}")
+
+    # Desglose por liga: una mejora que solo aparece en una liga es sospechosa.
+    print(f"\n  {'liga':16}{'n':>7}{'campeon':>10}{'candidato':>11}{'dif.':>9}")
+    ids_order = [i for i in cand_ids]
+    for lg in LEAGUES:
+        idx = [k for k, i in enumerate(ids_order) if league_of[i] == lg]
+        if not idx:
+            continue
+        a = np.mean([lm[k] for k in idx]); b = np.mean([lc[k] for k in idx])
+        print(f"  {league_label(lg):16}{len(idx):>7}{a:>10.4f}{b:>11.4f}"
+              f"{b - a:>+9.4f}")
 
     decision, reason, st = promotion.decide(lm, lc)
     print(f"\n  diferencia {st['diff']:+.4f}  IC 95% "
@@ -150,10 +171,14 @@ def main():
     print(f"\n  POTENCIA DEL GATE")
     print(f"    con {len(lc)} partidos solo puede declarar concluyentes")
     print(f"    diferencias de {mde:.4f} o mayores.")
-    print(f"    para que {st['diff']:+.4f} lo fuera harian falta ~{need} partidos,")
-    print(f"    o sea ~{need // 380} temporadas de una sola liga.")
-    print(f"    El rechazo NO dice que la capa no sirva: dice que con estos")
-    print(f"    datos no se puede demostrar que sirva.")
+    if decision == promotion.PROMOTE:
+        print(f"    la diferencia medida ({st['diff']:+.4f}) esta por encima de ese")
+        print(f"    umbral, y por eso se pudo declarar. Con una sola liga (790")
+        print(f"    partidos) el umbral era 0.0060 y esta misma capa fue rechazada.")
+    else:
+        print(f"    para que {st['diff']:+.4f} lo fuera harian falta ~{need} partidos.")
+        print(f"    El rechazo NO dice que la capa no sirva: dice que con estos")
+        print(f"    datos no se puede demostrar que sirva.")
 
     row = {
         "decided_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
@@ -171,8 +196,16 @@ def main():
     promotion.record_challenge(row)
     print(f"\n  Desafio registrado en ledger/challenges.csv")
     if decision == promotion.PROMOTE:
-        print("  OJO: promover esta capa exige cambiar tambien 04_predict.py,")
-        print("  porque el campeon deja de ser solo una ModelConfig.")
+        version = f"{cfg.slug()}+recal{best_lam}"
+        promotion.write_champion(
+            cfg, reason, previous=champ["raw"]["model_version"],
+            recalibration={"lam": best_lam, "window": 10,
+                           "features": recalibration.FEATURES,
+                           "train_seasons": ALL},
+            version=version)
+        print(f"  {version} pasa a produccion.")
+        print(f"  Las predicciones ya emitidas no se tocan: llevan el nombre")
+        print(f"  del modelo que las genero.")
     return 0
 
 

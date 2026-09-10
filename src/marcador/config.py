@@ -11,8 +11,27 @@ DB_PATH = DATA_DIR / "marcador.sqlite"
 
 # --- Alcance -----------------------------------------------------------------
 # Una sola liga. Ampliar después es fácil; empezar ancho es como uno se atora.
-# Códigos de football-data.co.uk: E0 = Premier League, SP1 = LaLiga,
-# D1 = Bundesliga, I1 = Serie A, F1 = Ligue 1.
+# Códigos de football-data.co.uk.
+#
+# POR QUE CINCO Y NO UNA. El proyecto arrancó con la Premier sola, y fue la
+# decisión correcta para empezar: ampliar después es fácil, empezar ancho es
+# como uno se atora. Dejó de serlo cuando el gate de la F4 rechazó una mejora
+# real (-0.0026 de log-loss) por falta de potencia: con 790 partidos solo puede
+# declarar concluyentes diferencias de 0.0060 o mayores, y validar aquella
+# habría exigido once temporadas de una liga.
+#
+# Cinco ligas dan ~1750 partidos por temporada en vez de 380. El bloque del
+# gate pasa de 790 a ~5000, que es justo el umbral que hacía falta.
+LEAGUES = {
+    "E0": "Premier League",
+    "SP1": "LaLiga",
+    "D1": "Bundesliga",
+    "I1": "Serie A",
+    "F1": "Ligue 1",
+}
+
+# Liga por defecto para lo que todavía mira una sola (el árbitro, por ejemplo,
+# solo existe en E0).
 LEAGUE = "E0"
 
 # Temporadas en el formato de la fuente: "2425" = temporada 2024/25.
@@ -46,6 +65,10 @@ USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
 )
+
+
+def league_label(code: str) -> str:
+    return LEAGUES.get(code, code)
 
 
 def season_url(season: str, league: str = LEAGUE) -> str:

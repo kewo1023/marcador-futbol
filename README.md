@@ -10,6 +10,9 @@ mismo y contra el mercado, y **decide solo** si cambiar de modelo.
 Un modelo que "se corrige solo" necesita saber en qué dirección corregirse, y
 eso solo lo da un sistema de medición que ya existía.
 
+**Cinco ligas:** Premier League, LaLiga, Bundesliga, Serie A y Ligue 1 —
+19.909 partidos.
+
 **Dashboard en vivo:** https://marcador-futbol-2rs4efqkkrvipztze7k5mr.streamlit.app/
 
 ### Por dónde empezar a leer
@@ -114,6 +117,51 @@ estimaban sobre nada y se iban al extremo.
 La regularización empuja hacia el promedio de la liga a los equipos de los que
 hay pocos datos, y deja quietos a los que tienen muchos. La probabilidad
 mínima emitida pasó de 0.74% a **4.52%**.
+
+## De una liga a cinco, y la primera promoción
+
+El límite descrito abajo —el gate no podía validar mejoras menores a 0.0060 con
+790 partidos— se resolvió de la única forma posible: **más datos**.
+
+| | Una liga | Cinco ligas |
+|---|---|---|
+| Partidos en la base | 4.210 | **19.909** |
+| Bloque del gate | 790 | **3.650** |
+| Diferencia mínima detectable | 0.0060 | **0.0022** |
+
+Cada liga se ajusta por separado —los equipos no se solapan, un ajuste conjunto
+exigiría efectos de liga— y lo que se junta son **las pérdidas por partido**,
+que sí son comparables: un log-loss es un log-loss venga de donde venga.
+
+### El resultado: la capa de recalibración pasó el gate
+
+La misma capa que había sido rechazada con una liga fue sometida de nuevo:
+
+| Liga | n | Campeón | Candidato | Dif. |
+|---|---|---|---|---|
+| Premier League | 790 | 1.0061 | 1.0066 | +0.0005 |
+| LaLiga | 801 | 0.9753 | **0.9686** | −0.0068 |
+| Bundesliga | 630 | 0.9997 | **0.9984** | −0.0013 |
+| Serie A | 790 | 0.9774 | **0.9723** | −0.0050 |
+| Ligue 1 | 639 | 0.9912 | **0.9880** | −0.0032 |
+| **TODAS** | **3650** | **0.9894** | **0.9862** | **−0.0033** |
+
+**PROMOVIDO** — IC 95% [−0.0054, −0.0011], p = 0.003. Mejora en cuatro de las
+cinco ligas, lo que descarta que sea un artefacto de una competición.
+
+Es la **primera promoción del proyecto**. El gate llevaba tres rechazos, y esa
+es exactamente la señal de que no reparte títulos por simpatía.
+
+Detalle con su punto de ironía: la excepción es la Premier (+0.0005), que es
+justo la liga donde se descubrió la hipótesis. Una pista encontrada mirando una
+competición resultó valer para las otras cuatro y no para ella.
+
+### Qué corre en cinco ligas y qué no
+
+El **loop de producción** (ingesta, predicción, scoring) y el **gate** corren
+sobre las cinco. Los scripts de análisis histórico —el backtest de la F2, el
+diagnóstico, los mercados y el valor— siguen sobre la Premier: cambiarlos
+movería números ya reportados, y su valor es documental.
 
 ## Atacando las victorias locales, y el límite que apareció
 

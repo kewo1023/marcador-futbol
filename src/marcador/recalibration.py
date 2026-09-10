@@ -50,7 +50,10 @@ def rolling_features(rows, window=10):
         h, a = r["home_team"], r["away_team"]
 
         def avg(team, key):
-            v = [x[key] for x in hist[team]]
+            # Se ignoran los huecos en vez de propagarlos. Son 2 partidos en
+            # 19.909, pero un solo NULL tumbaba el pipeline entero: una feature
+            # de forma tiene que degradarse, no romperse.
+            v = [x[key] for x in hist[team] if x[key] is not None]
             return float(np.mean(v)) if v else 0.0
 
         out[r["match_id"]] = {
@@ -64,6 +67,8 @@ def rolling_features(rows, window=10):
             "gol_dif_a": avg(a, "g_f") - avg(a, "g_a"),
         }
         # El partido entra al historial DESPUES de generar sus features.
+        # Si el partido no trae datos de eventos, entra con None y el promedio
+        # lo salta; no se descarta el partido, porque su resultado si es valido.
         hist[h].append({"sot_f": r["hst"], "sot_a": r["ast"], "sh_f": r["hs"],
                         "sh_a": r["as"], "c_f": r["hc"], "c_a": r["ac"],
                         "g_f": r["fthg"], "g_a": r["ftag"]})

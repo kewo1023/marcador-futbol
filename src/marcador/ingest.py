@@ -155,13 +155,34 @@ def upsert_matches(con, rows) -> int:
 
 
 def ingest_all(con, seasons=SEASONS, league: str = LEAGUE, force: bool = False):
-    """Baja y carga todas las temporadas del alcance. Devuelve un resumen."""
+    """Baja y carga todas las temporadas de UNA liga. Devuelve un resumen."""
     summary = []
     for season in seasons:
         path = download_season(season, league, force=force)
         n = upsert_matches(con, rows_from_csv(path, league, season))
         summary.append((season, n, path.stat().st_size))
     return summary
+
+
+def ingest_leagues(con, leagues, seasons=SEASONS, force: bool = False):
+    """Todas las ligas del alcance. Devuelve {liga: [(temporada, n, bytes)]}.
+
+    Una temporada que no exista para una liga (o que venga vacia) se salta sin
+    romper: las ligas no comparten calendario ni antiguedad de datos.
+    """
+    out = {}
+    for league in leagues:
+        rows = []
+        for season in seasons:
+            try:
+                path = download_season(season, league, force=force)
+                n = upsert_matches(con, rows_from_csv(path, league, season))
+            except Exception as exc:            # noqa: BLE001
+                rows.append((season, 0, 0, str(exc)[:40]))
+                continue
+            rows.append((season, n, path.stat().st_size, ""))
+        out[league] = rows
+    return out
 
 
 # --- Partidos por jugar ------------------------------------------------------

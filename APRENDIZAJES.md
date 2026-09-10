@@ -179,6 +179,30 @@ que nada avisara, moviendo números ya reportados. Ahora van explícitos.
 
 ---
 
+## Y cómo se resolvió: cinco ligas
+
+El límite se resolvió de la única forma posible — más datos. Pasar de la
+Premier sola a las cinco grandes multiplicó la base por cinco:
+
+| | Una liga | Cinco ligas |
+|---|---|---|
+| Partidos | 4.210 | 19.909 |
+| Bloque del gate | 790 | 3.650 |
+| Diferencia mínima detectable | 0.0060 | **0.0022** |
+
+Cada liga se ajusta por separado; lo que se junta son las pérdidas por partido.
+
+**La capa de recalibración, rechazada con una liga, pasó el gate con cinco:**
+−0.0033, IC [−0.0054, −0.0011], p = 0.003. Mejora en cuatro de las cinco, lo
+que descarta el artefacto de una sola competición. Es la primera promoción del
+proyecto, después de tres rechazos.
+
+Con una ironía que vale registrar: **la excepción es la Premier** (+0.0005),
+que es justo donde se descubrió la hipótesis. Una pista encontrada mirando una
+competición valió para las otras cuatro y no para ella. Es un recordatorio de
+que un hallazgo confirmado en el mismo sitio donde se encontró no está
+confirmado.
+
 ## El límite que encontré al final
 
 El gate rechazó la capa de recalibración, y al preguntarle por qué salió el

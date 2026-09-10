@@ -178,6 +178,30 @@ had already been reported. They're explicit now.
 
 ---
 
+## And how it was solved: five leagues
+
+The limit was solved the only way it could be — more data. Going from the
+Premier League alone to the five big leagues multiplied the base fivefold:
+
+| | One league | Five leagues |
+|---|---|---|
+| Matches | 4,210 | 19,909 |
+| Gate block | 790 | 3,650 |
+| Minimum detectable difference | 0.0060 | **0.0022** |
+
+Each league is fitted separately; what gets pooled is the per-match losses.
+
+**The recalibration layer, rejected with one league, passed the gate with
+five:** −0.0033, CI [−0.0054, −0.0011], p = 0.003. It improves in four of the
+five, which rules out a single-competition artifact. It's the project's first
+promotion, after three rejections.
+
+With an irony worth recording: **the exception is the Premier League**
+(+0.0005) — precisely where the hypothesis was discovered. A lead found by
+looking at one competition turned out to hold for the other four and not for
+it. A reminder that a finding confirmed in the same place it was found is not
+confirmed.
+
 ## The limit I hit at the end
 
 The gate rejected the recalibration layer, and asking why produced the single

@@ -50,10 +50,12 @@ def read_champion():
     if not CHAMPION_FILE.exists():
         return None
     d = json.loads(CHAMPION_FILE.read_text(encoding="utf-8"))
-    return {"config": ModelConfig.from_dict(d["config"]), "raw": d}
+    return {"config": ModelConfig.from_dict(d["config"]),
+            "recalibration": d.get("recalibration"), "raw": d}
 
 
-def write_champion(cfg: ModelConfig, reason: str, previous: str | None = None):
+def write_champion(cfg: ModelConfig, reason: str, previous: str | None = None,
+                   recalibration: dict | None = None, version: str | None = None):
     """Deja el campeon en el ledger, NO en el codigo.
 
     Vive en un archivo versionado y no en una constante de Python porque el
@@ -66,8 +68,13 @@ def write_champion(cfg: ModelConfig, reason: str, previous: str | None = None):
     """
     LEDGER_DIR.mkdir(parents=True, exist_ok=True)
     CHAMPION_FILE.write_text(json.dumps({
-        "model_version": cfg.slug(),
+        "model_version": version or cfg.slug(),
         "config": cfg.to_dict(),
+        # Capa de recalibracion, si el campeon la lleva. None significa que el
+        # campeon es el motor a secas. Va en el mismo archivo a proposito: lo
+        # que emite las predicciones de manana tiene que caber en un solo
+        # documento que se pueda leer de un vistazo.
+        "recalibration": recalibration,
         "promoted_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "promoted_because": reason,
         "previous": previous,

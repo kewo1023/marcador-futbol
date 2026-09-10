@@ -15,7 +15,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from marcador import ledger, promotion              # noqa: E402
-from marcador.config import LEAGUE                  # noqa: E402
+from marcador.config import LEAGUES                 # noqa: E402
 
 st.set_page_config(page_title="Marcador", page_icon="⚽", layout="wide")
 
@@ -32,7 +32,7 @@ champ = promotion.read_champion()
 PRODUCTION_MODEL = champ["raw"]["model_version"] if champ else "(sin campeon)"
 
 st.title("Marcador antes que modelo")
-st.caption(f"Liga {LEAGUE} · modelo en producción `{PRODUCTION_MODEL}` · "
+st.caption(f"{len(LEAGUES)} ligas · modelo en producción `{PRODUCTION_MODEL}` · "
            "todo lo que se ve sale del ledger versionado en git")
 
 # --- El campeon y sus desafios ----------------------------------------------
@@ -88,6 +88,9 @@ if preds.empty:
     st.stop()
 
 preds["prob"] = preds["prob"].astype(float)
+# El match_id empieza por el codigo de liga, asi que la liga se deduce sin
+# guardar una columna aparte.
+preds["liga"] = preds["match_id"].str.split("_").str[0]
 played = set(results["match_id"]) if not results.empty else set()
 
 # --- Estado general ---------------------------------------------------------

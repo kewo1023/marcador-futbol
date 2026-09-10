@@ -19,13 +19,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from marcador import db, ingest, ledger, scoring          # noqa: E402
 from marcador.baseline import MARKET_1X2, OUTCOMES        # noqa: E402
-from marcador.config import CURRENT_SEASON, LEAGUE        # noqa: E402
+from marcador.config import CURRENT_SEASON, LEAGUES       # noqa: E402
 
 
 def refresh(con):
-    path = ingest.download_season(CURRENT_SEASON, force=True)
-    return ingest.upsert_matches(
-        con, ingest.rows_from_csv(path, LEAGUE, CURRENT_SEASON))
+    """Re-baja la temporada en curso de las cinco ligas."""
+    n = 0
+    for league in LEAGUES:
+        path = ingest.download_season(CURRENT_SEASON, league=league, force=True)
+        n += ingest.upsert_matches(
+            con, ingest.rows_from_csv(path, league, CURRENT_SEASON))
+    return n
 
 
 def collect_results(con, predicted_ids):
@@ -104,11 +108,12 @@ def find_missed(con, preds):
         return []
     since = min(p["match_date"] for p in live)
     predicted = {p["match_id"] for p in live}
+    q = ",".join("?" * len(LEAGUES))
     rows = con.execute(
-        """SELECT match_id, match_date, home_team, away_team, ftr
-           FROM matches
-           WHERE league = ? AND ftr IS NOT NULL AND match_date >= ?
-           ORDER BY match_date""", (LEAGUE, since)).fetchall()
+        f"""SELECT match_id, match_date, home_team, away_team, ftr
+            FROM matches
+            WHERE league IN ({q}) AND ftr IS NOT NULL AND match_date >= ?
+            ORDER BY match_date""", list(LEAGUES) + [since]).fetchall()
     now = ledger.now_iso()
     return [{"match_id": r["match_id"], "match_date": r["match_date"],
              "home_team": r["home_team"], "away_team": r["away_team"],

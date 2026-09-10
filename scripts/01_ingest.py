@@ -12,36 +12,34 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from marcador import db, ingest                    # noqa: E402
-from marcador.config import LEAGUE, SEASONS, season_label  # noqa: E402
+from marcador.config import (LEAGUES, SEASONS,      # noqa: E402
+                             league_label, season_label)
 
 
 def main():
     force = "--force" in sys.argv
     con = db.init_db()
-    print(f"Liga: {LEAGUE} · {len(SEASONS)} temporadas "
+    print(f"{len(LEAGUES)} ligas x {len(SEASONS)} temporadas "
           f"({season_label(SEASONS[0])} a {season_label(SEASONS[-1])})\n")
 
-    for season, n, size in ingest.ingest_all(con, force=force):
-        print(f"  {season_label(season)}  {n:>4} partidos  ({size/1024:.0f} KB)")
+    for league, rows in ingest.ingest_leagues(con, LEAGUES, force=force).items():
+        total = sum(r[1] for r in rows)
+        fallos = [r for r in rows if r[1] == 0]
+        print(f"  {league_label(league):16} {total:>5} partidos"
+              + (f"   ({len(fallos)} temporadas sin datos)" if fallos else ""))
 
+    print()
+    q = """SELECT league, COUNT(*) n, MIN(match_date) a, MAX(match_date) b,
+                  SUM(avgch IS NOT NULL OR psch IS NOT NULL) odds,
+                  SUM(referee IS NOT NULL) ref
+           FROM matches GROUP BY league ORDER BY league"""
+    print(f"  {'liga':16}{'partidos':>10}{'con cuota':>11}{'con arbitro':>13}"
+          f"   rango")
+    for r in con.execute(q):
+        print(f"  {league_label(r['league']):16}{r['n']:>10}{r['odds']:>11}"
+              f"{r['ref']:>13}   {r['a']} a {r['b']}")
     total, = con.execute("SELECT COUNT(*) FROM matches").fetchone()
-    # Cuenta la cobertura EFECTIVA: el promedio de las casas, o Pinnacle donde
-    # aquel no exista. Contar solo Pinnacle daba un 95% enganoso desde que la
-    # fuente dejo de publicarla en enero de 2026.
-    with_odds, = con.execute(
-        "SELECT COUNT(*) FROM matches "
-        "WHERE avgch IS NOT NULL OR psch IS NOT NULL").fetchone()
-    with_ref, = con.execute(
-        "SELECT COUNT(*) FROM matches WHERE referee IS NOT NULL").fetchone()
-    with_corners, = con.execute(
-        "SELECT COUNT(*) FROM matches WHERE hc IS NOT NULL").fetchone()
-    lo, hi = con.execute(
-        "SELECT MIN(match_date), MAX(match_date) FROM matches").fetchone()
-
-    print(f"\n  Total en la base: {total} partidos  ({lo} a {hi})")
-    print(f"  Con cuota de cierre: {with_odds} ({with_odds/total*100:.0f}%)")
-    print(f"  Con corners:         {with_corners} ({with_corners/total*100:.0f}%)")
-    print(f"  Con árbitro:         {with_ref} ({with_ref/total*100:.0f}%)")
+    print(f"\n  Total en la base: {total} partidos")
 
 
 if __name__ == "__main__":
