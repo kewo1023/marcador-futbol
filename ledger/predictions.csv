@@ -1,0 +1,130 @@
+match_id,match_date,home_team,away_team,model_version,market,outcome,prob,mode,info_cutoff,created_at
+E0_2026-09-12_Aston-Villa_Nott'm-Forest,2026-09-12,Aston Villa,Nott'm Forest,dc-xi0020-reg002-rho+recal1000,1X2,H,0.449607,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Aston-Villa_Nott'm-Forest,2026-09-12,Aston Villa,Nott'm Forest,dc-xi0020-reg002-rho+recal1000,1X2,D,0.285372,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Aston-Villa_Nott'm-Forest,2026-09-12,Aston Villa,Nott'm Forest,dc-xi0020-reg002-rho+recal1000,1X2,A,0.265021,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Bournemouth_Brentford,2026-09-12,Bournemouth,Brentford,dc-xi0020-reg002-rho+recal1000,1X2,H,0.431448,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Bournemouth_Brentford,2026-09-12,Bournemouth,Brentford,dc-xi0020-reg002-rho+recal1000,1X2,D,0.262448,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Bournemouth_Brentford,2026-09-12,Bournemouth,Brentford,dc-xi0020-reg002-rho+recal1000,1X2,A,0.306104,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Chelsea_Hull,2026-09-12,Chelsea,Hull,dc-xi0020-reg002-rho+recal1000,1X2,H,0.288869,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Chelsea_Hull,2026-09-12,Chelsea,Hull,dc-xi0020-reg002-rho+recal1000,1X2,D,0.375208,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Chelsea_Hull,2026-09-12,Chelsea,Hull,dc-xi0020-reg002-rho+recal1000,1X2,A,0.335922,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Crystal-Palace_Ipswich,2026-09-12,Crystal Palace,Ipswich,dc-xi0020-reg002-rho+recal1000,1X2,H,0.619399,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Crystal-Palace_Ipswich,2026-09-12,Crystal Palace,Ipswich,dc-xi0020-reg002-rho+recal1000,1X2,D,0.239906,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Crystal-Palace_Ipswich,2026-09-12,Crystal Palace,Ipswich,dc-xi0020-reg002-rho+recal1000,1X2,A,0.140695,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Liverpool_Fulham,2026-09-12,Liverpool,Fulham,dc-xi0020-reg002-rho+recal1000,1X2,H,0.607467,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Liverpool_Fulham,2026-09-12,Liverpool,Fulham,dc-xi0020-reg002-rho+recal1000,1X2,D,0.213638,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Liverpool_Fulham,2026-09-12,Liverpool,Fulham,dc-xi0020-reg002-rho+recal1000,1X2,A,0.178896,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Sunderland_Arsenal,2026-09-12,Sunderland,Arsenal,dc-xi0020-reg002-rho+recal1000,1X2,H,0.153047,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Sunderland_Arsenal,2026-09-12,Sunderland,Arsenal,dc-xi0020-reg002-rho+recal1000,1X2,D,0.269619,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Sunderland_Arsenal,2026-09-12,Sunderland,Arsenal,dc-xi0020-reg002-rho+recal1000,1X2,A,0.577334,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Tottenham_Everton,2026-09-12,Tottenham,Everton,dc-xi0020-reg002-rho+recal1000,1X2,H,0.420546,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Tottenham_Everton,2026-09-12,Tottenham,Everton,dc-xi0020-reg002-rho+recal1000,1X2,D,0.281060,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-12_Tottenham_Everton,2026-09-12,Tottenham,Everton,dc-xi0020-reg002-rho+recal1000,1X2,A,0.298394,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-13_Coventry_Brighton,2026-09-13,Coventry,Brighton,dc-xi0020-reg002-rho+recal1000,1X2,H,0.153496,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-13_Coventry_Brighton,2026-09-13,Coventry,Brighton,dc-xi0020-reg002-rho+recal1000,1X2,D,0.313273,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-13_Coventry_Brighton,2026-09-13,Coventry,Brighton,dc-xi0020-reg002-rho+recal1000,1X2,A,0.533231,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-13_Man-United_Man-City,2026-09-13,Man United,Man City,dc-xi0020-reg002-rho+recal1000,1X2,H,0.230890,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-13_Man-United_Man-City,2026-09-13,Man United,Man City,dc-xi0020-reg002-rho+recal1000,1X2,D,0.218367,live,2026-09-06,2026-09-10T22:02:13+00:00
+E0_2026-09-13_Man-United_Man-City,2026-09-13,Man United,Man City,dc-xi0020-reg002-rho+recal1000,1X2,A,0.550742,live,2026-09-06,2026-09-10T22:02:13+00:00
+SP1_2026-09-11_Sevilla_Valencia,2026-09-11,Sevilla,Valencia,dc-xi0020-reg002-rho+recal1000,1X2,H,0.491511,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-11_Sevilla_Valencia,2026-09-11,Sevilla,Valencia,dc-xi0020-reg002-rho+recal1000,1X2,D,0.257701,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-11_Sevilla_Valencia,2026-09-11,Sevilla,Valencia,dc-xi0020-reg002-rho+recal1000,1X2,A,0.250788,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Ath-Bilbao_Elche,2026-09-12,Ath Bilbao,Elche,dc-xi0020-reg002-rho+recal1000,1X2,H,0.582292,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Ath-Bilbao_Elche,2026-09-12,Ath Bilbao,Elche,dc-xi0020-reg002-rho+recal1000,1X2,D,0.226881,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Ath-Bilbao_Elche,2026-09-12,Ath Bilbao,Elche,dc-xi0020-reg002-rho+recal1000,1X2,A,0.190827,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Osasuna_Espanol,2026-09-12,Osasuna,Espanol,dc-xi0020-reg002-rho+recal1000,1X2,H,0.510137,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Osasuna_Espanol,2026-09-12,Osasuna,Espanol,dc-xi0020-reg002-rho+recal1000,1X2,D,0.263524,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Osasuna_Espanol,2026-09-12,Osasuna,Espanol,dc-xi0020-reg002-rho+recal1000,1X2,A,0.226339,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Real-Madrid_Vallecano,2026-09-12,Real Madrid,Vallecano,dc-xi0020-reg002-rho+recal1000,1X2,H,0.765036,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Real-Madrid_Vallecano,2026-09-12,Real Madrid,Vallecano,dc-xi0020-reg002-rho+recal1000,1X2,D,0.152216,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Real-Madrid_Vallecano,2026-09-12,Real Madrid,Vallecano,dc-xi0020-reg002-rho+recal1000,1X2,A,0.082747,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Santander_Alaves,2026-09-12,Santander,Alaves,dc-xi0020-reg002-rho+recal1000,1X2,H,0.404524,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Santander_Alaves,2026-09-12,Santander,Alaves,dc-xi0020-reg002-rho+recal1000,1X2,D,0.240454,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-12_Santander_Alaves,2026-09-12,Santander,Alaves,dc-xi0020-reg002-rho+recal1000,1X2,A,0.355022,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Celta_Malaga,2026-09-13,Celta,Malaga,dc-xi0020-reg002-rho+recal1000,1X2,H,0.591016,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Celta_Malaga,2026-09-13,Celta,Malaga,dc-xi0020-reg002-rho+recal1000,1X2,D,0.281367,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Celta_Malaga,2026-09-13,Celta,Malaga,dc-xi0020-reg002-rho+recal1000,1X2,A,0.127617,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Getafe_La-Coruna,2026-09-13,Getafe,La Coruna,dc-xi0020-reg002-rho+recal1000,1X2,H,0.318905,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Getafe_La-Coruna,2026-09-13,Getafe,La Coruna,dc-xi0020-reg002-rho+recal1000,1X2,D,0.310319,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Getafe_La-Coruna,2026-09-13,Getafe,La Coruna,dc-xi0020-reg002-rho+recal1000,1X2,A,0.370776,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Levante_Barcelona,2026-09-13,Levante,Barcelona,dc-xi0020-reg002-rho+recal1000,1X2,H,0.137709,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Levante_Barcelona,2026-09-13,Levante,Barcelona,dc-xi0020-reg002-rho+recal1000,1X2,D,0.167433,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Levante_Barcelona,2026-09-13,Levante,Barcelona,dc-xi0020-reg002-rho+recal1000,1X2,A,0.694857,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Sociedad_Ath-Madrid,2026-09-13,Sociedad,Ath Madrid,dc-xi0020-reg002-rho+recal1000,1X2,H,0.297806,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Sociedad_Ath-Madrid,2026-09-13,Sociedad,Ath Madrid,dc-xi0020-reg002-rho+recal1000,1X2,D,0.253634,live,2026-09-07,2026-09-10T22:02:13+00:00
+SP1_2026-09-13_Sociedad_Ath-Madrid,2026-09-13,Sociedad,Ath Madrid,dc-xi0020-reg002-rho+recal1000,1X2,A,0.448560,live,2026-09-07,2026-09-10T22:02:13+00:00
+D1_2026-09-11_Union-Berlin_Schalke-04,2026-09-11,Union Berlin,Schalke 04,dc-xi0020-reg002-rho+recal1000,1X2,H,0.522650,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-11_Union-Berlin_Schalke-04,2026-09-11,Union Berlin,Schalke 04,dc-xi0020-reg002-rho+recal1000,1X2,D,0.297683,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-11_Union-Berlin_Schalke-04,2026-09-11,Union Berlin,Schalke 04,dc-xi0020-reg002-rho+recal1000,1X2,A,0.179667,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Augsburg_Leverkusen,2026-09-12,Augsburg,Leverkusen,dc-xi0020-reg002-rho+recal1000,1X2,H,0.203958,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Augsburg_Leverkusen,2026-09-12,Augsburg,Leverkusen,dc-xi0020-reg002-rho+recal1000,1X2,D,0.220352,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Augsburg_Leverkusen,2026-09-12,Augsburg,Leverkusen,dc-xi0020-reg002-rho+recal1000,1X2,A,0.575690,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Dortmund_Paderborn,2026-09-12,Dortmund,Paderborn,dc-xi0020-reg002-rho+recal1000,1X2,H,0.645718,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Dortmund_Paderborn,2026-09-12,Dortmund,Paderborn,dc-xi0020-reg002-rho+recal1000,1X2,D,0.268795,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Dortmund_Paderborn,2026-09-12,Dortmund,Paderborn,dc-xi0020-reg002-rho+recal1000,1X2,A,0.085487,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_FC-Koln_Werder-Bremen,2026-09-12,FC Koln,Werder Bremen,dc-xi0020-reg002-rho+recal1000,1X2,H,0.468447,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_FC-Koln_Werder-Bremen,2026-09-12,FC Koln,Werder Bremen,dc-xi0020-reg002-rho+recal1000,1X2,D,0.259012,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_FC-Koln_Werder-Bremen,2026-09-12,FC Koln,Werder Bremen,dc-xi0020-reg002-rho+recal1000,1X2,A,0.272541,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Freiburg_M'gladbach,2026-09-12,Freiburg,M'gladbach,dc-xi0020-reg002-rho+recal1000,1X2,H,0.484082,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Freiburg_M'gladbach,2026-09-12,Freiburg,M'gladbach,dc-xi0020-reg002-rho+recal1000,1X2,D,0.259763,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Freiburg_M'gladbach,2026-09-12,Freiburg,M'gladbach,dc-xi0020-reg002-rho+recal1000,1X2,A,0.256155,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Hoffenheim_Stuttgart,2026-09-12,Hoffenheim,Stuttgart,dc-xi0020-reg002-rho+recal1000,1X2,H,0.363332,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Hoffenheim_Stuttgart,2026-09-12,Hoffenheim,Stuttgart,dc-xi0020-reg002-rho+recal1000,1X2,D,0.221122,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Hoffenheim_Stuttgart,2026-09-12,Hoffenheim,Stuttgart,dc-xi0020-reg002-rho+recal1000,1X2,A,0.415546,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Mainz_Ein-Frankfurt,2026-09-12,Mainz,Ein Frankfurt,dc-xi0020-reg002-rho+recal1000,1X2,H,0.486692,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Mainz_Ein-Frankfurt,2026-09-12,Mainz,Ein Frankfurt,dc-xi0020-reg002-rho+recal1000,1X2,D,0.233085,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-12_Mainz_Ein-Frankfurt,2026-09-12,Mainz,Ein Frankfurt,dc-xi0020-reg002-rho+recal1000,1X2,A,0.280223,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-13_Elversberg_Bayern-Munich,2026-09-13,Elversberg,Bayern Munich,dc-xi0020-reg002-rho+recal1000,1X2,H,0.189912,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-13_Elversberg_Bayern-Munich,2026-09-13,Elversberg,Bayern Munich,dc-xi0020-reg002-rho+recal1000,1X2,D,0.129578,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-13_Elversberg_Bayern-Munich,2026-09-13,Elversberg,Bayern Munich,dc-xi0020-reg002-rho+recal1000,1X2,A,0.680510,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-13_RB-Leipzig_Hamburg,2026-09-13,RB Leipzig,Hamburg,dc-xi0020-reg002-rho+recal1000,1X2,H,0.720045,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-13_RB-Leipzig_Hamburg,2026-09-13,RB Leipzig,Hamburg,dc-xi0020-reg002-rho+recal1000,1X2,D,0.179630,live,2026-09-06,2026-09-10T22:02:13+00:00
+D1_2026-09-13_RB-Leipzig_Hamburg,2026-09-13,RB Leipzig,Hamburg,dc-xi0020-reg002-rho+recal1000,1X2,A,0.100325,live,2026-09-06,2026-09-10T22:02:13+00:00
+I1_2026-09-11_Venezia_Fiorentina,2026-09-11,Venezia,Fiorentina,dc-xi0020-reg002-rho+recal1000,1X2,H,0.239234,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-11_Venezia_Fiorentina,2026-09-11,Venezia,Fiorentina,dc-xi0020-reg002-rho+recal1000,1X2,D,0.272171,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-11_Venezia_Fiorentina,2026-09-11,Venezia,Fiorentina,dc-xi0020-reg002-rho+recal1000,1X2,A,0.488595,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Atalanta_Cagliari,2026-09-12,Atalanta,Cagliari,dc-xi0020-reg002-rho+recal1000,1X2,H,0.590610,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Atalanta_Cagliari,2026-09-12,Atalanta,Cagliari,dc-xi0020-reg002-rho+recal1000,1X2,D,0.236402,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Atalanta_Cagliari,2026-09-12,Atalanta,Cagliari,dc-xi0020-reg002-rho+recal1000,1X2,A,0.172988,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Genoa_Frosinone,2026-09-12,Genoa,Frosinone,dc-xi0020-reg002-rho+recal1000,1X2,H,0.339321,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Genoa_Frosinone,2026-09-12,Genoa,Frosinone,dc-xi0020-reg002-rho+recal1000,1X2,D,0.272561,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Genoa_Frosinone,2026-09-12,Genoa,Frosinone,dc-xi0020-reg002-rho+recal1000,1X2,A,0.388119,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Lazio_Milan,2026-09-12,Lazio,Milan,dc-xi0020-reg002-rho+recal1000,1X2,H,0.342697,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Lazio_Milan,2026-09-12,Lazio,Milan,dc-xi0020-reg002-rho+recal1000,1X2,D,0.282045,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-12_Lazio_Milan,2026-09-12,Lazio,Milan,dc-xi0020-reg002-rho+recal1000,1X2,A,0.375258,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Lecce_Monza,2026-09-13,Lecce,Monza,dc-xi0020-reg002-rho+recal1000,1X2,H,0.354527,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Lecce_Monza,2026-09-13,Lecce,Monza,dc-xi0020-reg002-rho+recal1000,1X2,D,0.322708,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Lecce_Monza,2026-09-13,Lecce,Monza,dc-xi0020-reg002-rho+recal1000,1X2,A,0.322765,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Napoli_Bologna,2026-09-13,Napoli,Bologna,dc-xi0020-reg002-rho+recal1000,1X2,H,0.515943,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Napoli_Bologna,2026-09-13,Napoli,Bologna,dc-xi0020-reg002-rho+recal1000,1X2,D,0.252569,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Napoli_Bologna,2026-09-13,Napoli,Bologna,dc-xi0020-reg002-rho+recal1000,1X2,A,0.231488,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Sassuolo_Juventus,2026-09-13,Sassuolo,Juventus,dc-xi0020-reg002-rho+recal1000,1X2,H,0.182301,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Sassuolo_Juventus,2026-09-13,Sassuolo,Juventus,dc-xi0020-reg002-rho+recal1000,1X2,D,0.220426,live,2026-09-07,2026-09-10T22:02:13+00:00
+I1_2026-09-13_Sassuolo_Juventus,2026-09-13,Sassuolo,Juventus,dc-xi0020-reg002-rho+recal1000,1X2,A,0.597273,live,2026-09-07,2026-09-10T22:02:13+00:00
+F1_2026-09-11_Rennes_Marseille,2026-09-11,Rennes,Marseille,dc-xi0020-reg002-rho+recal1000,1X2,H,0.387739,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-11_Rennes_Marseille,2026-09-11,Rennes,Marseille,dc-xi0020-reg002-rho+recal1000,1X2,D,0.222942,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-11_Rennes_Marseille,2026-09-11,Rennes,Marseille,dc-xi0020-reg002-rho+recal1000,1X2,A,0.389320,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Auxerre_Nice,2026-09-12,Auxerre,Nice,dc-xi0020-reg002-rho+recal1000,1X2,H,0.374086,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Auxerre_Nice,2026-09-12,Auxerre,Nice,dc-xi0020-reg002-rho+recal1000,1X2,D,0.287650,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Auxerre_Nice,2026-09-12,Auxerre,Nice,dc-xi0020-reg002-rho+recal1000,1X2,A,0.338265,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Le-Havre_Angers,2026-09-12,Le Havre,Angers,dc-xi0020-reg002-rho+recal1000,1X2,H,0.426597,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Le-Havre_Angers,2026-09-12,Le Havre,Angers,dc-xi0020-reg002-rho+recal1000,1X2,D,0.321275,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Le-Havre_Angers,2026-09-12,Le Havre,Angers,dc-xi0020-reg002-rho+recal1000,1X2,A,0.252127,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Lorient_Toulouse,2026-09-12,Lorient,Toulouse,dc-xi0020-reg002-rho+recal1000,1X2,H,0.411879,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Lorient_Toulouse,2026-09-12,Lorient,Toulouse,dc-xi0020-reg002-rho+recal1000,1X2,D,0.285637,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Lorient_Toulouse,2026-09-12,Lorient,Toulouse,dc-xi0020-reg002-rho+recal1000,1X2,A,0.302483,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Paris-FC_Lyon,2026-09-12,Paris FC,Lyon,dc-xi0020-reg002-rho+recal1000,1X2,H,0.379569,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Paris-FC_Lyon,2026-09-12,Paris FC,Lyon,dc-xi0020-reg002-rho+recal1000,1X2,D,0.246824,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Paris-FC_Lyon,2026-09-12,Paris FC,Lyon,dc-xi0020-reg002-rho+recal1000,1X2,A,0.373607,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Strasbourg_Monaco,2026-09-12,Strasbourg,Monaco,dc-xi0020-reg002-rho+recal1000,1X2,H,0.372421,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Strasbourg_Monaco,2026-09-12,Strasbourg,Monaco,dc-xi0020-reg002-rho+recal1000,1X2,D,0.241268,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-12_Strasbourg_Monaco,2026-09-12,Strasbourg,Monaco,dc-xi0020-reg002-rho+recal1000,1X2,A,0.386311,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Brest_Paris-SG,2026-09-13,Brest,Paris SG,dc-xi0020-reg002-rho+recal1000,1X2,H,0.144355,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Brest_Paris-SG,2026-09-13,Brest,Paris SG,dc-xi0020-reg002-rho+recal1000,1X2,D,0.180237,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Brest_Paris-SG,2026-09-13,Brest,Paris SG,dc-xi0020-reg002-rho+recal1000,1X2,A,0.675408,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Le-Mans_Lens,2026-09-13,Le Mans,Lens,dc-xi0020-reg002-rho+recal1000,1X2,H,0.190372,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Le-Mans_Lens,2026-09-13,Le Mans,Lens,dc-xi0020-reg002-rho+recal1000,1X2,D,0.229029,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Le-Mans_Lens,2026-09-13,Le Mans,Lens,dc-xi0020-reg002-rho+recal1000,1X2,A,0.580598,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Lille_Troyes,2026-09-13,Lille,Troyes,dc-xi0020-reg002-rho+recal1000,1X2,H,0.771176,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Lille_Troyes,2026-09-13,Lille,Troyes,dc-xi0020-reg002-rho+recal1000,1X2,D,0.155021,live,2026-09-06,2026-09-10T22:02:13+00:00
+F1_2026-09-13_Lille_Troyes,2026-09-13,Lille,Troyes,dc-xi0020-reg002-rho+recal1000,1X2,A,0.073803,live,2026-09-06,2026-09-10T22:02:13+00:00
