@@ -167,6 +167,33 @@ LEDGER_MISSED = LEDGER_DIR / "missed.csv"
 # corregir un dato que no es de la prediccion.
 LEDGER_FIXTURES = LEDGER_DIR / "fixtures.csv"
 
+# --- Mercados en vivo ademas del 1X2 ----------------------------------------
+# Solo tarjetas amarillas, y por una razon medida: en la F5 (08_markets.py,
+# Premier 2024/25-2025/26) es el UNICO mercado que le gana a la frecuencia base
+# de forma concluyente en sus tres lineas (+0.018 a +0.032 de log-loss,
+# p<0.04). Goles, corners y tiros no. Corners y tiros totales ademas exigen
+# binomial negativa; amarillas no.
+#
+# `w` es cuanto se le cree al modelo frente a la base: p = w*modelo +
+# (1-w)*base. Los valores son los que la F5 eligio en el bloque de afinado,
+# SOBRE UNA LIGA. No se han re-afinado en cinco. Se transfieren porque son un
+# paso de grid entre si y la direccion (creerle mucho al modelo) fue la misma
+# en las tres lineas; queda pendiente medirlos en cinco ligas.
+#
+# Este mercado NO tiene gate: no hay retador de tarjetas ni promocion. Por eso
+# vive aqui y no en champion.json, que es lo que el gate escribe. Y NO tiene
+# techo de mercado: la fuente no publica cuota de tarjetas, asi que en vivo se
+# mide solo contra la base, que se emite como un modelo mas (`base-freq-v1`)
+# para que el marcador la evalue igual que a cualquiera.
+LIVE_MARKETS = {
+    "tarjetas": {
+        "lines": (2.5, 3.5, 4.5),
+        "w": {2.5: 0.9, 3.5: 0.8, 4.5: 0.8},
+        "version_suffix": "w-f5",
+    },
+}
+BASE_MODEL_VERSION = "base-freq-v1"
+
 # Modelo que emite las predicciones en vivo. Se cambia solo cuando la F4
 # promueva uno nuevo, y ese cambio queda en el historial de git.
 PRODUCTION_MODEL = "dixon-coles-xi0020-reg002-v1"

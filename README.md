@@ -551,6 +551,39 @@ pronto posible.
 detrás de una capa de proveedor (`fixtures.py`) diseñada para que cambiar a una
 API con términos explícitos sea reemplazar una función y la tabla de alias.
 
+### El segundo mercado en vivo: tarjetas amarillas
+
+Es la F5 puesta a emitir, y solo una parte de ella. De los cuatro mercados que
+`08_markets.py` midió en backtest, **tarjetas amarillas es el único que le gana
+a la frecuencia base de forma concluyente** en sus tres líneas (+0.018 a
++0.032 de log-loss, p < 0.04). Goles, corners y tiros no. Por eso se emite
+tarjetas y no los otros; la decisión está en `LIVE_MARKETS` de `config.py`, con
+las líneas (2.5, 3.5, 4.5) y el `w` de encogimiento que la F5 eligió.
+
+Tres cosas que este mercado hace distinto del 1X2, y por qué:
+
+- **Firma con su propio nombre.** `dc-xi0020-reg002-norho+w-f5`, no el del
+  campeón. Ni la corrección `rho` ni la capa de recalibración aplican a
+  tarjetas; llamarlo igual sería decir que el modelo de tarjetas pasó por un
+  gate que no existe.
+- **La referencia se emite como un modelo más.** La fuente no publica cuota de
+  tarjetas, así que no hay techo de mercado. Lo que hay es la frecuencia base
+  de la liga —cuántos partidos pasan de 3.5 amarillas—, y el loop la escribe en
+  el ledger como `base-freq-v1` con sus propias filas. Así `05_score.py` la
+  evalúa con el mismo código que a cualquier modelo, y el dashboard puede decir
+  «modelo contra base, mismos N partidos» sin un cálculo aparte que nadie pueda
+  auditar desde el ledger.
+- **El `w` viene de una liga y no se ha re-afinado en cinco.** Los valores
+  (0.9 / 0.8 / 0.8) salieron del bloque de afinado de la F5 sobre la Premier.
+  Se transfieren porque están a un paso de grid entre sí y la dirección fue la
+  misma en las tres líneas; medirlos sobre las cinco ligas queda pendiente y
+  está anotado.
+
+`results.csv` guarda ahora `yellows` (el total del partido) junto al marcador, y
+`metrics.csv` lleva una fila por (modelo, mercado, `live`). En el dashboard hay
+una sección propia: probabilidad de over por línea para lo que viene, y para lo
+jugado, cuánto le dio el modelo y cuánto la base a lo que pasó.
+
 ### Dónde viven las predicciones, y por qué importa
 
 En `ledger/`, en texto plano y versionado — no en la base de datos, que está

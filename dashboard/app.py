@@ -15,7 +15,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from marcador import ledger, promotion              # noqa: E402
-from marcador.config import LEAGUES                 # noqa: E402
+from marcador.config import BASE_MODEL_VERSION as BASE_MODEL, LEAGUES  # noqa: E402
 
 st.set_page_config(page_title="Marcador", page_icon="⚽", layout="wide")
 
@@ -117,6 +117,12 @@ preds["prob"] = preds["prob"].astype(float)
 # guardar una columna aparte.
 preds["liga"] = preds["match_id"].str.split("_").str[0]
 played = set(results["match_id"]) if not results.empty else set()
+
+# Desde el 2026-09-10 el ledger trae dos mercados. Todo lo que sigue hasta
+# 'Tarjetas amarillas' es el 1X2; las filas de tarjetas se apartan aqui.
+all_preds = preds
+preds = all_preds[all_preds["market"] == "1X2"]
+yc = all_preds[all_preds["market"].str.startswith("TARJETAS_")]
 
 # --- Estado general ---------------------------------------------------------
 live = metrics[metrics["eval_set"] == "live"] if not metrics.empty else pd.DataFrame()
@@ -243,6 +249,83 @@ if played:
                      use_container_width=True, hide_index=True)
 
 # --- Los otros mercados -----------------------------------------------------
+# --- Tarjetas amarillas en vivo ---------------------------------------------
+# El segundo mercado que se emite. La referencia aqui no es el mercado (la
+# fuente no publica cuota de tarjetas) sino la frecuencia base, que el loop
+# emite como un modelo mas (base-freq-v1) para que se compare igual.
+if not yc.empty:
+    st.subheader("Tarjetas amarillas")
+    st.caption("Mismo motor, otra columna. `>3.5` es la probabilidad de que el "
+               "partido tenga cuatro amarillas o más. La referencia es la "
+               "frecuencia base de la liga —no hay cuota de tarjetas en la "
+               "fuente—, así que aquí se sabe si el modelo aporta, no cuánto "
+               "le falta para lo alcanzable. En el backtest fue el único "
+               "mercado que le ganó a la base de forma concluyente.")
+    yc = yc.copy()
+    yc["linea"] = yc["market"].str.replace("TARJETAS_OU", "", regex=False)
+    yc["linea"] = ">" + yc["linea"].str[0] + "." + yc["linea"].str[1]
+    lines = sorted(yc["linea"].unique())
+    yc_model = yc[(yc["model_version"] != BASE_MODEL) & (yc["outcome"] == "OVER")]
+    yc_base = yc[(yc["model_version"] == BASE_MODEL) & (yc["outcome"] == "OVER")]
+
+    # Marcador de tarjetas: modelo contra base por linea, sobre lo jugado.
+    live_yc = live[live["market"].str.startswith("TARJETAS_")] if not live.empty else pd.DataFrame()
+    if not live_yc.empty:
+        cols = st.columns(len(lines))
+        for col, line in zip(cols, lines):
+            code = "TARJETAS_OU" + line[1] + line[3]
+            m = live_yc[(live_yc["market"] == code) & (live_yc["model_version"] != BASE_MODEL)]
+            b = live_yc[(live_yc["market"] == code) & (live_yc["model_version"] == BASE_MODEL)]
+            if m.empty or b.empty:
+                continue
+            d = float(m.iloc[0]["log_loss"]) - float(b.iloc[0]["log_loss"])
+            col.metric(f"log-loss {line} · {m.iloc[0]['n_matches']} partidos",
+                       f"{float(m.iloc[0]['log_loss']):.4f}",
+                       f"{d:+.4f} vs base", delta_color="inverse")
+
+    yc_up = yc_model[~yc_model["match_id"].isin(played)]
+    if not yc_up.empty:
+        wide = (yc_up.pivot_table(index=["match_id", "match_date", "home_team",
+                                         "away_team"],
+                                  columns="linea", values="prob").reset_index())
+        wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
+        view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
+                [["fecha", "local", "visitante"] + lines])
+        st.dataframe(view.style.format({l: "{:.1%}" for l in lines}),
+                     use_container_width=True, hide_index=True)
+
+    yc_done = yc_model[yc_model["match_id"].isin(played)]
+    if not yc_done.empty and "yellows" in results:
+        pick = st.selectbox("Línea", lines, index=min(1, len(lines) - 1),
+                            key="yc_line")
+        m_w = yc_done[yc_done["linea"] == pick].set_index("match_id")["prob"]
+        b_w = yc_base[yc_base["linea"] == pick].set_index("match_id")["prob"]
+        res = results[results["match_id"].isin(m_w.index)
+                      & (results["yellows"].astype(str) != "")].copy()
+        res["amarillas"] = res["yellows"].astype(int)
+        thr = float(pick[1:])
+        over = res["amarillas"] > thr
+        p_m = res["match_id"].map(m_w)
+        p_b = res["match_id"].map(b_w)
+        # Lo que cada uno le dio a lo que paso: P(over) si hubo over, si no
+        # 1 - P(over). Es la misma columna 'le dio al resultado' del 1X2.
+        res["modelo le dio"] = p_m.where(over, 1 - p_m)
+        res["base le dio"] = p_b.where(over, 1 - p_b)
+        res["vs base"] = res["modelo le dio"] - res["base le dio"]
+        res["paso"] = over.map({True: "over", False: "under"})
+        res = with_kickoff(res, fixtures)
+        view = (res.sort_values(["match_date", "fecha"], ascending=False)
+                .rename(columns={"home_team": "local", "away_team": "visitante"})
+                [["fecha", "local", "visitante", "amarillas", "paso",
+                  "modelo le dio", "base le dio", "vs base"]])
+        st.dataframe(view.style.format({"modelo le dio": "{:.1%}",
+                                        "base le dio": "{:.1%}",
+                                        "vs base": "{:+.1%}"}, na_rep="—")
+                     .map(lambda v: ("color: #3fb950" if v > 0 else "color: #f85149")
+                          if isinstance(v, float) and v == v else "",
+                          subset=["vs base"]),
+                     use_container_width=True, hide_index=True)
+
 mk_path = ledger.LEDGER_DIR / "markets.csv"
 if mk_path.exists():
     st.subheader("Otros mercados")

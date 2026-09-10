@@ -17,9 +17,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from marcador import db, ingest, ledger, scoring          # noqa: E402
+from marcador import db, ingest, ledger, live_markets, scoring  # noqa: E402
 from marcador.baseline import MARKET_1X2, OUTCOMES, market_probs  # noqa: E402
-from marcador.config import CURRENT_SEASON, LEAGUES       # noqa: E402
+from marcador.config import (BASE_MODEL_VERSION, CURRENT_SEASON,  # noqa: E402
+                             LEAGUES)
 
 # El mismo nombre con el que 02_baseline registra el mercado en el backtest,
 # para que 'test' y 'live' de la misma referencia se lean uno al lado del otro.
@@ -51,7 +52,7 @@ def collect_results(con, predicted_ids):
         q = ",".join("?" * len(chunk))
         for r in con.execute(
                 f"""SELECT match_id, match_date, home_team, away_team,
-                           fthg, ftag, ftr,
+                           fthg, ftag, ftr, hy, ay,
                            avgch, avgcd, avgca, psch, pscd, psca
                     FROM matches WHERE ftr IS NOT NULL AND match_id IN ({q})""",
                 chunk):
@@ -66,6 +67,9 @@ def collect_results(con, predicted_ids):
                         "market_h": f"{mkt['H']:.6f}" if mkt else "",
                         "market_d": f"{mkt['D']:.6f}" if mkt else "",
                         "market_a": f"{mkt['A']:.6f}" if mkt else "",
+                        "yellows": (r["hy"] + r["ay"]
+                                    if r["hy"] is not None and r["ay"] is not None
+                                    else ""),
                         "recorded_at": now})
     return out
 
@@ -79,22 +83,39 @@ def score_live():
     """
     preds = [p for p in ledger.read_predictions() if p["mode"] == "live"]
     rows = {r["match_id"]: r for r in ledger.read_results()}
-    results = {k: r["ftr"] for k, r in rows.items()}
 
-    by_model = {}
+    def actual_for(market, r):
+        """Lo que paso, en el vocabulario del mercado. None si falta el dato."""
+        if market == MARKET_1X2:
+            return r["ftr"]
+        parsed = live_markets.parse_market(market)
+        if parsed and parsed[0] == "tarjetas" and r.get("yellows", "") != "":
+            return live_markets.actual_outcome(int(r["yellows"]), parsed[1])
+        return None
+
+    # Agrupado por (modelo, mercado): cada mercado tiene sus propios outcomes
+    # (H/D/A o OVER/UNDER) y su propia columna de verdad en results.csv.
+    by_key = {}
     for p in preds:
-        if p["match_id"] not in results:
+        r = rows.get(p["match_id"])
+        if r is None:
             continue                      # todavia no se juega: no cuenta
-        slot = by_model.setdefault(p["model_version"], {})
-        m = slot.setdefault(p["match_id"], {"probs": {}, "ftr": results[p["match_id"]]})
+        actual = actual_for(p["market"], r)
+        if actual is None:
+            continue                      # se jugo, pero sin ese dato
+        slot = by_key.setdefault((p["model_version"], p["market"]), {})
+        m = slot.setdefault(p["match_id"], {"probs": {}, "actual": actual})
         m["probs"][p["outcome"]] = float(p["prob"])
 
-    # El mercado se evalua sobre EXACTAMENTE los partidos que el modelo tiene
-    # completos y con cuota, y con el mismo nombre que ya usa la referencia
-    # del backtest. Es el techo del proyecto; sin el, 'log-loss en vivo' es un
-    # numero suelto que solo se puede comparar con Elo, y Elo no es el techo
-    # de nada.
-    for model_version, matches in list(by_model.items()):
+    # El mercado (cuota de cierre) se evalua sobre EXACTAMENTE los partidos que
+    # el modelo tiene completos y con cuota, y con el mismo nombre que ya usa
+    # la referencia del backtest. Es el techo del proyecto; sin el, 'log-loss
+    # en vivo' es un numero suelto que solo se puede comparar con Elo, y Elo
+    # no es el techo de nada. Solo existe para 1X2: para tarjetas la referencia
+    # es la base, que 04_predict emite como un modelo mas (base-freq-v1).
+    for (model_version, market), matches in list(by_key.items()):
+        if market != MARKET_1X2 or model_version == MARKET_REFERENCE:
+            continue
         mk = {}
         for mid, m in matches.items():
             r = rows[mid]
@@ -102,24 +123,26 @@ def score_live():
                 mk[mid] = {"probs": {"H": float(r["market_h"]),
                                      "D": float(r["market_d"]),
                                      "A": float(r["market_a"])},
-                           "ftr": m["ftr"]}
+                           "actual": m["actual"]}
         if mk:
-            by_model[MARKET_REFERENCE] = mk
+            by_key[(MARKET_REFERENCE, MARKET_1X2)] = mk
 
     out = []
-    for model_version, matches in by_model.items():
-        pairs = [(m["probs"], m["ftr"]) for m in matches.values()
-                 if len(m["probs"]) == len(OUTCOMES)]
+    for (model_version, market), matches in by_key.items():
+        outcomes = OUTCOMES if market == MARKET_1X2 else live_markets.OUTCOMES_OU
+        pairs = [(m["probs"], m["actual"]) for m in matches.values()
+                 if len(m["probs"]) == len(outcomes)]
         if not pairs:
             continue
-        res = scoring.evaluate([p for p, _ in pairs], [a for _, a in pairs])
-        out.append({"model_version": model_version, "market": MARKET_1X2,
+        res = scoring.evaluate([p for p, _ in pairs], [a for _, a in pairs],
+                               outcomes=outcomes)
+        out.append({"model_version": model_version, "market": market,
                     "eval_set": "live", "n_matches": res["n_matches"],
                     "log_loss": f"{res['log_loss']:.6f}",
                     "brier": f"{res['brier']:.6f}",
                     "accuracy": f"{res['accuracy']:.6f}",
                     "computed_at": ledger.now_iso()})
-    return out, by_model
+    return out, by_key
 
 
 def find_missed(con, preds):
@@ -178,26 +201,36 @@ def main():
         return 0
 
     ledger.upsert_metrics(metrics)
-    print(f"\n{'TRACK RECORD EN VIVO':40}{'log-loss':>10}{'Brier':>9}"
-          f"{'acc':>8}{'n':>6}")
-    print("  " + "-" * 71)
-    for m in sorted(metrics, key=lambda r: float(r["log_loss"])):
-        print(f"  {m['model_version']:38}{float(m['log_loss']):>10.4f}"
+    print(f"\n{'TRACK RECORD EN VIVO':40}{'mercado':>15}{'log-loss':>10}"
+          f"{'Brier':>9}{'acc':>8}{'n':>6}")
+    print("  " + "-" * 86)
+    for m in sorted(metrics, key=lambda r: (r["market"], float(r["log_loss"]))):
+        print(f"  {m['model_version']:38}{m['market']:>15}"
+              f"{float(m['log_loss']):>10.4f}"
               f"{float(m['brier']):>9.4f}{float(m['accuracy'])*100:>7.1f}%"
               f"{m['n_matches']:>6}")
 
-    # Contexto: sin una referencia, un log-loss suelto no dice nada. La que
-    # importa es el mercado sobre ESTOS partidos (ya esta en la tabla de
-    # arriba si hubo cuota); Elo del backtest queda como segunda referencia.
-    live = {m["model_version"]: m for m in metrics}
-    mkt = live.get(MARKET_REFERENCE)
-    models = [m for m in metrics if m["model_version"] != MARKET_REFERENCE]
-    if mkt and models:
-        for m in models:
+    # Contexto: sin una referencia, un log-loss suelto no dice nada. Para el
+    # 1X2 la que importa es el mercado sobre ESTOS partidos; para tarjetas, la
+    # frecuencia base (no hay cuota). Elo del backtest queda como segunda
+    # referencia del 1X2.
+    live = {(m["model_version"], m["market"]): m for m in metrics}
+    mkt = live.get((MARKET_REFERENCE, MARKET_1X2))
+    if mkt:
+        for (mv, mk), m in live.items():
+            if mk != MARKET_1X2 or mv == MARKET_REFERENCE:
+                continue
             d = float(m["log_loss"]) - float(mkt["log_loss"])
-            print(f"\n  {m['model_version']} contra el mercado, mismos "
+            print(f"\n  {mv} contra el mercado, mismos "
                   f"{mkt['n_matches']} partidos: {d:+.4f} "
                   f"({'pierde' if d > 0 else 'gana'})")
+    for (mv, mk), m in sorted(live.items()):
+        base = live.get((BASE_MODEL_VERSION, mk))
+        if mk == MARKET_1X2 or mv == BASE_MODEL_VERSION or not base:
+            continue
+        d = float(m["log_loss"]) - float(base["log_loss"])
+        print(f"  {mk}: {mv} contra la base, mismos {base['n_matches']} "
+              f"partidos: {d:+.4f} ({'pierde' if d > 0 else 'gana'})")
     ref = {r["eval_set"] + "|" + r["model_version"]: r
            for r in ledger._read(ledger.LEDGER_METRICS)}
     base = ref.get("test|baseline-elo-v1")
