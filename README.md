@@ -2,11 +2,32 @@
 
 Sistema de pronóstico de fútbol que se autoevalúa: registra sus predicciones
 antes de que se jueguen los partidos, ingiere los resultados, se mide contra sí
-mismo y contra el mercado, y solo promueve un modelo nuevo cuando gana.
+mismo y contra el mercado, y **decide solo** si cambiar de modelo.
 
 **La tesis:** el sistema que juzga al modelo se construye antes que el modelo.
 Un modelo que "se corrige solo" necesita saber en qué dirección corregirse, y
 eso solo lo da un sistema de medición que ya existía.
+
+### Por dónde empezar a leer
+
+| Si quieres… | Ve a |
+|---|---|
+| Saber qué funcionó y qué no, sin adornos | **[APRENDIZAJES.md](APRENDIZAJES.md)** |
+| Ver el resultado medido | [El marcador hoy](#el-marcador-hoy), aquí abajo |
+| Entender por qué el modelo no puede empeorar solo | [El gate de promoción](#el-gate-de-promoción) |
+| Ver el motor | [`src/marcador/dixon_coles.py`](src/marcador/dixon_coles.py) |
+| Ver cómo se impide el data leakage | [`src/marcador/db.py`](src/marcador/db.py) — son triggers, no documentación |
+| Auditar las predicciones sin confiar en nadie | [`ledger/`](ledger/) y `git log` |
+
+### El resumen en tres líneas
+
+El modelo final saca **0.9786** de log-loss. Elo saca 0.9845 y el mercado
+0.9556. Contra Elo queda por delante pero el intervalo de confianza cruza cero
+(p = 0.147): **es un empate con ventaja, no una victoria**, y así se reporta.
+Contra el mercado pierde, y eso sí es concluyente.
+
+De cuatro mercados construidos sobre el mismo motor, **uno** le gana a su
+frecuencia base de forma demostrable.
 
 ## Estado
 
@@ -370,7 +391,23 @@ código:
 - El formato de fecha cambia entre temporadas: unas traen `dd/mm/yyyy` y otras
   `dd/mm/yy`. La columna `Time` solo existe desde 2019/20.
 
+## Cómo está construido, en una frase por pieza
+
+- **Los datos crudos no entran al repo.** `data/` está en `.gitignore`; lo que
+  se publica son predicciones y métricas derivadas.
+- **Las predicciones son inmutables**, y no por disciplina: la base de datos
+  aborta cualquier `UPDATE` o `DELETE` sobre ellas con un trigger.
+- **Ninguna feature usa información del futuro**, y también lo impone la base:
+  una predicción cuyo corte de información sea posterior al partido se rechaza.
+- **Todo backtest es walk-forward**, agrupado por fecha para que dos partidos
+  del mismo día no se filtren información entre sí.
+- **Ninguna comparación entre modelos se hace por promedio**: todas pasan por un
+  bootstrap pareado, porque una diferencia de 0.002 de log-loss sobre 1700
+  partidos cabe holgada dentro del ruido.
+- **El modelo en producción vive en un archivo versionado, no en el código**, que
+  es lo que permite que el gate promueva sin intervención humana.
+
 ## Licencia
 
-MIT para el código. Los datos son de sus respectivas fuentes y no se
-redistribuyen aquí.
+MIT para el código — ver [LICENSE](LICENSE). Los datos son de sus respectivas
+fuentes y no se redistribuyen aquí.
