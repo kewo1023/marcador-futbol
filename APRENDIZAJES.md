@@ -109,6 +109,18 @@ aleja de las selecciones entre tomar el precio y el cierre.
 Era lo que anticipaba el log-loss, y por eso se midió con la expectativa escrita
 antes de mirar: un modelo peor que el mercado no puede batir al mercado.
 
+**Los tres intentos de cerrar la brecha en victorias locales.** El diagnóstico
+señaló ese frente; se atacó con tres ideas y el gate rechazó las tres.
+
+Una ventaja de local por equipo resultó ser **ruido puro**: la variación entre
+equipos (6.71%) es la que produciría el azar (6.06%). Mezclar la fuerza estimada
+con tiros a puerta **desplazaba el nivel en vez de discriminar** — la
+probabilidad de local subía al 48.7% y la de empate se hundía al 15.9% cuando la
+real es 22.5%, con la correlación intacta. Y una capa de recalibración con forma
+reciente sí aportó discriminación real (correlación con victoria local 0.3377 →
+0.3502, sobreviviendo a que se le quitara la capacidad de mover el nivel) pero
+solo **−0.0026** de log-loss, indistinguible del ruido sobre 790 partidos.
+
 **Tres de los cuatro mercados nuevos.** De goles over/under, corners, tarjetas y
 tiros a puerta, solo **tarjetas** le gana a la frecuencia base de forma
 concluyente (p = 0.038 / 0.000 / 0.029). Los otros tres dan mejoras positivas
@@ -166,6 +178,27 @@ como `SEASONS[6:]`. Al agregar una temporada nueva pasó de 5 a 6 temporadas sin
 que nada avisara, moviendo números ya reportados. Ahora van explícitos.
 
 ---
+
+## El límite que encontré al final
+
+El gate rechazó la capa de recalibración, y al preguntarle por qué salió el
+hallazgo más útil de todo el proyecto:
+
+**Con 790 partidos, el gate solo puede declarar concluyente una diferencia de
+0.0060 o mayor.** Validar la mejora medida (−0.0026) exigiría ~4.279 partidos:
+once temporadas de una sola liga.
+
+La distancia total del modelo al mercado es 0.0230. O sea que **solo son
+demostrables las mejoras que cierren más de una cuarta parte de esa distancia de
+una vez**. Todo avance incremental es invisible, y no porque el gate esté mal
+—su conservadurismo es exactamente lo que impide que el sistema se degrade—
+sino porque una liga no da suficientes partidos.
+
+Eso cambia cuál es el siguiente paso. No es un modelo mejor: son **más datos**.
+Cuatro ligas grandes más multiplicarían por cinco el bloque del gate y pondrían
+estas mejoras dentro de lo verificable. Cambiar de liga es una constante en
+`config.py` — la decisión de la F0 de empezar por una sola liga fue correcta
+para arrancar, y este es el punto donde deja de serlo.
 
 ## Dónde queda el proyecto
 

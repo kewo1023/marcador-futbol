@@ -109,6 +109,18 @@ from the model's picks between taking the price and the close.
 This is what the log loss predicted, which is why the expectation was written
 down before looking: a model worse than the market cannot beat the market.
 
+**All three attempts to close the home-win gap.** The diagnostic flagged that
+front; three ideas were tried and the gate rejected all three.
+
+A per-team home advantage turned out to be **pure noise**: the spread across
+teams (6.71%) is what chance alone would produce (6.06%). Blending team strength
+estimated from shots on target **shifted the level instead of discriminating** —
+home probability rose to 48.7% and draws collapsed to 15.9% against a real 22.5%,
+with correlation unchanged. And a recalibration layer using recent form did add
+genuine discrimination (home-win correlation 0.3377 → 0.3502, surviving the
+removal of its ability to shift levels) but only **−0.0026** of log loss,
+indistinguishable from noise over 790 matches.
+
 **Three of the four new markets.** Of goals over/under, corners, cards and shots
 on target, only **cards** beats its base rate conclusively (p = 0.038 / 0.000 /
 0.029). The other three show positive but noise-indistinguishable gains over 760
@@ -165,6 +177,27 @@ Adding a new season silently moved it from 5 to 6 seasons, shifting numbers that
 had already been reported. They're explicit now.
 
 ---
+
+## The limit I hit at the end
+
+The gate rejected the recalibration layer, and asking why produced the single
+most useful finding in the project:
+
+**With 790 matches, the gate can only call a difference of 0.0060 or larger
+conclusive.** Validating the measured improvement (−0.0026) would take ~4,279
+matches — eleven seasons of a single league.
+
+The model's total distance to the market is 0.0230. Which means **only
+improvements that close more than a quarter of that distance in one step are
+demonstrable**. Every incremental gain is invisible — not because the gate is
+miscalibrated (its conservatism is exactly what stops the system degrading) but
+because one league doesn't supply enough matches.
+
+That changes what comes next. Not a better model: **more data**. Four more major
+leagues would multiply the gate block fivefold and bring improvements of this
+size inside what can be verified. Switching leagues is a constant in
+`config.py` — the Phase 0 decision to start with one league was right to get
+going, and this is the point where it stops being right.
 
 ## Where the project stands
 

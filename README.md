@@ -115,6 +115,70 @@ La regularización empuja hacia el promedio de la liga a los equipos de los que
 hay pocos datos, y deja quietos a los que tienen muchos. La probabilidad
 mínima emitida pasó de 0.74% a **4.52%**.
 
+## Atacando las victorias locales, y el límite que apareció
+
+El diagnóstico decía que el modelo pierde contra el mercado sobre todo en
+victorias locales. Se atacó ese frente. **Los tres intentos fueron rechazados
+por el gate, y el tercero por una razón que redefine el techo del proyecto.**
+
+Primero se confirmó que el problema era real fuera del bloque donde se
+encontró: en 2021/22–2023/24, temporadas que el diagnóstico nunca miró, la
+brecha en locales es +0.0333. No era un artefacto.
+
+Y se identificó la causa: **no es el nivel, es la discriminación.** El modelo da
+43.6% de probabilidad media de local y el mercado 43.9% — prácticamente lo
+mismo. Pero la correlación con el resultado es 0.3925 contra 0.4325. Separa
+peor los partidos.
+
+### Intento 1 — ventaja de local por equipo: es ruido
+
+La variación entre equipos del residuo de local es 6.71%. La que produciría el
+puro azar, dado el número de partidos, es 6.06%. **Compatible con ruido.** Meter
+un parámetro de localía por equipo sería ajustar el azar y llamarlo modelo.
+
+### Intento 2 — fuerza estimada con tiros a puerta: desplaza, no discrimina
+
+Los tiros a puerta son señal menos ruidosa que los goles, así que se mezcló la
+fuerza estimada con ambos. El log-loss de locales mejoraba muchísimo (0.7345 →
+0.6089) — y era una trampa. La probabilidad media de local subía del 43.6% al
+48.7% mientras la de empate se hundía del 23.0% al 15.9%, cuando la real es
+22.5%. La correlación no se movía (0.3925 → 0.3932). Total: −0.0008, p = 0.52.
+**Estaba moviendo masa, no separando partidos.**
+
+### Intento 3 — recalibración con forma reciente: real, pero diminuta
+
+Una capa logística que corrige las tres probabilidades con medias móviles de
+tiros, tiros a puerta, corners y goles — lo que el motor Poisson no puede ver,
+porque solo cuenta goles y un equipo que genera mucho sin marcar le resulta
+idéntico a uno que no genera.
+
+La primera versión repitió el error del intento 2 en forma sutil: mejoraba
+locales −0.0368 (concluyente) y empeoraba empates +0.0129 y visitantes +0.0301
+(también concluyentes). Se le quitó la capacidad de mover el nivel global
+—sin interceptos, solo pesos— y **la ganancia sobrevivió**: correlación con
+victoria local 0.3377 → 0.3502, probabilidad media quieta en 43.4%. Esa es la
+prueba de que aporta información: si fuera desplazamiento, quitarle la palanca
+lo habría borrado.
+
+Total: **−0.0026 de log-loss. Rechazado, p = 0.409.**
+
+### El límite que esto destapó
+
+El gate no rechazó por capricho. Con 790 partidos **solo puede declarar
+concluyente una diferencia de 0.0060 o mayor**. Para validar −0.0026 harían
+falta ~4.279 partidos: unas **once temporadas de una sola liga**.
+
+Y la distancia total del modelo al mercado es 0.0230. Es decir: **solo son
+demostrables las mejoras que cierren más de una cuarta parte de esa distancia
+de un golpe.** Cualquier avance incremental es invisible para este gate, no
+porque el gate esté mal calibrado —su conservadurismo es correcto— sino porque
+una liga no da suficientes partidos.
+
+**El siguiente paso del proyecto no es un modelo mejor: son más datos.** Añadir
+cuatro ligas grandes multiplicaría por cinco el bloque del gate y pondría estas
+mejoras dentro de lo verificable. Cambiar de liga es una constante en
+`config.py`; era el argumento de la F0 y aquí es donde se cobra.
+
 ## ¿Hay valor real contra el mercado? (F7)
 
 **No.** Y la forma en que no lo hay es más interesante que el titular.
