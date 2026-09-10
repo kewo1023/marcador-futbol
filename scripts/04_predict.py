@@ -21,7 +21,7 @@ import numpy as np                                        # noqa: E402
 from marcador import (backtest, db, dixon_coles as dc,     # noqa: E402
                       fixtures, ingest, ledger, promotion, recalibration)
 from marcador.backtest import ModelConfig                   # noqa: E402
-from marcador.baseline import MARKET_1X2, OUTCOMES          # noqa: E402
+from marcador.baseline import MARKET_1X2, OUTCOMES, register_model  # noqa: E402
 from marcador.config import (CURRENT_SEASON, FIXTURES_LOOKAHEAD_DAYS,  # noqa: E402
                              LEAGUES, PRODUCTION_REG, PRODUCTION_USE_RHO,
                              PRODUCTION_XI, league_label)
@@ -241,6 +241,15 @@ def main():
     if dry:
         print("\n--dry-run: no se escribio nada.")
         return 0
+
+    # La base del runner nace vacia en cada corrida, y `predictions` exige que
+    # el modelo exista en `model_versions`. Solo 02 y 03 registraban, y esos no
+    # corren en el loop. Estuvo latente hasta la primera corrida con partidos
+    # reales (2026-09-10): en seco no se inserta, y hasta ese dia nunca hubo
+    # nada que insertar. Idempotente: registrar dos veces no duplica.
+    register_model(con, version, "dixon-coles",
+                   params={**cfg.to_dict(), "recalibration": spec},
+                   notes="modelo en produccion, registrado por 04_predict.py")
 
     for r in new_rows:
         con.execute(
