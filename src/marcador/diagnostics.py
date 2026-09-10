@@ -21,8 +21,13 @@ import datetime as dt
 import math
 
 from .baseline import market_probs
+from .scoring import bootstrap_diff
 
 EPS = 1e-15
+
+# Con menos de esto el numero de un grupo es humo. `analyse` lo lleva escrito
+# en su cuerpo desde la F4; aqui se nombra para poder reutilizarlo.
+MIN_GROUP = 15
 
 
 def load_context(con, league):
@@ -36,6 +41,7 @@ def load_context(con, league):
     out = []
     for r in rows:
         out.append({"id": r["match_id"], "season": r["season"],
+                    "league": league,
                     "date": dt.date.fromisoformat(r["match_date"]),
                     "home": r["home_team"], "away": r["away_team"],
                     "ftr": r["ftr"], "reds": (r["hr"] or 0) + (r["ar"] or 0),
@@ -130,4 +136,82 @@ def analyse(matches, model_probs, seasons=None):
                          "brecha": model - market,
                          # cuanto de la brecha TOTAL aporta este grupo
                          "peso": (model - market) * g["n"] / len(sel)})
+    return rows, len(sel)
+
+
+def _newcomers_by_league(matches):
+    """Los ascendidos, calculados DENTRO de cada liga.
+
+    Con una sola liga daba igual y `newcomers_by_season` bastaba. Al juntar
+    cinco deja de bastar: "equipo que no jugo la temporada anterior" solo
+    significa algo dentro de su propia competicion. Sobre el conjunto mezclado,
+    el primer partido de cualquier liga contra otra volveria ascendida a media
+    Europa.
+    """
+    out = {}
+    for lg in sorted({m.get("league") for m in matches}):
+        sub = [m for m in matches if m.get("league") == lg]
+        for season, teams in newcomers_by_season(sub).items():
+            out.setdefault(season, set()).update(teams)
+    return out
+
+
+def analyse_paired(matches, model_probs, seasons=None, extra_segments=None,
+                   min_group=MIN_GROUP, seed=0):
+    """Igual que `analyse`, pero dice ademas si la brecha se distingue del ruido.
+
+    `analyse` compara promedios, y con una sola liga era lo unico que se podia
+    hacer: partido el bloque en segmentos, los grupos quedaban en 100 o 200
+    partidos — suficiente para calcular una media, no para creersela. Con cinco
+    ligas los grupos crecen lo bastante para meterles el mismo bootstrap
+    pareado que usa el gate de la F4 (regla 6), modelo contra mercado y sobre
+    los MISMOS partidos.
+
+    Por que importa aqui y no solo en el gate: este modulo genera las hipotesis
+    que despues cuestan sesiones enteras de perseguir. Un grupo puede encabezar
+    la tabla por promedio y no sobrevivir al intervalo; sin esta marca, ese es
+    justo el que uno sale a atacar primero.
+
+    `extra_segments` son cortes adicionales como (nombre, funcion) — el de liga,
+    por ejemplo, que con una sola competicion no existia.
+
+    Devuelve las mismas claves que `analyse` mas ci_low, ci_high, p_value y
+    concluyente.
+    """
+    sel = [m for m in matches
+           if m["id"] in model_probs and m["market"]
+           and (seasons is None or m["season"] in seasons)]
+    if not sel:
+        return [], 0
+    newcomers = _newcomers_by_league(matches)
+
+    def loss(p, ftr):
+        return -math.log(max(p.get(ftr, 0.0), EPS))
+
+    cortes = [(name, fn) for name, fn, _ in segments(sel, model_probs, newcomers)]
+    cortes += list(extra_segments or [])
+
+    rows = []
+    for name, key_fn in cortes:
+        groups = {}
+        for m in sel:
+            k = key_fn(m)
+            if k is None:
+                continue
+            modelo, mercado = groups.setdefault(k, ([], []))
+            modelo.append(loss(model_probs[m["id"]]["probs"], m["ftr"]))
+            mercado.append(loss(m["market"], m["ftr"]))
+        for k, (modelo, mercado) in sorted(groups.items()):
+            n = len(modelo)
+            if n < min_group:
+                continue
+            # 'a' es el modelo y 'b' el mercado, asi que un diff positivo es el
+            # modelo perdiendo: la misma orientacion que 'brecha' en `analyse`.
+            diff, lo, hi, p, _ = bootstrap_diff(modelo, mercado, seed=seed)
+            rows.append({"segmento": name, "grupo": str(k), "n": n,
+                         "modelo": sum(modelo) / n, "mercado": sum(mercado) / n,
+                         "brecha": diff, "peso": diff * n / len(sel),
+                         "ci_low": lo, "ci_high": hi, "p_value": p,
+                         # el intervalo no contiene cero
+                         "concluyente": (lo > 0) == (hi > 0)})
     return rows, len(sel)

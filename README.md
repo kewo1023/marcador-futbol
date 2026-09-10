@@ -419,6 +419,36 @@ al mercado en victorias visitantes y en partidos con roja. El frente abierto
 son las **victorias locales**, no los empates como parecía en la F2: contra
 Elo el problema eran los empates, contra el mercado son los locales.
 
+### Las dos ventajas de arriba no existen
+
+`scripts/11_diagnose_multi.py` repite el diagnóstico sobre las cinco ligas y le
+mete a cada segmento el mismo bootstrap pareado que usa el gate (regla 6).
+Escribe `ledger/diagnostics_multi.csv` y **no modifica nada de lo anterior**:
+la tabla de una liga se deja como está, porque es lo que se publicó y su valor
+ahora es documental.
+
+La muestra pasa de 790 partidos con cuota de cierre a **3.650**, y con eso las
+dos "ventajas" del párrafo anterior se caen:
+
+| Segmento | 1 liga | 5 ligas | |
+|---|---|---|---|
+| Gana visitante | −0.0114 | +0.0053 | se da vuelta, y ya no se distingue de cero |
+| Con tarjeta roja | −0.0039 | +0.0195 | se da vuelta, y ahora es demostrable |
+| Empate | +0.0103 | +0.0207 | confirmada, y del doble |
+| Gana local | +0.0410 | +0.0304 | confirmada |
+
+Ninguna de las dos era una pista: era el azar de qué temporada tocó en una
+liga. La de visitantes había llegado a ser **la hipótesis que la F7 salió a
+probar**, y este es el mecanismo que la habría descartado antes de gastar la
+sesión.
+
+Lo que queda al ampliar es un resultado más incómodo y más útil: **18 de 20
+grupos pierden contra el mercado con brecha demostrable, y el reparto es
+parejo entre las cinco ligas** (de +0.0161 en la Premier a +0.0299 en la
+Bundesliga, todas concluyentes). No hay un bolsillo donde atacar. La brecha es
+del modelo, no de un segmento ni de una competición — y eso es una conclusión
+que con 790 partidos no se podía sostener.
+
 Esto genera hipótesis, no autoriza cambios. Cualquier idea que salga de aquí
 pasa por el gate igual que las demás.
 
@@ -494,6 +524,7 @@ El loop y el dashboard:
 ./.venv/bin/python scripts/06_retrain.py --dry-run   # que decidiria el gate, sin escribir
 ./.venv/bin/python scripts/07_diagnose.py            # donde pierde contra el mercado
 ./.venv/bin/python scripts/08_markets.py             # los cuatro mercados
+./.venv/bin/python scripts/11_diagnose_multi.py      # lo mismo en 5 ligas, con intervalos
 ./.venv/bin/streamlit run dashboard/app.py           # dashboard en localhost:8501
 ```
 
@@ -531,8 +562,9 @@ scripts/
   04_predict.py   emite predicciones de los proximos partidos (loop)
   05_score.py     ingiere resultados y recalcula el marcador (loop)
   06_retrain.py   busca retador y lo pasa por el gate (semanal)
-  07_diagnose.py  donde pierde el campeon contra el mercado
+  07_diagnose.py  donde pierde el campeon contra el mercado (1 liga)
   08_markets.py   backtest de corners, tarjetas y tiros
+  11_diagnose_multi.py  lo mismo en 5 ligas, y si la brecha es demostrable
 dashboard/
   app.py          Streamlit; lee solo el ledger
 ledger/           predicciones, resultados y metricas — esto SI se versiona
