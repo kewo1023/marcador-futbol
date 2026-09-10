@@ -121,10 +121,12 @@ genuine discrimination (home-win correlation 0.3377 → 0.3502, surviving the
 removal of its ability to shift levels) but only **−0.0026** of log loss,
 indistinguishable from noise over 790 matches.
 
-**Three of the four new markets.** Of goals over/under, corners, cards and shots
-on target, only **cards** beats its base rate conclusively (p = 0.038 / 0.000 /
-0.029). The other three show positive but noise-indistinguishable gains over 760
-matches.
+**Three of the four new markets — with one league.** Of goals over/under,
+corners, cards and shots on target, only **cards** beat its base rate
+conclusively over 760 matches (p = 0.038 / 0.000 / 0.029). The other three
+showed positive but noise-indistinguishable gains. **With five leagues all four
+beat it**, p < 0.001 on all thirteen lines. It wasn't that they added nothing;
+it was that there wasn't enough sample to see it. See below.
 
 ---
 
@@ -171,6 +173,20 @@ lasts seconds; appearing in one match in three revealed that this "price" was no
 a simultaneous set but the maximum of each outcome taken separately across the
 whole pre-match window. Both scenarios are reported: the model loses even at
 impossible prices, which makes the conclusion firmer, not weaker.
+
+**A "where it loses most" that meant nothing.** The first five-league
+diagnostic took the group contributing most to the gap across ALL cuts, and
+returned "no red card". That's 3,053 of 3,650 matches: in an unbalanced cut the
+big side wins by construction. Each cut is a different partition of the same
+set, and "contributes" only compares within one. What gave it away was that the
+answer was useless, not that it was false.
+
+**An inherited parameter that looked general.** The cards shrinkage weight went
+live with Phase 5's values without re-tuning, on the argument that they were one
+grid step apart. Re-tuned per league that same afternoon: the Premier League
+chose exactly those, the other four chose less. The argument was true and it
+wasn't enough. Changed under a new version; the first 43 predictions with the old
+weight stay, and the scoreboard evaluates both.
 
 **Data splits defined by index.** The test block was written as `SEASONS[6:]`.
 Adding a new season silently moved it from 5 to 6 seasons, shifting numbers that
@@ -223,6 +239,59 @@ size inside what can be verified. Switching leagues is a constant in
 `config.py` — the Phase 0 decision to start with one league was right to get
 going, and this is the point where it stops being right.
 
+## What happened on going live, in a single day
+
+On 2026-09-10 the system emitted its first real batch. What that day taught fits
+in six points, and four of them are the same lesson.
+
+**Rule 6's corollary, three times over.** "A rejection for lack of power doesn't
+say the candidate is useless." Repeating on five leagues three analyses that had
+been done on one changed three published conclusions: two "advantages" from the
+diagnostic turned out not to exist (they were the luck of which season one league
+drew), the three "not conclusive" markets turned out to beat the base rate, and
+the shrinkage weight for cards that Phase 5 had chosen turned out to be the one
+league's own — the Premier League chose it again exactly; the other four chose
+between 0.3 and 0.7. **A finding about one league is not a finding about
+football.** And one of those false advantages had become the hypothesis Phase 7
+went out to test.
+
+**Moving mass, in reverse.** Attempt 2 on home wins raised home probability at
+the expense of draws. Attacking draws with a one-parameter shift did the mirror
+image: the draw gap closed completely (+0.0300 → −0.0055, the model starts
+beating the market there) and the total moved by 0.0002. What it gains on draws
+it gives back on home and away wins. Five candidates, five rejections, and the
+five-parameter one — best on the tuning block — lost on the gate. **A gap in one
+segment is a symptom, not a cause:** the model knows slightly less about
+everything, and the least likely outcome is where knowing less costs the most.
+
+**The system had a blind spot at its own input.** The upcoming-fixtures file
+was a ~3-day snapshot the source regenerates when it likes. It had been frozen
+for 49 hours with the matchday the next day, and three loop runs finished green
+saying "no matches" — the same message as a day with no football. A project
+whose thesis is that the measurement system comes before the model wasn't
+measuring the freshness of its source. The source was switched the same day, and
+the real cost wasn't the API: it was 96 team names, because the `match_id`
+carries the name and a prediction with the wrong id is orphaned and immutable.
+
+**A bug latent since Phase 3 that only surfaced with real data.** The first run
+with matches to predict failed with `FOREIGN KEY constraint failed`: the
+prediction script never registered the model in the versions table. It was
+hidden by two things covering for each other: dry runs insert nothing, and until
+that day there had never been anything to insert. **"Verified end-to-end" with
+the clock rolled back is not the same as verified with tomorrow's match.**
+
+**A full season in view demands a cap.** With the new source, the first test
+emitted 1,606 predictions at once: a May match with the September model. With
+the 3-day snapshot the cap wasn't needed, so it didn't exist. Since a written
+prediction is never replaced, that one would have counted. Each match is
+predicted as close to kick-off as possible, not as early as possible.
+
+**The reference is emitted as a model too.** There are no odds for cards, so the
+only yardstick is the league's base rate. Instead of computing it on the side,
+the loop writes it into the ledger as a model with its own rows. The scoreboard
+evaluates it with the same code, and the dashboard says "model vs base" from the
+ledger alone, auditable by anyone.
+
 ## Where the project stands
 
 | | Log loss | vs Elo |
@@ -236,9 +305,12 @@ going, and this is the point where it stops being right.
 interval crosses zero over 1,900 matches. Against the market it loses by 0.0230,
 and that one *is* conclusive.
 
-The automated diagnostic says where the loss comes from: the model **beats the
-market** on away wins (−0.0203) and on matches with a red card (−0.0116), and
-gives it all back on **home wins** (+0.0386). That's the open front.
+The one-league diagnostic said the model **beat the market** on away wins
+(−0.0203) and on matches with a red card (−0.0116). On five leagues **neither
+exists**: the away-win one flips (+0.0053) and is no longer distinguishable from
+zero; the red-card one flips (+0.0195) and is demonstrable. What's left is less
+comfortable: 18 of 20 segments lose with a demonstrable gap, evenly across the
+five leagues. There is no pocket to attack. The gap belongs to the model.
 
 ### Limitations worth stating
 
@@ -252,10 +324,11 @@ gives it all back on **home wins** (+0.0386). That's the open front.
   measurement than the one for goals.
 - **Phase 7 was measured on backtest, not on real bets.** No money was staked:
   it's a simulation using the historical prices the source publishes.
-- **There is no live track record yet.** The system is built and verified
-  end-to-end with the clock rolled back over real data, but it hasn't yet emitted
-  its first batch of predictions on future matches. Until it does and accumulates
-  ~100 matches, everything above is backtest.
+- **The live track record started on 2026-09-10.** First batch: 43 matches,
+  five leagues, two markets, emitted hours ahead with the commit date as proof.
+  Until it accumulates ~100 matches, everything above is still backtest, and the
+  first real matchday is what will say whether aliases, dates and market line up
+  in production and not just in tests.
 
 ---
 

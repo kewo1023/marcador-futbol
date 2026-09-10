@@ -121,10 +121,12 @@ reciente sí aportó discriminación real (correlación con victoria local 0.337
 0.3502, sobreviviendo a que se le quitara la capacidad de mover el nivel) pero
 solo **−0.0026** de log-loss, indistinguible del ruido sobre 790 partidos.
 
-**Tres de los cuatro mercados nuevos.** De goles over/under, corners, tarjetas y
-tiros a puerta, solo **tarjetas** le gana a la frecuencia base de forma
-concluyente (p = 0.038 / 0.000 / 0.029). Los otros tres dan mejoras positivas
-pero indistinguibles del ruido sobre 760 partidos.
+**Tres de los cuatro mercados nuevos — con una liga.** De goles over/under,
+corners, tarjetas y tiros a puerta, solo **tarjetas** le ganaba a la frecuencia
+base de forma concluyente sobre 760 partidos (p = 0.038 / 0.000 / 0.029). Los
+otros tres daban mejoras positivas pero indistinguibles del ruido. **Con cinco
+ligas le ganan los cuatro**, p < 0.001 en las trece líneas. No era que no
+aportaran: era que no había muestra para verlo. Ver más abajo.
 
 ---
 
@@ -172,6 +174,20 @@ delataba que ese "precio" no era un conjunto simultáneo, sino el máximo de cad
 resultado a lo largo de todo el pre-partido. Se reportan los dos escenarios: el
 modelo pierde incluso con precios imposibles, y eso hace la conclusión más
 firme, no más débil.
+
+**Un «dónde más se pierde» que no significaba nada.** La primera versión del
+diagnóstico en cinco ligas tomaba el grupo que más aportaba a la brecha entre
+TODOS los cortes, y devolvió «sin tarjeta roja». Eran 3.053 de 3.650 partidos:
+en un corte desbalanceado el lado grande gana por construcción. Cada corte es
+una partición distinta del mismo conjunto, y «aporta» solo se compara dentro
+de uno. Lo que lo delató fue que la respuesta era inútil, no que fuera falsa.
+
+**Un parámetro heredado que parecía general.** El `w` de tarjetas salió a
+producción con los valores de la F5 sin re-afinar, con el argumento de que
+estaban a un paso de grid entre sí. Re-afinado por liga la misma tarde: la
+Premier eligió exactamente esos, las otras cuatro eligieron menos. El
+argumento era cierto y no era suficiente. Se cambió con versión nueva; las
+primeras 43 predicciones con el `w` viejo quedan, y el marcador evalúa las dos.
 
 **Cortes de datos definidos por índice.** El bloque de prueba estaba escrito
 como `SEASONS[6:]`. Al agregar una temporada nueva pasó de 5 a 6 temporadas sin
@@ -224,6 +240,62 @@ estas mejoras dentro de lo verificable. Cambiar de liga es una constante en
 `config.py` — la decisión de la F0 de empezar por una sola liga fue correcta
 para arrancar, y este es el punto donde deja de serlo.
 
+## Lo que pasó al salir en vivo, en un solo día
+
+El 2026-09-10 el sistema emitió su primer lote real. Lo que se aprendió ese día
+cabe en seis puntos, y cuatro de ellos son la misma lección.
+
+**El corolario de la regla 6, tres veces.** "Un rechazo por falta de potencia
+no dice que el candidato no sirva." Al repetir sobre cinco ligas tres análisis
+que se habían hecho sobre una, tres conclusiones publicadas cambiaron: dos
+"ventajas" del diagnóstico resultaron no existir (eran el azar de qué
+temporada tocó), los tres mercados "no concluyentes" resultaron ganarle a la
+base, y el `w` de tarjetas que la F5 había elegido resultó ser el de la única
+liga mirada — la Premier lo volvió a elegir exacto; las otras cuatro eligieron
+entre 0.3 y 0.7. **Un hallazgo sobre una liga no es un hallazgo sobre el
+fútbol.** Y una de esas ventajas falsas había llegado a ser la hipótesis que la
+F7 salió a probar.
+
+**Mover masa, al revés.** El intento 2 de los locales subía locales a costa de
+empates. Al atacar los empates con un desplazamiento de un parámetro pasó lo
+simétrico: la brecha en empates se cerró del todo (+0.0300 → −0.0055, el
+modelo pasa a ganarle al mercado ahí) y el total se movió 0.0002. Lo que gana
+en empates lo devuelve en locales y visitantes. Cinco candidatos, cinco
+rechazos, y el de cinco parámetros —el mejor en afinado— perdió en el gate.
+**La brecha en un segmento es síntoma, no causa:** el modelo sabe un poco menos
+en todo, y el resultado menos probable es donde saber menos cuesta más caro.
+
+**El sistema tenía un punto ciego en su propia entrada.** El archivo de
+próximos partidos era una foto de tres días que la fuente regenera cuando
+quiere. Llevaba 49 horas congelada con la jornada al día siguiente, y tres
+corridas del loop terminaron en verde diciendo «no hay partidos» — el mismo
+mensaje que un día sin fútbol. Un proyecto cuya tesis es que el sistema de
+medición se construye antes que el modelo no medía la frescura de su fuente.
+Se cambió de fuente el mismo día, y el costo real no fue la API: fueron los 96
+nombres de equipo, porque el `match_id` lleva el nombre y una predicción con el
+id equivocado es huérfana e inmutable.
+
+**Un bug latente desde la F3 que solo apareció con datos reales.** La primera
+corrida con partidos que predecir falló con `FOREIGN KEY constraint failed`:
+el script de predicción nunca registraba el modelo en la tabla de versiones.
+Estuvo escondido por dos cosas que se tapaban entre sí: en seco no se inserta
+nada, y hasta ese día nunca hubo nada que insertar. **"Verificado de punta a
+punta" con el reloj retrocedido no es lo mismo que verificado con un partido
+de mañana.**
+
+**Una temporada entera a la vista exige un tope.** Con la fuente nueva, la
+primera prueba emitió 1.606 predicciones de golpe: un partido de mayo con el
+modelo de septiembre. Con la foto de tres días el tope no hacía falta y por
+eso no existía. Como una predicción escrita no se reemplaza, esa habría sido
+la que contara. Cada partido se predice lo más cerca posible del kickoff, no lo
+más pronto posible.
+
+**La referencia se emite como un modelo más.** Para tarjetas no hay cuota, así
+que la única vara es la frecuencia base de la liga. En vez de calcularla
+aparte, el loop la escribe en el ledger como un modelo con sus propias filas.
+Así el marcador la evalúa con el mismo código y el dashboard dice «modelo
+contra base» desde el ledger solo, auditable por cualquiera.
+
 ## Dónde queda el proyecto
 
 | | log-loss | Contra Elo |
@@ -237,9 +309,13 @@ para arrancar, y este es el punto donde deja de serlo.
 delante, pero el intervalo cruza cero sobre 1900 partidos. Contra el mercado
 pierde por 0.0230, y eso sí es concluyente.
 
-El diagnóstico automático dice dónde se pierde: el modelo **le gana al mercado**
-en victorias visitantes (−0.0203) y en partidos con tarjeta roja (−0.0116), y
-devuelve todo en **victorias locales** (+0.0386). Ese es el frente abierto.
+El diagnóstico sobre una liga decía que el modelo **le ganaba al mercado** en
+victorias visitantes (−0.0203) y en partidos con tarjeta roja (−0.0116). Sobre
+cinco ligas, **ninguna de las dos existe**: la de visitantes se da vuelta
+(+0.0053) y ya no se distingue de cero; la de rojas se da vuelta (+0.0195) y
+es demostrable. Lo que queda es más incómodo: 18 de 20 segmentos pierden con
+brecha demostrable, y parejo entre las cinco ligas. No hay un bolsillo donde
+atacar. La brecha es del modelo.
 
 ### Limitaciones que hay que decir
 
@@ -252,10 +328,11 @@ devuelve todo en **victorias locales** (+0.0386). Ese es el frente abierto.
   le falta para lo alcanzable. Es una medición más débil que la de goles.
 - **F7 se midió sobre backtest, no sobre apuestas reales.** Nadie apostó un
   peso: es una simulación con los precios históricos que publica la fuente.
-- **El track record en vivo todavía no existe.** El sistema está construido y
-  verificado de punta a punta con el reloj retrocedido sobre datos reales, pero
-  no ha emitido aún su primer lote de predicciones sobre partidos futuros. Hasta
-  que lo haga y acumule ~100 partidos, todo lo de arriba es backtest.
+- **El track record en vivo arrancó el 2026-09-10.** Primer lote: 43 partidos,
+  cinco ligas, dos mercados, emitidos con horas de margen y con la fecha del
+  commit como prueba. Hasta que acumule ~100 partidos, todo lo de arriba sigue
+  siendo backtest, y la primera jornada real es la que dirá si alias, fechas y
+  mercado casan en producción y no solo en las pruebas.
 
 ---
 
