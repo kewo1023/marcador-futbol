@@ -71,6 +71,14 @@ jobs:
           git add ledger/
           # La fecha de ESTE commit es la prueba de que la prediccion se emitio
           # antes del partido. Por eso el mensaje lleva la fecha y el conteo.
-          git commit -m "predicciones: $(date -u +%Y-%m-%d) ($(git diff --cached --numstat ledger/predictions.csv | awk '{print $1}') filas)"
+          # Si solo cambio la hora de algun partido (ledger/fixtures.csv) y no
+          # hubo prediccion nueva, el mensaje lo dice, para no sugerir una
+          # emision que no ocurrio.
+          N=$(git diff --cached --numstat ledger/predictions.csv | awk '{print $1}')
+          if [ -n "$N" ]; then
+            git commit -m "predicciones: $(date -u +%Y-%m-%d) ($N filas)"
+          else
+            git commit -m "horas de partido: $(date -u +%Y-%m-%d)"
+          fi
           git pull --rebase origin main
           git push origin main

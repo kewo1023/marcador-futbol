@@ -28,8 +28,8 @@ import csv
 import datetime as dt
 from pathlib import Path
 
-from .config import (LEDGER_DIR, LEDGER_METRICS, LEDGER_MISSED,
-                     LEDGER_PREDICTIONS, LEDGER_RESULTS)
+from .config import (LEDGER_DIR, LEDGER_FIXTURES, LEDGER_METRICS,
+                     LEDGER_MISSED, LEDGER_PREDICTIONS, LEDGER_RESULTS)
 
 PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                "model_version", "market", "outcome", "prob", "mode",
@@ -40,6 +40,8 @@ METRIC_FIELDS = ["model_version", "market", "eval_set", "n_matches",
                  "log_loss", "brier", "accuracy", "computed_at"]
 MISSED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                  "ftr", "detected_at"]
+FIXTURE_FIELDS = ["match_id", "match_date", "kickoff_utc", "home_team",
+                  "away_team", "updated_at"]
 
 
 def _read(path: Path):
@@ -148,6 +150,36 @@ def upsert_metrics(rows):
 
 def now_iso():
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+
+
+def read_fixtures():
+    return _read(LEDGER_FIXTURES)
+
+
+def upsert_fixtures(rows) -> int:
+    """La hora y la fecha de los partidos por jugar. Devuelve cuantos cambiaron.
+
+    A diferencia de las predicciones, esto SI se actualiza: un partido que se
+    aplaza cambia de hora y de dia, y el ledger tiene que decir la ultima que
+    se supo. Lo que nunca cambia es el match_id — ese lleva la fecha con la
+    que se emitio la prediccion, y si un partido se mueve de dia, el resultado
+    va a llegar con otra fecha y otro id. Ese caso lo detecta 05_score.py como
+    un partido sin prediccion, y esta tabla es lo que permite ver que en
+    realidad si se predijo, para otro dia.
+    """
+    by_id = {r["match_id"]: r for r in read_fixtures()}
+    changed = 0
+    for r in rows:
+        old = by_id.get(r["match_id"])
+        if old and (old["kickoff_utc"], old["match_date"]) == \
+                   (r["kickoff_utc"] or "", r["match_date"]):
+            continue
+        by_id[r["match_id"]] = {**r, "kickoff_utc": r["kickoff_utc"] or ""}
+        changed += 1
+    if changed:
+        _write(LEDGER_FIXTURES, FIXTURE_FIELDS,
+               sorted(by_id.values(), key=lambda x: (x["match_date"], x["match_id"])))
+    return changed
 
 
 def read_missed():

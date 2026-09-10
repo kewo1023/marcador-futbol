@@ -24,10 +24,35 @@ st.set_page_config(page_title="Marcador", page_icon="⚽", layout="wide")
 def load():
     return (pd.DataFrame(ledger.read_predictions()),
             pd.DataFrame(ledger.read_results()),
-            pd.DataFrame(ledger._read(ledger.LEDGER_METRICS)))
+            pd.DataFrame(ledger._read(ledger.LEDGER_METRICS)),
+            pd.DataFrame(ledger.read_fixtures()))
 
 
-preds, results, metrics = load()
+def with_kickoff(df, fixtures):
+    """Cambia la columna `fecha` por fecha y hora UTC cuando el ledger la tiene.
+
+    La hora vive en ledger/fixtures.csv, aparte de las predicciones, porque
+    cambia (aplazamientos) y las predicciones no. Un partido sin hora en el
+    ledger —los emitidos antes de que existiera ese archivo, o los que la liga
+    aun no confirmo— se queda con la fecha sola.
+    """
+    if fixtures.empty or "kickoff_utc" not in fixtures:
+        return df
+    hours = fixtures.set_index("match_id")["kickoff_utc"]
+    ko = df["match_id"].map(hours).fillna("")
+    df = df.copy()
+    df["fecha"] = [
+        (k.replace("T", " ") + " UTC") if k else d
+        for k, d in zip(ko, df["match_date"])]
+    return df
+
+
+# Local primero, empate en medio, visitante al final: el orden en que se lee
+# un partido. Se aplica igual a los proximos y a los ya jugados.
+COLS_1X2 = {"H": "gana local", "D": "empate", "A": "gana visitante"}
+ORDER_1X2 = ["gana local", "empate", "gana visitante"]
+
+preds, results, metrics, fixtures = load()
 champ = promotion.read_champion()
 PRODUCTION_MODEL = champ["raw"]["model_version"] if champ else "(sin campeon)"
 
@@ -123,15 +148,14 @@ upcoming = preds[~preds["match_id"].isin(played)]
 if upcoming.empty:
     st.write("Nada pendiente ahora mismo.")
 else:
-    wide = (upcoming.pivot_table(index=["match_date", "home_team", "away_team"],
+    wide = (upcoming.pivot_table(index=["match_id", "match_date", "home_team",
+                                        "away_team"],
                                  columns="outcome", values="prob")
-            .reset_index().rename(columns={"match_date": "fecha",
-                                           "home_team": "local",
-                                           "away_team": "visitante",
-                                           "H": "gana local", "D": "empate",
-                                           "A": "gana visitante"}))
-    st.dataframe(wide.style.format({"gana local": "{:.1%}", "empate": "{:.1%}",
-                                    "gana visitante": "{:.1%}"}),
+            .reset_index().rename(columns=COLS_1X2))
+    wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
+    view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
+            [["fecha", "local", "visitante"] + ORDER_1X2])
+    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}),
                  use_container_width=True, hide_index=True)
 
 # --- Lo ya jugado -----------------------------------------------------------
@@ -143,13 +167,28 @@ if played:
     merged = results.merge(wide, on="match_id")
     merged["marcador"] = merged["fthg"].astype(str) + "-" + merged["ftag"].astype(str)
     merged["le dio al resultado"] = [r[r["ftr"]] for _, r in merged.iterrows()]
-    view = (merged[["match_date", "home_team", "away_team", "marcador", "ftr",
-                    "H", "D", "A", "le dio al resultado"]]
-            .sort_values("match_date", ascending=False)
-            .rename(columns={"match_date": "fecha", "home_team": "local",
-                             "away_team": "visitante", "ftr": "resultado"}))
-    st.dataframe(view.style.format({"H": "{:.1%}", "D": "{:.1%}", "A": "{:.1%}",
-                                    "le dio al resultado": "{:.1%}"}),
+    # 'acerto' = el resultado real era el mas probable segun el modelo. Es lo
+    # primero que pregunta cualquiera, y por eso se muestra; pero es accuracy,
+    # y accuracy no decide nada (regla 5): un 34-33-33 que 'acierta' no sabia
+    # nada, y un 60% que falla una vez de cada tres esta haciendo su trabajo.
+    # Lo que si mide es la columna de al lado: cuanta probabilidad le dio a
+    # lo que paso. Ese numero es el que entra al log-loss.
+    merged["acerto"] = [
+        "✓" if max("HDA", key=lambda o: r[o]) == r["ftr"] else "✗"
+        for _, r in merged.iterrows()]
+    merged["resultado"] = merged["ftr"].map({"H": "local", "D": "empate",
+                                              "A": "visitante"})
+    merged = with_kickoff(merged.rename(columns=COLS_1X2), fixtures)
+    view = (merged.sort_values(["match_date", "fecha"], ascending=False)
+            .rename(columns={"home_team": "local", "away_team": "visitante"})
+            [["fecha", "local", "visitante", "marcador", "resultado", "acerto"]
+             + ORDER_1X2 + ["le dio al resultado"]])
+    st.caption("`acertó` es si el resultado real era el más probable. Es "
+               "contexto, no criterio: la columna que cuenta es `le dio al "
+               "resultado` — cuánta probabilidad puso el modelo en lo que "
+               "pasó. Eso es lo que entra al log-loss.")
+    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}
+                                   | {"le dio al resultado": "{:.1%}"}),
                  use_container_width=True, hide_index=True)
 
     # --- Calibración --------------------------------------------------------

@@ -161,6 +161,11 @@ LEDGER_PREDICTIONS = LEDGER_DIR / "predictions.csv"
 LEDGER_RESULTS = LEDGER_DIR / "results.csv"
 LEDGER_METRICS = LEDGER_DIR / "metrics.csv"
 LEDGER_MISSED = LEDGER_DIR / "missed.csv"
+# La hora de cada partido va APARTE de las predicciones. Una prediccion es
+# inmutable; la hora de un partido no (se aplazan, se mueven de dia). Mezclar
+# las dos en un archivo obligaria a reescribir filas de prediccion para
+# corregir un dato que no es de la prediccion.
+LEDGER_FIXTURES = LEDGER_DIR / "fixtures.csv"
 
 # Modelo que emite las predicciones en vivo. Se cambia solo cuando la F4
 # promueva uno nuevo, y ese cambio queda en el historial de git.

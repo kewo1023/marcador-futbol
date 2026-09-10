@@ -166,13 +166,30 @@ def main():
     spec = champ.get("recalibration") if champ else None
     version = champ["raw"]["model_version"] if champ else cfg.slug()
 
-    todo_by_league = {}
+    todo_by_league, in_window = {}, []
     for league in LEAGUES:
         pend = pending_fixtures(con, today, league)
+        in_window += pend
         already = ledger.predicted_matches(version)
         todo = [f for f in pend if f["match_id"] not in already]
         if todo:
             todo_by_league[league] = todo
+
+    # La hora de TODO lo que esta en la ventana, predicho o no todavia. Va a un
+    # archivo aparte porque cambia (aplazamientos) y las predicciones no. Se
+    # escribe antes del 'nada que hacer' a proposito: un partido ya predicho
+    # cuya hora se movio tiene que quedar registrado aunque no haya nada nuevo
+    # que predecir.
+    if in_window and not dry:
+        stamp = ledger.now_iso()
+        n_fx = ledger.upsert_fixtures([
+            {"match_id": f["match_id"], "match_date": f["match_date"],
+             "kickoff_utc": f["kickoff_utc"], "home_team": f["home_team"],
+             "away_team": f["away_team"], "updated_at": stamp}
+            for f in in_window])
+        if n_fx:
+            print(f"Horas de partido: {n_fx} actualizadas en ledger/fixtures.csv")
+
     if not todo_by_league:
         # Los dos casos se leian igual hasta el 2026-09-10, y no son el mismo:
         # uno es el sistema funcionando y el otro es el sistema perdiendo
