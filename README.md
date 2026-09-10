@@ -19,6 +19,7 @@ eso solo lo da un sistema de medición que ya existía.
 
 | Si quieres… | Ve a |
 |---|---|
+| Entender el sistema sin leer nada más | **[Tutorial en PDF](docs/TUTORIAL.pdf)** — 9 páginas, diez minutos |
 | Saber qué funcionó y qué no, sin adornos | **[APRENDIZAJES.md](APRENDIZAJES.md)** |
 | Ver el resultado medido | [El marcador hoy](#el-marcador-hoy), aquí abajo |
 | Entender por qué el modelo no puede empeorar solo | [El gate de promoción](#el-gate-de-promoción) |

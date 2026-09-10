@@ -16,6 +16,7 @@ correct, and only a measurement system that already exists can tell it that.
 
 | If you want to… | Go to |
 |---|---|
+| Understand the system without reading anything else | **[PDF tutorial](docs/TUTORIAL.pdf)** — 9 pages, in Spanish |
 | See what worked and what didn't, unvarnished | **[LEARNINGS.md](LEARNINGS.md)** |
 | See the measured result | [The scoreboard](#the-scoreboard), below |
 | Understand why the model can't degrade itself | [The promotion gate](#the-promotion-gate) |
