@@ -50,13 +50,18 @@ BASE_URL = "https://football-data.co.uk/mmz4281"
 # Partidos por jugar, todas las ligas en un solo archivo. Es el UNICO archivo
 # de proximos partidos que publica la fuente: no hay version con mas horizonte.
 #
-# La ventana es corta. Observado el 2026-09-09: el archivo traia 18 partidos
-# de 6 ligas, todos entre el 08/09 y el 10/09 — tres dias. La Premier no
-# aparecia porque su siguiente jornada era el sabado 12, fuera de la ventana.
-# 
-# NO se sabe si esa ventana es siempre de tres dias; es UNA observacion. Por eso
-# el sistema no asume que alcanza: 05_score.py comprueba despues de cada jornada
-# si algun partido se jugo sin haber sido predicho, y lo registra.
+# Es una FOTO, no una ventana que rueda con el dia. La fuente regenera el
+# archivo cada cierto tiempo y cubre los dias siguientes al momento de
+# escribirlo.
+#
+# Medido el 2026-09-10 a las 03:12 UTC: last-modified del martes 08/09 a las
+# 18:07 UTC —33 horas antes— cubriendo del 08 al 10 de septiembre. Que una liga
+# no aparezca significa que su jornada cae fuera de esa foto, no que no se
+# juegue.
+#
+# Por eso el job de predecir corre dos veces al dia, para recoger la foto nueva
+# poco despues de que se escriba. Y por eso 05_score.py comprueba despues de
+# cada jornada si algun partido se jugo sin prediccion.
 FIXTURES_URL = "https://football-data.co.uk/fixtures.csv"
 
 # Muchos servidores rechazan un user-agent de librería. Este es el mínimo que

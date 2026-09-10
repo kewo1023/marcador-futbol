@@ -435,18 +435,22 @@ nunca escriban a la vez:
 
 Los días sin partidos ninguno de los dos commitea nada.
 
-**La ventana de la fuente es corta y eso condiciona el diseño.** `fixtures.csv`
-es el único archivo de próximos partidos que publica football-data.co.uk, y
-cubre pocos días: el 2026-09-09 traía 18 partidos de 6 ligas, todos entre el
-08/09 y el 10/09. Que una liga no aparezca significa que su siguiente jornada
-cae fuera de esa ventana, no que no se juegue.
+**La fuente publica los próximos partidos como una foto, no como una ventana
+que rueda.** `fixtures.csv` es el único archivo de próximos partidos de
+football-data.co.uk, y se regenera cada cierto tiempo cubriendo los días
+siguientes al momento en que se escribe.
 
-Eso es **una observación, no una garantía**, así que el sistema no asume que la
-ventana alcanza. Después de cada jornada, `05_score.py` comprueba si algún
-partido se jugó sin haber sido predicho y lo registra en
-`ledger/missed.csv`. Si encuentra alguno, el workflow queda en rojo: un partido
-sin predecir es un agujero en el track record, y un agujero silencioso vale
-menos que ninguno.
+Medido el 2026-09-10 a las 03:12 UTC: el archivo tenía fecha de modificación del
+**martes 08/09 a las 18:07 UTC** —33 horas antes— y cubría del 08 al 10 de
+septiembre. Que una liga no aparezca significa que su siguiente jornada cae
+fuera de esa foto, no que no se juegue.
+
+Por eso el job de predecir corre **dos veces al día**: para recoger la foto
+nueva poco después de que la fuente la escriba. Y por eso, después de cada
+jornada, `05_score.py` comprueba si algún partido se jugó sin haber sido
+predicho y lo registra en `ledger/missed.csv`. Si encuentra alguno, el workflow
+queda en rojo: un partido sin predecir es un agujero en el track record, y un
+agujero silencioso vale menos que ninguno.
 
 ### Dónde viven las predicciones, y por qué importa
 

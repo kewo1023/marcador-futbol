@@ -61,6 +61,38 @@ Las métricas del proyecto son **log-loss** (la que decide si un modelo
 reemplaza a otro), **Brier score** y la **curva de calibración**. Accuracy se
 reporta como contexto y nunca como criterio.
 
+## Regla 6 — Ninguna comparación se decide por el promedio
+
+Dos modelos pueden separarse por 0.002 de log-loss y que eso no signifique nada:
+con unos miles de partidos, esa diferencia cabe holgada dentro de la variación
+que produce el azar.
+
+**Toda comparación entre modelos pasa por un bootstrap pareado**, y el intervalo
+de confianza manda sobre la media. Si el intervalo contiene cero, no hay
+diferencia demostrada — aunque la media diga lo contrario.
+
+De dónde sale: una versión temprana de este proyecto anunció que el modelo "le
+ganaba a Elo por 0.0018" con un intervalo que cruzaba cero de lado a lado. La
+corrección no fue borrar la frase, fue meter la prueba dentro del script para
+que no pudiera repetirse. Ese mismo mecanismo es hoy el gate de promoción.
+
+**Corolario sobre la potencia:** cuando el gate rechaza, hay que preguntarle si
+podía haber detectado la diferencia. Un rechazo por falta de potencia no dice
+que el candidato no sirva; dice que con esos datos no se puede demostrar que
+sirva. Distinguir los dos casos es lo que llevó de una liga a cinco.
+
+## Regla 7 — El guardia de pre-commit no ve dentro de los binarios
+
+El hook lee las líneas agregadas del diff de texto. Un PDF, una imagen o una
+hoja de cálculo solo producen «Binary files differ», así que **su contenido no
+se revisa**.
+
+Todo binario que entre al repositorio se revisa a mano —extrayendo su texto—
+antes del primer commit. Y si un dato protegido tiene que aparecer dentro del
+binario, **no se escribe en el código fuente que lo genera**: se deriva en
+tiempo de ejecución. El generador del tutorial lee la URL del repositorio con
+`git remote get-url origin` por esa razón exacta.
+
 ## Convenciones de código
 
 - Python 3.13, librería estándar donde alcance. Sin dependencias que no se usen.

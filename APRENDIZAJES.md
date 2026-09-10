@@ -243,7 +243,10 @@ devuelve todo en **victorias locales** (+0.0386). Ese es el frente abierto.
 
 ### Limitaciones que hay que decir
 
-- **Una sola liga.** Nada aquí demuestra que el enfoque se traslade a otra.
+- **Cinco ligas europeas, todas de nivel similar.** El enfoque está probado en
+  Premier, LaLiga, Bundesliga, Serie A y Ligue 1. Nada demuestra que se traslade
+  a competiciones con menos datos, formato distinto (copas, playoffs) o niveles
+  muy dispares.
 - **Corners, tarjetas y tiros se miden sin techo.** La fuente no publica cuotas
   para esos mercados, así que solo se sabe si el modelo aporta algo, no cuánto
   le falta para lo alcanzable. Es una medición más débil que la de goles.

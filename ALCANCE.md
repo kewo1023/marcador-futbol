@@ -3,7 +3,27 @@
 Documento corto y vinculante. Si algo lo contradice más adelante, se cambia
 aquí primero y se deja el porqué.
 
-## Una sola liga: Premier League (`E0`)
+## Las cinco grandes ligas
+
+**Actualizado el 2026-09-10.** El proyecto empezó con la Premier sola y ahora
+corre sobre cinco: Premier League, LaLiga, Bundesliga, Serie A y Ligue 1.
+19.909 partidos.
+
+El motivo del cambio no fue querer más cobertura: fue que **el gate se había
+quedado ciego**. Con 790 partidos solo podía declarar concluyentes diferencias
+de 0.0060 o mayores, y rechazó una mejora real de 0.0026 por falta de potencia.
+Con cinco ligas el bloque del gate pasó a 3.650 partidos y su umbral a 0.0022 —
+y esa misma mejora pasó.
+
+Cada liga se ajusta por separado; lo que se junta son las pérdidas por partido.
+El loop de producción y el gate corren sobre las cinco. Los scripts de análisis
+histórico siguen sobre la Premier a propósito: cambiarlos movería números ya
+reportados.
+
+## La decisión original: una sola liga, Premier League (`E0`)
+
+*Lo que sigue es el razonamiento de la F0, que se conserva porque fue correcto
+para arrancar y explica por qué la Premier sigue siendo la liga primaria.*
 
 Cinco temporadas era el mínimo; se cargan **once** (2015/16 a 2025/26, 4180
 partidos) porque el costo de bajar seis más es cero y el modelo de la F2 agradece

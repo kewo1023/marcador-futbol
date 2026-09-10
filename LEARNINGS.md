@@ -242,7 +242,10 @@ gives it all back on **home wins** (+0.0386). That's the open front.
 
 ### Limitations worth stating
 
-- **One league only.** Nothing here demonstrates the approach transfers.
+- **Five European leagues, all of similar standard.** The approach is tested on
+  the Premier League, LaLiga, Bundesliga, Serie A and Ligue 1. Nothing
+  demonstrates it transfers to competitions with less data, a different format
+  (cups, playoffs) or very uneven levels.
 - **Corners, cards and shots are measured without a ceiling.** The source
   publishes no odds for those markets, so I can tell whether the model adds
   something, not how far it is from what's achievable. That's a weaker
