@@ -47,6 +47,52 @@ CURRENT_SEASON = SEASONS[-1]
 # programáticas. El dominio pelado sí responde. Verificado al construir F1.
 BASE_URL = "https://football-data.co.uk/mmz4281"
 
+# --- Proximos partidos ---------------------------------------------------------
+# Desde el 2026-09-10 vienen de fixturedownload.com, un archivo por liga con la
+# temporada COMPLETA. Football-data.co.uk sigue siendo la fuente del historico,
+# de los resultados y de las cuotas de cierre — eso no cambia, y es lo que
+# obliga a traducir los nombres de equipo (ver aliases.py).
+#
+# POR QUE SE CAMBIO. El archivo de fixtures de football-data.co.uk es una foto
+# de ~3 dias que la fuente regenera cuando quiere. El 2026-09-10 llevaba 49 h
+# congelada, cubria hasta el 10, y la jornada de las cinco ligas arrancaba el
+# 11. Ninguna frecuencia de job arregla eso: el horizonte lo fija la fuente.
+#
+# LO QUE NO SE PUDO VERIFICAR. fixturedownload.com no publica terminos de uso
+# (solo tiene /privacy) ni dice de donde saca los datos. Se usa como puente,
+# detras de una capa de proveedor (fixtures.py) para que cambiar a una API con
+# terminos explicitos sea reemplazar una funcion.
+FIXTURES_BASE_URL = "https://fixturedownload.com/download"
+
+# Codigo de liga nuestro -> nombre del archivo en la fuente de fixtures.
+FIXTURE_SOURCES = {
+    "E0": "epl",
+    "SP1": "la-liga",
+    "D1": "bundesliga",
+    "I1": "serie-a",
+    "F1": "ligue-1",
+}
+
+# Cuantos dias hacia adelante se PREDICE, y sobre cuantos se reporta salud.
+#
+# Con la fuente anterior no hacia falta: mostraba tres dias y ese era el tope.
+# Con la temporada completa a la vista, sin tope se predeciria un partido de
+# mayo con el modelo de septiembre — y como una prediccion escrita no se
+# reemplaza (regla 3), esa seria la que contaria. Cada partido se predice lo
+# mas cerca posible del kickoff, no lo mas pronto posible. Tres dias, con el
+# job cada cuatro horas, da unas 18 oportunidades de emitir antes del partido
+# y mantiene la frescura comparable a la del backtest (reajuste semanal).
+#
+# Y sobre la hora: la fuente pone 00:00 cuando la liga aun no la confirmo.
+# Medido el 2026-09-10: 309 de 380 partidos de LaLiga la tenian sin confirmar,
+# pero los de los dias siguientes la tenian toda. La senal de salud ya no es
+# "cuando se escribio el archivo", es "los partidos que vienen, ¿tienen hora?".
+FIXTURES_LOOKAHEAD_DAYS = 3
+
+# --- Fuente ANTERIOR de fixtures (football-data.co.uk) ------------------------
+# Ya no se usa en produccion. Se conserva la URL y las funciones de ingest.py
+# que la leen para poder volver a medirla si hiciera falta.
+#
 # Partidos por jugar, todas las ligas en un solo archivo. Es el UNICO archivo
 # de proximos partidos que publica la fuente: no hay version con mas horizonte.
 #

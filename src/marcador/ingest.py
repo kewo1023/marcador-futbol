@@ -187,7 +187,13 @@ def ingest_leagues(con, leagues, seasons=SEASONS, force: bool = False):
     return out
 
 
-# --- Partidos por jugar ------------------------------------------------------
+# --- Partidos por jugar (fuente ANTERIOR: football-data.co.uk) ---------------
+#
+# FUERA DE PRODUCCION desde el 2026-09-10. Los proximos partidos vienen ahora
+# de fixtures.py (fixturedownload.com, temporada completa). Esto se conserva
+# entero para poder volver a medir la fuente anterior —su foto de tres dias y
+# cuando la regenera— sin reconstruirlo, y porque el detector de frescura que
+# hay aqui es el que dejo claro por que habia que cambiar.
 
 @dataclass(frozen=True)
 class FixturesSnapshot:

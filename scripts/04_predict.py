@@ -19,40 +19,93 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import numpy as np                                        # noqa: E402
 
 from marcador import (backtest, db, dixon_coles as dc,     # noqa: E402
-                      ingest, ledger, promotion, recalibration)
+                      fixtures, ingest, ledger, promotion, recalibration)
 from marcador.backtest import ModelConfig                   # noqa: E402
 from marcador.baseline import MARKET_1X2, OUTCOMES          # noqa: E402
-from marcador.config import (CURRENT_SEASON, LEAGUES,       # noqa: E402
-                             PRODUCTION_REG, PRODUCTION_USE_RHO,
+from marcador.config import (CURRENT_SEASON, FIXTURES_LOOKAHEAD_DAYS,  # noqa: E402
+                             LEAGUES, PRODUCTION_REG, PRODUCTION_USE_RHO,
                              PRODUCTION_XI, league_label)
 
 
 def refresh_data(con):
-    """Re-baja SOLO la temporada en curso de cada liga y los proximos partidos."""
+    """Re-baja SOLO la temporada en curso de cada liga y los proximos partidos.
+
+    Dos fuentes distintas a proposito: el historico y los resultados siguen
+    viniendo de football-data.co.uk (cuotas de cierre); los proximos partidos
+    vienen del proveedor de fixtures.py, que traduce los nombres al vocabulario
+    de la primera antes de escribir nada.
+    """
     n_played = 0
     for league in LEAGUES:
         path = ingest.download_season(CURRENT_SEASON, league, force=True)
         n_played += ingest.upsert_matches(
             con, ingest.rows_from_csv(path, league, CURRENT_SEASON))
-    fx = ingest.download_fixtures()
-    n_new = sum(ingest.upsert_fixtures(con, ingest.fixture_rows(fx.path, lg))
+    snap = fixtures.download_all()
+    n_new = sum(ingest.upsert_fixtures(con, fixtures.fixture_rows(snap, lg))
                 for lg in LEAGUES)
-    return n_played, n_new, fx
+    return n_played, n_new, snap
 
 
-def pending_fixtures(con, today, league):
-    """Partidos de una liga sin resultado y con fecha de hoy en adelante.
+def report_source(snap, today):
+    """El estado de la fuente de fixtures, SIEMPRE, haya partidos o no.
 
-    El filtro por fecha importa: un partido sin resultado y con fecha pasada no
-    es un partido por jugar, es uno cuyo resultado todavia no publicaron (o que
-    se aplazo). Predecirlo seria emitir una prediccion despues del kickoff.
+    Devuelve True si algo impide confiar en que 'no hay partidos' signifique
+    que no hay jornada: una liga que no bajo, o equipos sin alias.
     """
+    salud = fixtures.health(snap, today)
+    print(f"Fuente de fixtures: fixturedownload.com · {len(snap.files)} de "
+          f"{len(LEAGUES)} ligas bajadas · ventana de {FIXTURES_LOOKAHEAD_DAYS} dias")
+    for lg in LEAGUES:
+        etiqueta = league_label(lg)
+        if lg in snap.errors:
+            print(f"  {etiqueta:16} ERROR al bajar: {snap.errors[lg]}")
+            continue
+        h = salud[lg]
+        edad = f"{h['age_hours']:.0f} h" if h["age_hours"] is not None else "?"
+        sin = (f", {h['unconfirmed']} SIN HORA" if h["unconfirmed"] else "")
+        print(f"  {etiqueta:16} {h['upcoming']:2} partidos en la ventana{sin}"
+              f" · archivo hasta {h['last']} · escrito hace {edad}")
+    if snap.unknown:
+        print("  AVISO: nombres que la tabla de alias no reconoce. Sus partidos "
+              "NO se predijeron")
+        print("  (se salta antes que adivinar: un id equivocado es una "
+              "prediccion huerfana e inmutable):")
+        for lg, name in snap.unknown:
+            print(f"    {lg}: {name!r}  -> agregar a src/marcador/aliases.py")
+        print("  05_score.py los va a reportar en missed.csv cuando se jueguen.")
+    return bool(snap.errors) or bool(snap.unknown)
+
+
+def pending_fixtures(con, today, league, now_utc=None,
+                     horizon_days=FIXTURES_LOOKAHEAD_DAYS):
+    """Partidos de una liga sin resultado, de hoy hasta `horizon_days` adelante,
+    cuyo kickoff no haya pasado.
+
+    Los tres filtros son la regla 3 aplicada de tres formas:
+
+    · Fecha pasada sin resultado no es un partido por jugar, es uno cuyo
+      resultado no han publicado (o se aplazo). Predecirlo seria emitir
+      despues del kickoff.
+    · Kickoff pasado, mismo caso pero con la hora, que desde el 2026-09-10
+      esta disponible en UTC real para lo que viene de fixtures.py.
+    · Y el TOPE hacia adelante, que hasta ese dia no hacia falta porque la
+      fuente solo mostraba tres dias: con la temporada completa a la vista,
+      sin tope se predeciria un partido de mayo con el modelo de septiembre —
+      y como una prediccion escrita no se reemplaza, esa seria la que quedaria.
+      Cada partido se predice lo mas cerca posible del kickoff, no lo mas
+      pronto posible.
+    """
+    now_utc = now_utc or dt.datetime.now(dt.timezone.utc)
+    horizon = today + dt.timedelta(days=horizon_days)
     return con.execute(
         """SELECT match_id, match_date, home_team, away_team, kickoff_utc
            FROM matches
-           WHERE league = ? AND ftr IS NULL AND match_date >= ?
+           WHERE league = ? AND ftr IS NULL
+             AND match_date >= ? AND match_date <= ?
+             AND (kickoff_utc IS NULL OR kickoff_utc > ?)
            ORDER BY match_date, home_team""",
-        (league, today.isoformat())).fetchall()
+        (league, today.isoformat(), horizon.isoformat(),
+         now_utc.strftime("%Y-%m-%dT%H:%M"))).fetchall()
 
 
 def train_recalibration(con, cfg, spec):
@@ -102,29 +155,10 @@ def main():
     today = dt.date.today()
     con = db.init_db()
 
-    n_played, n_new, fx = refresh_data(con)
+    n_played, n_new, snap = refresh_data(con)
     print(f"Datos: {n_played} partidos de la temporada en curso · "
           f"{n_new} fixtures nuevos")
-
-    # El estado de la fuente se reporta SIEMPRE, haya partidos o no. Es la
-    # unica forma de que el log distinga "no juega nadie" de "la foto de la
-    # fuente lleva dias congelada" (ver FIXTURES_STALE_HOURS en config).
-    resumen = ingest.fixtures_summary(fx.path)
-    ligas = ", ".join(f"{k}:{v}" for k, v in sorted(resumen["leagues"].items()))
-    print(f"Fuente de fixtures: {fx.describe()} · {resumen['n']} partidos"
-          + (f" del {resumen['first']} al {resumen['last']}"
-             if resumen["first"] else ""))
-    print(f"  ligas en el archivo: {ligas or '(ninguna)'}")
-    nuestras = [lg for lg in LEAGUES if lg in resumen["leagues"]]
-    if not nuestras:
-        print(f"  NINGUNA de las nuestras ({', '.join(LEAGUES)}) esta en la foto.")
-    if fx.is_stale:
-        edad = (f"{fx.age_hours:.0f} h" if fx.age_hours is not None
-                else "un tiempo que la fuente no declara")
-        print(f"  AVISO: la foto lleva {edad} sin regenerarse. Mientras no la "
-              f"regenere,")
-        print(f"  ninguna jornada nueva puede entrar por mucho que corra "
-              f"este job.")
+    source_problem = report_source(snap, today)
 
     champ = promotion.read_champion()
     cfg = champ["config"] if champ else ModelConfig(
@@ -145,14 +179,13 @@ def main():
         # jornadas en silencio. Que un partido llegue a jugarse sin prediccion
         # lo verifica ademas 05_score.py, pero eso se sabe DESPUES del kickoff;
         # esto se sabe antes.
-        if fx.is_stale:
-            print("Sin partidos que predecir, y la foto de la fuente esta "
-                  "rancia: NO se puede")
-            print("concluir que no haya jornada. Revisar si la fuente se "
-                  "destrabo.")
+        if source_problem:
+            print("Sin partidos que predecir, pero la fuente tuvo problemas "
+                  "(ver arriba): NO se puede")
+            print("concluir que no haya jornada.")
         else:
-            print("No hay partidos por jugar sin prediccion, y la foto de la "
-                  "fuente esta al dia:")
+            print("No hay partidos por jugar sin prediccion, y la fuente "
+                  "esta completa:")
             print("no hay jornada en la ventana. Nada que hacer.")
         return 0
 

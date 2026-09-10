@@ -513,6 +513,44 @@ y esa es la misma lógica de fallar cerrado que usa el guardia de pre-commit.
 Esto no arregla que la foto sea vieja —eso solo lo arregla cambiar de fuente
 para los fixtures— pero convierte un fallo silencioso en uno que se ve.
 
+### Y el mismo día, se cambió de fuente para los fixtures
+
+El detector duró unas horas en producción: a la siguiente lectura la foto
+llevaba **49 h** congelada y la jornada arrancaba al día siguiente. Los próximos
+partidos vienen ahora de **fixturedownload.com**, un CSV por liga con la
+temporada completa (380 partidos las de 20 equipos, 306 las de 18), hora de
+kickoff en UTC, y sin registro ni API key. Football-data.co.uk sigue siendo la
+fuente del histórico, de los resultados y de las **cuotas de cierre** — eso no
+cambia, y es lo que obliga a lo que viene.
+
+**Los nombres son el costo real del cambio.** El `match_id` se construye con la
+fecha y los nombres de los dos equipos, y el resultado va a llegar desde
+football-data.co.uk con *sus* nombres: `Sevilla`, `Ath Bilbao`, `Man United`.
+Si el fixture se hubiera escrito como `Sevilla FC`, el id sería otro, la
+predicción nunca se conectaría con el resultado, y por la regla 3 tampoco se
+podría corregir. `src/marcador/aliases.py` traduce los 96 equipos al
+vocabulario canónico **antes** de crear el id. Un nombre que la tabla no
+reconozca **salta el partido con aviso** — nunca se adivina, porque un id
+equivocado es una predicción huérfana e inmutable, y `05_score.py` lo va a
+reportar en `missed.csv` cuando se juegue.
+
+Se comprobó sobre 99 partidos ya jugados que la fecha UTC de la fuente nueva
+coincide con la que guarda football-data.co.uk en los 99.
+
+**Lo que la temporada completa obligó a añadir: un tope hacia adelante.** Con
+la fuente anterior no hacía falta, mostraba tres días. Con toda la temporada a
+la vista, `04_predict.py` habría emitido 1.606 predicciones de golpe — un
+partido de mayo predicho con el modelo de septiembre, y como una predicción
+escrita no se reemplaza, esa sería la que contaría. Ahora se predice solo lo
+que cae en los próximos `FIXTURES_LOOKAHEAD_DAYS` (3) y cuyo kickoff no haya
+pasado. Cada partido se predice lo más cerca posible del kickoff, no lo más
+pronto posible.
+
+**Lo que no se pudo verificar.** fixturedownload.com no publica términos de uso
+(solo tiene `/privacy`) ni dice de dónde saca los datos. Se usa como puente,
+detrás de una capa de proveedor (`fixtures.py`) diseñada para que cambiar a una
+API con términos explícitos sea reemplazar una función y la tabla de alias.
+
 ### Dónde viven las predicciones, y por qué importa
 
 En `ledger/`, en texto plano y versionado — no en la base de datos, que está
@@ -621,11 +659,18 @@ más altos que los que reportaba el README antes de la F4. El baseline viejo
 (`market-close-v1`) se conserva intacto en la base y el nuevo se registra como
 `market-avgclose-v1`: dos referencias distintas no comparten nombre.
 
-## Fuente de datos
+## Fuentes de datos
 
-[football-data.co.uk](https://football-data.co.uk) — CSV por temporada y liga,
-gratuitos. Traen resultado, corners, tarjetas, tiros, tiros a puerta, árbitro y
-cuotas de varias casas incluyendo las de cierre.
+**Histórico, resultados y cuotas:** [football-data.co.uk](https://football-data.co.uk)
+— CSV por temporada y liga, gratuitos. Traen resultado, corners, tarjetas,
+tiros, tiros a puerta, árbitro y cuotas de varias casas incluyendo las de
+cierre.
+
+**Próximos partidos:** [fixturedownload.com](https://fixturedownload.com) —
+un CSV por liga con la temporada completa y hora en UTC. Desde el 2026-09-10;
+antes venían del `fixtures.csv` de football-data.co.uk, que es una foto de
+tres días que la fuente regenera cuando quiere (ver «Y el mismo día, se cambió
+de fuente»). Los nombres de equipo se traducen en `aliases.py`.
 
 Dos cosas que cuestan tiempo si uno no las sabe, y que ya están resueltas en el
 código:
