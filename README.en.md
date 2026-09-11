@@ -439,6 +439,28 @@ Three GitHub Actions workflows run on a schedule:
 | `predict.yml` | every 4 h (01, 05, 09, 13, 17, 21 UTC) | Downloads upcoming fixtures, fits the model, emits predictions |
 | `retrain.yml` | Mondays 06:00 UTC | Searches for a challenger, runs the gate, diagnoses where it fails |
 
+### Source health stays in the ledger
+
+Since 2026-09-11, every `04_predict.py` run leaves one row per league in
+`ledger/source_health.csv`: matches in the window, how many without a confirmed
+time, the file's last date, how long it had gone without regenerating, and any
+download error or unknown team name. Until then all of that lived only in
+Actions logs, which expire; "how often was the source wrong?" had no answer
+with data. It costs one commit per run even with no new prediction (the
+message says "salud de la fuente"), and that's the price of judging the new
+source against the old with a series rather than an anecdote.
+
+### `kickoff_utc` said UTC and was UK time
+
+The history source doesn't document the time zone of its `Time` column. It was
+measured against the fixtures source's UTC on 144 already-played matches across
+the five leagues: **exactly +1 hour in all 144**. It's UK time — BST in summer,
+GMT in winter — not UTC and not each country's local time (Spain or Italy would
+have given +2). Ingest now converts with `Europe/London → UTC`, a real time zone
+rather than a fixed offset, so the clock change doesn't break it twice a year.
+`match_date` is untouched: it's the source's date and forms the `match_id`.
+Verified after re-ingesting: 144 of 144 at zero.
+
 ### Where predictions live, and why it matters
 
 In `ledger/`, as plain versioned text — not in the database, which is gitignored

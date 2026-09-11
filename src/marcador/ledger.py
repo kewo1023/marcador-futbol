@@ -28,8 +28,9 @@ import csv
 import datetime as dt
 from pathlib import Path
 
-from .config import (LEDGER_DIR, LEDGER_FIXTURES, LEDGER_METRICS,
-                     LEDGER_MISSED, LEDGER_PREDICTIONS, LEDGER_RESULTS)
+from .config import (LEDGER_DIR, LEDGER_FIXTURES, LEDGER_HEALTH,
+                     LEDGER_METRICS, LEDGER_MISSED, LEDGER_PREDICTIONS,
+                     LEDGER_RESULTS)
 
 PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                "model_version", "market", "outcome", "prob", "mode",
@@ -53,6 +54,11 @@ MISSED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                  "ftr", "detected_at"]
 FIXTURE_FIELDS = ["match_id", "match_date", "kickoff_utc", "home_team",
                   "away_team", "updated_at"]
+# checked_at: cuando se miro. upcoming/unconfirmed: partidos en la ventana y
+# cuantos sin hora. file_age_hours: cuanto llevaba el archivo sin regenerarse.
+# error: que fallo al bajar, si algo. unknown_teams: nombres sin alias.
+HEALTH_FIELDS = ["checked_at", "league", "upcoming", "unconfirmed",
+                 "file_last_date", "file_age_hours", "error", "unknown_teams"]
 
 
 def _read(path: Path):
@@ -195,6 +201,20 @@ def upsert_fixtures(rows) -> int:
         _write(LEDGER_FIXTURES, FIXTURE_FIELDS,
                sorted(by_id.values(), key=lambda x: (x["match_date"], x["match_id"])))
     return changed
+
+
+def read_health():
+    return _read(LEDGER_HEALTH)
+
+
+def append_health(rows) -> int:
+    """Una fila por corrida y liga. Append puro: es una serie de tiempo, y
+    dos corridas iguales seguidas son un dato (la fuente no cambio), no un
+    duplicado."""
+    if not rows:
+        return 0
+    _write(LEDGER_HEALTH, HEALTH_FIELDS, read_health() + list(rows))
+    return len(rows)
 
 
 def read_missed():

@@ -408,6 +408,39 @@ ou_section("tarjetas", "Tarjetas amarillas",
            "le falta para lo alcanzable. En cinco ligas es el mercado de "
            "mayor ganancia sobre la base.")
 
+# --- Salud de la fuente de fixtures ------------------------------------------
+health = pd.DataFrame(ledger.read_health())
+if not health.empty:
+    st.subheader("Salud de la fuente de fixtures")
+    st.caption("Una fila por corrida y liga, desde el ledger. `sin hora` son "
+               "partidos en la ventana cuya hora la liga aún no confirmó; "
+               "`archivo hace` es cuánto llevaba el archivo sin regenerarse. "
+               "Un error o un nombre sin alias aquí es un partido que no se "
+               "predijo.")
+    h = health.copy()
+    h["checked_at"] = h["checked_at"].str[:16].str.replace("T", " ")
+    h["file_age_hours"] = pd.to_numeric(h["file_age_hours"], errors="coerce")
+    last = h["checked_at"].max()
+    latest = h[h["checked_at"] == last]
+    problems = h[(h["error"] != "") | (h["unknown_teams"] != "")]
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Corridas registradas", h["checked_at"].nunique())
+    c2.metric("Última", last + " UTC")
+    c3.metric("Corridas con problema", problems["checked_at"].nunique(),
+              delta=None if problems.empty else "revisar", delta_color="inverse")
+    view = (latest.rename(columns={"league": "liga", "upcoming": "en ventana",
+                                   "unconfirmed": "sin hora",
+                                   "file_last_date": "archivo hasta",
+                                   "file_age_hours": "archivo hace (h)",
+                                   "unknown_teams": "sin alias"})
+            [["liga", "en ventana", "sin hora", "archivo hasta",
+              "archivo hace (h)", "error", "sin alias"]])
+    view["liga"] = view["liga"].map(lambda c: LEAGUES.get(c, c))
+    st.dataframe(view, use_container_width=True, hide_index=True)
+    if not problems.empty:
+        st.warning(f"{len(problems)} filas con error o nombre sin alias en el "
+                   "historial. Última: " + problems["checked_at"].max())
+
 mk_path = ledger.LEDGER_DIR / "markets.csv"
 if mk_path.exists():
     st.subheader("Otros mercados")

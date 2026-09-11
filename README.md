@@ -679,6 +679,30 @@ contra ella. `results.csv` guarda `sot`, el total del partido. Con esto los
 cuatro mercados de la F5 que le ganan a la base en cinco ligas están en vivo,
 menos corners, que es el de señal más débil.
 
+### La salud de la fuente queda en el ledger
+
+Desde el 2026-09-11, cada corrida de `04_predict.py` deja una fila por liga en
+`ledger/source_health.csv`: cuántos partidos hay en la ventana, cuántos sin hora
+confirmada, hasta qué fecha llega el archivo, cuánto llevaba sin regenerarse, y
+si hubo error de descarga o nombres sin alias. Hasta ese día todo eso vivía
+solo en el log de Actions, que expira; la pregunta «¿cuántas veces estuvo mal
+la fuente?» no tenía respuesta con datos. Cuesta un commit por corrida aunque
+no haya predicción nueva (el mensaje lo distingue: «salud de la fuente»), y es
+el precio de poder juzgar la fuente nueva contra la vieja con una serie y no
+con una anécdota. El dashboard muestra la última corrida y cuenta las que
+tuvieron problema.
+
+### `kickoff_utc` decía UTC y era hora del Reino Unido
+
+La fuente del histórico no documenta la zona de su columna `Time`. Se midió
+contra la hora UTC de la fuente de fixtures sobre 144 partidos ya jugados de las
+cinco ligas: **+1 hora exacta en los 144**. Es hora del Reino Unido —BST en
+verano, GMT en invierno—, no UTC ni la hora local de cada país (España o Italia
+habrían dado +2). La ingesta la convierte ahora con `Europe/London → UTC`, con
+zona horaria real y no una resta fija, para que el cambio de horario no la
+rompa dos veces al año. `match_date` no se toca: es la fecha de la fuente y
+forma el `match_id`. Verificado tras re-ingestar: 144 de 144 a cero.
+
 ### Dónde viven las predicciones, y por qué importa
 
 En `ledger/`, en texto plano y versionado — no en la base de datos, que está

@@ -77,8 +77,14 @@ jobs:
           N=$(git diff --cached --numstat ledger/predictions.csv | awk '{print $1}')
           if [ -n "$N" ]; then
             git commit -m "predicciones: $(date -u +%Y-%m-%d) ($N filas)"
-          else
+          elif [ -n "$(git diff --cached --name-only ledger/fixtures.csv)" ]; then
             git commit -m "horas de partido: $(date -u +%Y-%m-%d)"
+          else
+            # Solo la salud de la fuente. Una fila por corrida y liga, a
+            # proposito: el log de Actions expira y esto no. Cuesta un commit
+            # por corrida, y es el precio de poder responder con datos
+            # "cuantas veces estuvo mal la fuente".
+            git commit -m "salud de la fuente: $(date -u +%Y-%m-%dT%H:%M)"
           fi
           git pull --rebase origin main
           git push origin main

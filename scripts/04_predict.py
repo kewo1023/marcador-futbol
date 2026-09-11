@@ -49,13 +49,31 @@ def refresh_data(con):
     return n_played, n_new, snap
 
 
-def report_source(snap, today):
+def report_source(snap, today, dry=False):
     """El estado de la fuente de fixtures, SIEMPRE, haya partidos o no.
 
-    Devuelve True si algo impide confiar en que 'no hay partidos' signifique
-    que no hay jornada: una liga que no bajo, o equipos sin alias.
+    Lo imprime y lo deja en ledger/source_health.csv, una fila por liga. El
+    log de Actions expira; el ledger no. Devuelve True si algo impide confiar
+    en que 'no hay partidos' signifique que no hay jornada: una liga que no
+    bajo, o equipos sin alias.
     """
     salud = fixtures.health(snap, today)
+    stamp = ledger.now_iso()
+    unknown_by_lg = {}
+    for lg, name in snap.unknown:
+        unknown_by_lg.setdefault(lg, []).append(name)
+    health_rows = []
+    for lg in LEAGUES:
+        h = salud.get(lg, {})
+        health_rows.append({
+            "checked_at": stamp, "league": lg,
+            "upcoming": h.get("upcoming", ""), "unconfirmed": h.get("unconfirmed", ""),
+            "file_last_date": h.get("last") or "",
+            "file_age_hours": (f"{h['age_hours']:.1f}" if h.get("age_hours") is not None else ""),
+            "error": snap.errors.get(lg, ""),
+            "unknown_teams": "|".join(unknown_by_lg.get(lg, []))})
+    if not dry:
+        ledger.append_health(health_rows)
     print(f"Fuente de fixtures: fixturedownload.com · {len(snap.files)} de "
           f"{len(LEAGUES)} ligas bajadas · ventana de {FIXTURES_LOOKAHEAD_DAYS} dias")
     for lg in LEAGUES:
@@ -161,7 +179,7 @@ def main():
     n_played, n_new, snap = refresh_data(con)
     print(f"Datos: {n_played} partidos de la temporada en curso · "
           f"{n_new} fixtures nuevos")
-    source_problem = report_source(snap, today)
+    source_problem = report_source(snap, today, dry=dry)
 
     champ = promotion.read_champion()
     cfg = champ["config"] if champ else ModelConfig(

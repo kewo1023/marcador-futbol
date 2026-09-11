@@ -166,6 +166,12 @@ LEDGER_MISSED = LEDGER_DIR / "missed.csv"
 # las dos en un archivo obligaria a reescribir filas de prediccion para
 # corregir un dato que no es de la prediccion.
 LEDGER_FIXTURES = LEDGER_DIR / "fixtures.csv"
+# Una fila por corrida y por liga con lo que la fuente de fixtures traia en ese
+# momento. Hasta el 2026-09-11 esto solo quedaba en el log de Actions, que
+# expira: no habia forma de responder "cuantas veces estuvo mal la fuente" con
+# datos. Es lo que permite juzgar la fuente nueva contra la vieja, y detectar
+# una degradacion antes de que se pierda una jornada.
+LEDGER_HEALTH = LEDGER_DIR / "source_health.csv"
 
 # --- Mercados en vivo ademas del 1X2 ----------------------------------------
 # Tarjetas amarillas, goles over/under 2.5 y tiros a puerta. Tarjetas fue el

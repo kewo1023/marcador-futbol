@@ -8,6 +8,7 @@ import datetime as dt
 import email.utils
 import io
 import urllib.request
+import zoneinfo
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -51,9 +52,22 @@ def parse_date(raw: str) -> str | None:
     return None
 
 
+# La fuente no documenta la zona de su columna Time. Se midio el 2026-09-11
+# contra la hora UTC de la fuente de fixtures sobre 144 partidos ya jugados de
+# las cinco ligas: +1 hora exacta en los 144, en septiembre. Es hora del Reino
+# Unido (BST en verano, GMT en invierno), no UTC ni la hora local de cada pais
+# — Espana o Italia habrian dado +2. Hasta ese dia la columna kickoff_utc del
+# historico guardaba esa hora sin convertir, con un nombre que mentia.
+SOURCE_TZ = zoneinfo.ZoneInfo("Europe/London")
+
+
 def parse_kickoff(date_iso: str, raw_time: str | None) -> str | None:
-    """La hora solo existe desde la temporada 2019/20. Si no está, queda NULL:
-    inventarla sería peor que no tenerla."""
+    """La hora, convertida a UTC de verdad. Solo existe desde 2019/20; si no
+    está, queda NULL: inventarla sería peor que no tenerla.
+
+    La fecha de la fila (match_date) NO se toca: es la de la fuente y es la
+    que forma el match_id. Solo kickoff_utc lleva la conversion, y en el caso
+    raro de un partido pasada la medianoche puede caer en otro dia."""
     raw_time = (raw_time or "").strip()
     if not date_iso or not raw_time:
         return None
@@ -61,7 +75,8 @@ def parse_kickoff(date_iso: str, raw_time: str | None) -> str | None:
         t = dt.datetime.strptime(raw_time, "%H:%M").time()
     except ValueError:
         return None
-    return f"{date_iso}T{t.isoformat(timespec='minutes')}"
+    local = dt.datetime.combine(dt.date.fromisoformat(date_iso), t, tzinfo=SOURCE_TZ)
+    return local.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M")
 
 
 def make_match_id(league: str, date_iso: str, home: str, away: str) -> str:
