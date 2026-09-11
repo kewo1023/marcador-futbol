@@ -53,7 +53,7 @@ def collect_results(con, predicted_ids):
         q = ",".join("?" * len(chunk))
         for r in con.execute(
                 f"""SELECT match_id, match_date, home_team, away_team,
-                           fthg, ftag, ftr, hy, ay,
+                           fthg, ftag, ftr, hy, ay, hst, ast,
                            avgch, avgcd, avgca, psch, pscd, psca,
                            avgc_o25, avgc_u25
                     FROM matches WHERE ftr IS NOT NULL AND match_id IN ({q})""",
@@ -75,6 +75,9 @@ def collect_results(con, predicted_ids):
                         "yellows": (r["hy"] + r["ay"]
                                     if r["hy"] is not None and r["ay"] is not None
                                     else ""),
+                        "sot": (r["hst"] + r["ast"]
+                                if r["hst"] is not None and r["ast"] is not None
+                                else ""),
                         "recorded_at": now})
     return out
 

@@ -168,8 +168,8 @@ LEDGER_MISSED = LEDGER_DIR / "missed.csv"
 LEDGER_FIXTURES = LEDGER_DIR / "fixtures.csv"
 
 # --- Mercados en vivo ademas del 1X2 ----------------------------------------
-# Tarjetas amarillas y goles over/under 2.5. Tarjetas fue el primero, y la
-# razon original era medida sobre una
+# Tarjetas amarillas, goles over/under 2.5 y tiros a puerta. Tarjetas fue el
+# primero, y la razon original era medida sobre una
 # liga: en la F5 (08_markets.py, Premier) era el UNICO mercado que le ganaba a
 # la frecuencia base de forma concluyente. Al medir sobre las cinco ligas
 # (12_markets_multi.py, 2026-09-10) los cuatro mercados resultaron ganarle,
@@ -215,6 +215,14 @@ LIVE_MARKETS = {
         "lines": (2.5,),
         "w": {2.5: 0.7},
         "version_suffix": "goles-w-5l",
+    },
+    # Tiros a puerta: el segundo mercado de mayor ganancia sobre la base en
+    # cinco ligas (+0.021 en 9.5). Sin cuota en la fuente, asi que se mide
+    # solo contra la base, como tarjetas. w de 12_markets_multi.py.
+    "tiros_puerta": {
+        "lines": (7.5, 8.5, 9.5),
+        "w": {7.5: 0.6, 8.5: 0.7, 9.5: 0.7},
+        "version_suffix": "sot-w-5l",
     },
 }
 BASE_MODEL_VERSION = "base-freq-v1"

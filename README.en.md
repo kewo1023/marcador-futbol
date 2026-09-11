@@ -499,7 +499,7 @@ of matches, that column is the live log loss at the top of the page. `05_score`
 evaluates the market on exactly the matches the model has complete with odds,
 under the same name the backtest uses, so "test" and "live" read side by side.
 
-### The live over/under markets: yellow cards and goals 2.5
+### The live over/under markets: cards, goals 2.5 and shots on target
 
 Of the four markets, cards has the largest gain over the base rate, so it's the
 one emitted live. Three things it does differently from 1X2:
@@ -533,6 +533,13 @@ the base, which cards already does. It signs as
 `dc-xi0020-reg002-rho+goles-w-5l` — with rho, since goals use it, and with the
 market name in the suffix because the slug would otherwise look dangerously like
 the 1X2 champion's. `w` = 0.7, the five-league value.
+
+**Shots on target is emitted since 2026-09-11** (`dc-xi0020-reg002-norho+sot-w-5l`,
+lines 7.5 / 8.5 / 9.5, `w` = 0.6 / 0.7 / 0.7 from five leagues). It's the
+second-largest gain over the base rate; with no odds in the source, it's
+measured against the base alone. `results.csv` stores `sot`, the match total.
+With this, all the Phase 5 markets that beat the base on five leagues are live
+except corners, the weakest signal.
 
 ### On the Streamlit Cloud deployment
 

@@ -298,6 +298,14 @@ def ou_section(key, title, blurb):
     if df.empty:
         return
     model = OU_MODEL.get(key, "")
+    if not model:
+        # Streamlit Cloud puede tener un config.py viejo en memoria (ver README,
+        # 'reboot'). Antes que dejar la seccion vacia, se toma la version mas
+        # reciente que el ledger tenga para este mercado: el ledger si llega
+        # fresco. La anotacion de abajo dice que paso.
+        cands = df[df["model_version"] != BASE_MODEL]
+        if not cands.empty:
+            model = cands.sort_values("created_at")["model_version"].iloc[-1]
     st.subheader(title)
     st.caption(blurb + f" Modelo en producción: `{model}`.")
     df = df.copy()
@@ -387,6 +395,11 @@ ou_section("goles", "Goles over/under 2.5",
            "el único donde se puede saber si el modelo le gana **al mercado** y "
            "no solo a la frecuencia base. En la Premier perdía por 0.0038; con "
            "cinco ligas en vivo se va a saber si eso es real.")
+ou_section("tiros_puerta", "Tiros a puerta",
+           "Mismo motor, otra columna. `>8.5` es la probabilidad de que el "
+           "partido tenga nueve o más tiros a puerta entre los dos equipos. "
+           "Sin cuota en la fuente: se mide contra la frecuencia base. En cinco "
+           "ligas es el segundo mercado de mayor ganancia sobre la base.")
 ou_section("tarjetas", "Tarjetas amarillas",
            "Mismo motor, otra columna. `>3.5` es la probabilidad de que el "
            "partido tenga cuatro amarillas o más. La referencia es la "

@@ -1,4 +1,4 @@
-"""Mercados en vivo ademas del 1X2: tarjetas amarillas y goles over/under 2.5.
+"""Mercados en vivo ademas del 1X2: tarjetas, goles over/under 2.5 y tiros a puerta.
 
 Es la F5 puesta a emitir. 08_markets.py midio cuatro mercados en backtest y
 concluyo que solo tarjetas le gana a la frecuencia base de forma concluyente;
@@ -125,15 +125,17 @@ def actual_outcome(total, line):
 def actual_total(key: str, result_row) -> int | None:
     """El total real del evento en una fila de results.csv, o None si falta.
 
-    Goles salen del marcador, que siempre esta; tarjetas de `yellows`, que se
-    guarda aparte y puede faltar en filas anteriores a esa columna.
+    Goles salen del marcador, que siempre esta; tarjetas de `yellows` y tiros
+    a puerta de `sot`, que se guardan aparte y pueden faltar en filas
+    anteriores a esas columnas.
     """
     if key == "goles":
         try:
             return int(result_row["fthg"]) + int(result_row["ftag"])
         except (KeyError, TypeError, ValueError):
             return None
-    if key == "tarjetas":
-        v = result_row.get("yellows", "")
+    col = {"tarjetas": "yellows", "tiros_puerta": "sot"}.get(key)
+    if col:
+        v = result_row.get(col, "")
         return int(v) if v not in ("", None) else None
     return None

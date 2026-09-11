@@ -604,7 +604,7 @@ pronto posible.
 detrás de una capa de proveedor (`fixtures.py`) diseñada para que cambiar a una
 API con términos explícitos sea reemplazar una función y la tabla de alias.
 
-### Los mercados over/under en vivo: tarjetas amarillas y goles 2.5
+### Los mercados over/under en vivo: tarjetas, goles 2.5 y tiros a puerta
 
 Es la F5 puesta a emitir, y solo una parte de ella. De los cuatro mercados que
 `08_markets.py` midió en backtest, **tarjetas amarillas es el único que le gana
@@ -671,6 +671,13 @@ medirían contra la base, que es lo que tarjetas ya hace. Firma como
 `dc-xi0020-reg002-rho+goles-w-5l` — con rho, porque goles lo usa, y con el
 nombre del mercado en el sufijo porque el slug quedaría peligrosamente parecido
 al del campeón del 1X2. `w` = 0.7, el de cinco ligas.
+
+**Tiros a puerta se emite desde el 2026-09-11** (`dc-xi0020-reg002-norho+sot-w-5l`,
+líneas 7.5 / 8.5 / 9.5, `w` = 0.6 / 0.7 / 0.7 de cinco ligas). Es el segundo
+mercado de mayor ganancia sobre la base; sin cuota en la fuente, se mide solo
+contra ella. `results.csv` guarda `sot`, el total del partido. Con esto los
+cuatro mercados de la F5 que le ganan a la base en cinco ligas están en vivo,
+menos corners, que es el de señal más débil.
 
 ### Dónde viven las predicciones, y por qué importa
 

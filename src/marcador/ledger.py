@@ -43,9 +43,10 @@ PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
 # market_o25 / market_u25: la probabilidad implicita de la cuota de cierre de
 # over/under 2.5 goles, sin margen — el techo del unico mercado over/under que
 # lo tiene. Vacios si la fuente no los trae para ese partido.
+# sot: total de tiros a puerta del partido, para ese mercado.
 RESULT_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                  "fthg", "ftag", "ftr", "market_h", "market_d", "market_a",
-                 "market_o25", "market_u25", "yellows", "recorded_at"]
+                 "market_o25", "market_u25", "yellows", "sot", "recorded_at"]
 METRIC_FIELDS = ["model_version", "market", "eval_set", "n_matches",
                  "log_loss", "brier", "accuracy", "computed_at"]
 MISSED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
