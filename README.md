@@ -604,7 +604,7 @@ pronto posible.
 detrás de una capa de proveedor (`fixtures.py`) diseñada para que cambiar a una
 API con términos explícitos sea reemplazar una función y la tabla de alias.
 
-### El segundo mercado en vivo: tarjetas amarillas
+### Los mercados over/under en vivo: tarjetas amarillas y goles 2.5
 
 Es la F5 puesta a emitir, y solo una parte de ella. De los cuatro mercados que
 `08_markets.py` midió en backtest, **tarjetas amarillas es el único que le gana
@@ -657,8 +657,20 @@ puerta es el siguiente candidato.
 
 `results.csv` guarda ahora `yellows` (el total del partido) junto al marcador, y
 `metrics.csv` lleva una fila por (modelo, mercado, `live`). En el dashboard hay
-una sección propia: probabilidad de over por línea para lo que viene, y para lo
-jugado, cuánto le dio el modelo y cuánto la base a lo que pasó.
+una sección por mercado: probabilidad de over por línea para lo que viene, y
+para lo jugado, cuánto le dio el modelo y cuánto la referencia a lo que pasó.
+
+**Goles over/under 2.5 se emite desde el 2026-09-11, y por una razón distinta a
+la de tarjetas:** es el único mercado nuevo con cuota de cierre en la fuente.
+Contra la frecuencia base cualquier modelo decente gana; contra el mercado es la
+prueba de verdad, y en la Premier el modelo perdía por 0.0038. `results.csv`
+guarda `market_o25`/`market_u25` (probabilidad implícita de cierre, sin margen)
+y el marcador en vivo evalúa al mercado sobre los mismos partidos, igual que en
+el 1X2. Solo la línea 2.5, a propósito: 1.5 y 3.5 no tienen cuota y solo se
+medirían contra la base, que es lo que tarjetas ya hace. Firma como
+`dc-xi0020-reg002-rho+goles-w-5l` — con rho, porque goles lo usa, y con el
+nombre del mercado en el sufijo porque el slug quedaría peligrosamente parecido
+al del campeón del 1X2. `w` = 0.7, el de cinco ligas.
 
 ### Dónde viven las predicciones, y por qué importa
 

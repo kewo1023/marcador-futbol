@@ -40,10 +40,12 @@ PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
 # desde el ledger solo, si el modelo puso mas o menos que el mercado en lo que
 # paso. Es un dato derivado (regla 2): ni la cuota cruda ni la de ninguna casa.
 # yellows: total de amarillas del partido, para evaluar el mercado de tarjetas.
-# Vacio si la fuente no lo trae para ese partido.
+# market_o25 / market_u25: la probabilidad implicita de la cuota de cierre de
+# over/under 2.5 goles, sin margen — el techo del unico mercado over/under que
+# lo tiene. Vacios si la fuente no los trae para ese partido.
 RESULT_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                  "fthg", "ftag", "ftr", "market_h", "market_d", "market_a",
-                 "yellows", "recorded_at"]
+                 "market_o25", "market_u25", "yellows", "recorded_at"]
 METRIC_FIELDS = ["model_version", "market", "eval_set", "n_matches",
                  "log_loss", "brier", "accuracy", "computed_at"]
 MISSED_FIELDS = ["match_id", "match_date", "home_team", "away_team",

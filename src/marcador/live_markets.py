@@ -1,4 +1,4 @@
-"""Mercados en vivo ademas del 1X2. Hoy: tarjetas amarillas.
+"""Mercados en vivo ademas del 1X2: tarjetas amarillas y goles over/under 2.5.
 
 Es la F5 puesta a emitir. 08_markets.py midio cuatro mercados en backtest y
 concluyo que solo tarjetas le gana a la frecuencia base de forma concluyente;
@@ -35,11 +35,12 @@ OUTCOMES_OU = ("OVER", "UNDER")
 def market_version(cfg: ModelConfig, key: str) -> str:
     """El nombre con el que este mercado firma en el ledger.
 
-    Ni rho ni la capa de recalibracion aplican a tarjetas, asi que el modelo
-    de tarjetas NO es el campeon del 1X2 y no puede llevar su nombre. Es el
-    mismo motor con use_rho=False mas el sufijo del encogimiento.
+    La capa de recalibracion no aplica a ningun mercado over/under, y rho solo
+    a goles (Market.use_rho), asi que ninguno de estos modelos ES el campeon
+    del 1X2 ni puede llevar su nombre. Es el mismo motor con el rho que le
+    toca, mas el sufijo del encogimiento de ese mercado.
     """
-    base = ModelConfig(xi=cfg.xi, reg=cfg.reg, use_rho=False,
+    base = ModelConfig(xi=cfg.xi, reg=cfg.reg, use_rho=BY_KEY[key].use_rho,
                        refit_days=cfg.refit_days)
     return f"{base.slug()}+{LIVE_MARKETS[key]['version_suffix']}"
 
@@ -79,7 +80,8 @@ def predict(con, league, key, fixtures, cfg: ModelConfig, now_iso):
     train = training_rows(con, league, key, first)
     if not train:
         return [], None
-    fit = dc.fit(train, first, xi=cfg.xi, use_rho=False, reg=cfg.reg)
+    fit = dc.fit(train, first, xi=cfg.xi, use_rho=BY_KEY[key].use_rho,
+                 reg=cfg.reg)
     cutoff = max(t["date"] for t in train).isoformat()
     base = base_rates(train, lines)
     version = market_version(cfg, key)
@@ -118,3 +120,20 @@ def parse_market(code: str):
 
 def actual_outcome(total, line):
     return "OVER" if total > line else "UNDER"
+
+
+def actual_total(key: str, result_row) -> int | None:
+    """El total real del evento en una fila de results.csv, o None si falta.
+
+    Goles salen del marcador, que siempre esta; tarjetas de `yellows`, que se
+    guarda aparte y puede faltar en filas anteriores a esa columna.
+    """
+    if key == "goles":
+        try:
+            return int(result_row["fthg"]) + int(result_row["ftag"])
+        except (KeyError, TypeError, ValueError):
+            return None
+    if key == "tarjetas":
+        v = result_row.get("yellows", "")
+        return int(v) if v not in ("", None) else None
+    return None

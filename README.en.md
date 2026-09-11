@@ -499,7 +499,7 @@ of matches, that column is the live log loss at the top of the page. `05_score`
 evaluates the market on exactly the matches the model has complete with odds,
 under the same name the backtest uses, so "test" and "live" read side by side.
 
-### The second live market: yellow cards
+### The live over/under markets: yellow cards and goals 2.5
 
 Of the four markets, cards has the largest gain over the base rate, so it's the
 one emitted live. Three things it does differently from 1X2:
@@ -521,6 +521,18 @@ one emitted live. Three things it does differently from 1X2:
   over-trusted the model elsewhere. Five-league values: **0.7 / 0.6 / 0.6**. The
   first 43 predictions went out with the old `w` and are immutable; since then
   the new version is emitted, and `05_score` evaluates both.
+
+**Goals over/under 2.5 is emitted since 2026-09-11, for a different reason than
+cards:** it's the only new market with closing odds in the source. Against the
+base rate any decent model wins; against the market is the real test, and on the
+Premier League the model lost by 0.0038. `results.csv` stores
+`market_o25`/`market_u25` (closing implied probability, vig removed) and the live
+scoreboard evaluates the market on the same matches, as with 1X2. Only the 2.5
+line, deliberately: 1.5 and 3.5 have no odds and would only be measured against
+the base, which cards already does. It signs as
+`dc-xi0020-reg002-rho+goles-w-5l` — with rho, since goals use it, and with the
+market name in the suffix because the slug would otherwise look dangerously like
+the 1X2 champion's. `w` = 0.7, the five-league value.
 
 ### On the Streamlit Cloud deployment
 

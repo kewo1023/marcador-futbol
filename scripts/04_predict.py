@@ -172,19 +172,21 @@ def main():
     # Cada mercado lleva su propia lista de pendientes, porque cada uno firma
     # con su propio model_version: un partido puede tener el 1X2 emitido y las
     # tarjetas no (los 43 del primer lote, por ejemplo).
-    yc_version = live_markets.market_version(cfg, "tarjetas")
-    todo_by_league, todo_yc_by_league, in_window = {}, {}, []
+    ou_version = {k: live_markets.market_version(cfg, k) for k in LIVE_MARKETS}
+    todo_by_league, in_window = {}, []
+    todo_ou = {k: {} for k in LIVE_MARKETS}       # mercado -> liga -> fixtures
     already_1x2 = ledger.predicted_matches(version)
-    already_yc = ledger.predicted_matches(yc_version)
+    already_ou = {k: ledger.predicted_matches(v) for k, v in ou_version.items()}
     for league in LEAGUES:
         pend = pending_fixtures(con, today, league)
         in_window += pend
         todo = [f for f in pend if f["match_id"] not in already_1x2]
         if todo:
             todo_by_league[league] = todo
-        todo_yc = [f for f in pend if f["match_id"] not in already_yc]
-        if todo_yc:
-            todo_yc_by_league[league] = todo_yc
+        for k in LIVE_MARKETS:
+            t = [f for f in pend if f["match_id"] not in already_ou[k]]
+            if t:
+                todo_ou[k][league] = t
 
     # La hora de TODO lo que esta en la ventana, predicho o no todavia. Va a un
     # archivo aparte porque cambia (aplazamientos) y las predicciones no. Se
@@ -201,7 +203,7 @@ def main():
         if n_fx:
             print(f"Horas de partido: {n_fx} actualizadas en ledger/fixtures.csv")
 
-    if not todo_by_league and not todo_yc_by_league:
+    if not todo_by_league and not any(todo_ou.values()):
         # Los dos casos se leian igual hasta el 2026-09-10, y no son el mismo:
         # uno es el sistema funcionando y el otro es el sistema perdiendo
         # jornadas en silencio. Que un partido llegue a jugarse sin prediccion
@@ -266,51 +268,58 @@ def main():
                     "outcome": o, "prob": f"{probs[o]:.6f}", "mode": "live",
                     "info_cutoff": cutoff, "created_at": now})
 
-    # --- Segundo mercado: tarjetas amarillas ---------------------------------
-    # Mismo motor, otra columna (F5). Sin rho, sin recalibracion, encogido
-    # hacia la frecuencia base, y la base se emite como un modelo mas: es la
-    # unica referencia que hay, porque la fuente no publica cuota de tarjetas.
-    yc_rows, yc_lines = [], LIVE_MARKETS["tarjetas"]["lines"]
-    for league, todo in todo_yc_by_league.items():
-        rows, info = live_markets.predict(con, league, "tarjetas", todo, cfg, now)
-        if info is None:
-            print(f"\n  {league_label(league)}: sin historial de tarjetas, "
-                  f"no se emite este mercado.")
-            continue
-        yc_rows += rows
-        print(f"\n  {league_label(league)} — tarjetas amarillas "
-              f"(base: {', '.join(f'>{l} {info['base'][l]:.0%}' for l in yc_lines)})")
-        print(f"  {'partido':44}{'fecha':>12}"
-              + "".join(f"{'>'+str(l):>8}" for l in yc_lines))
-        by_match = {}
-        for r in rows:
-            if r["model_version"] == info["version"] and r["outcome"] == "OVER":
-                by_match.setdefault(r["match_id"], {})[r["market"]] = float(r["prob"])
-        for f in todo:
-            p = by_match.get(f["match_id"])
-            if not p:
+    # --- Mercados over/under: tarjetas y goles 2.5 ---------------------------
+    # Mismo motor, otra columna (F5). Sin recalibracion, encogido hacia la
+    # frecuencia base, y la base se emite como un modelo mas: para tarjetas es
+    # la unica referencia que hay; para goles 2.5 ademas existe la cuota de
+    # cierre, que 05_score guarda con el resultado.
+    ou_rows = {k: [] for k in LIVE_MARKETS}
+    for key, by_league in todo_ou.items():
+        lines = LIVE_MARKETS[key]["lines"]
+        label = BY_KEY[key].label.lower()
+        for league, todo in by_league.items():
+            rows, info = live_markets.predict(con, league, key, todo, cfg, now)
+            if info is None:
+                print(f"\n  {league_label(league)}: sin historial de {label}, "
+                      f"no se emite este mercado.")
                 continue
-            print(f"  {f['home_team'] + ' vs ' + f['away_team']:44}"
-                  f"{f['match_date']:>12}"
-                  + "".join(f"{p[live_markets.market_code(BY_KEY['tarjetas'], l)]*100:>7.1f}%"
-                            for l in yc_lines))
-        for f in info["skipped"]:
-            print(f"  {f['home_team'] + ' vs ' + f['away_team']:44}"
-                  f"{f['match_date']:>12}   (equipo sin historial, no se emite)")
-    new_rows += yc_rows
+            ou_rows[key] += rows
+            print(f"\n  {league_label(league)} — {label} "
+                  f"(base: {', '.join(f'>{l} {info['base'][l]:.0%}' for l in lines)})")
+            print(f"  {'partido':44}{'fecha':>12}"
+                  + "".join(f"{'>'+str(l):>8}" for l in lines))
+            by_match = {}
+            for r in rows:
+                if r["model_version"] == info["version"] and r["outcome"] == "OVER":
+                    by_match.setdefault(r["match_id"], {})[r["market"]] = float(r["prob"])
+            for f in todo:
+                p = by_match.get(f["match_id"])
+                if not p:
+                    continue
+                print(f"  {f['home_team'] + ' vs ' + f['away_team']:44}"
+                      f"{f['match_date']:>12}"
+                      + "".join(f"{p[live_markets.market_code(BY_KEY[key], l)]*100:>7.1f}%"
+                                for l in lines))
+            for f in info["skipped"]:
+                print(f"  {f['home_team'] + ' vs ' + f['away_team']:44}"
+                      f"{f['match_date']:>12}   (equipo sin historial, no se emite)")
+        new_rows += ou_rows[key]
 
     if dry:
         print("\n--dry-run: no se escribio nada.")
         return 0
 
-    if yc_rows:
-        register_model(con, yc_version, "dixon-coles",
-                       params={**cfg.to_dict(), "use_rho": False,
-                               "shrink": LIVE_MARKETS["tarjetas"]},
-                       notes="tarjetas amarillas en vivo; w y lineas de la F5 (Premier)")
+    for key, rows in ou_rows.items():
+        if not rows:
+            continue
+        register_model(con, ou_version[key], "dixon-coles",
+                       params={**cfg.to_dict(), "use_rho": BY_KEY[key].use_rho,
+                               "shrink": LIVE_MARKETS[key]},
+                       notes=f"{BY_KEY[key].label} en vivo; w de 12_markets_multi (5 ligas)")
+    if any(ou_rows.values()):
         register_model(con, BASE_MODEL_VERSION, "baseline",
                        params={"what": "frecuencia de OVER en la liga antes del partido"},
-                       notes="referencia para mercados sin cuota")
+                       notes="referencia para mercados over/under")
 
     # La base del runner nace vacia en cada corrida, y `predictions` exige que
     # el modelo exista en `model_versions`. Solo 02 y 03 registraban, y esos no
@@ -332,9 +341,11 @@ def main():
     con.commit()
     n = ledger.append_predictions(new_rows)
     n_1x2 = sum(1 for r in new_rows if r["market"] == MARKET_1X2) // len(OUTCOMES)
-    n_yc = len({r["match_id"] for r in yc_rows})
+    por_mercado = ", ".join(
+        f"{len({r['match_id'] for r in rows})} de {BY_KEY[k].label.lower()}"
+        for k, rows in ou_rows.items())
     print(f"\n{n} filas nuevas en el ledger: {n_1x2} partidos de 1X2, "
-          f"{n_yc} de tarjetas.")
+          f"{por_mercado}.")
     return 0
 
 

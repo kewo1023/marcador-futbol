@@ -168,7 +168,8 @@ LEDGER_MISSED = LEDGER_DIR / "missed.csv"
 LEDGER_FIXTURES = LEDGER_DIR / "fixtures.csv"
 
 # --- Mercados en vivo ademas del 1X2 ----------------------------------------
-# Solo tarjetas amarillas, por ahora. La razon original era medida sobre una
+# Tarjetas amarillas y goles over/under 2.5. Tarjetas fue el primero, y la
+# razon original era medida sobre una
 # liga: en la F5 (08_markets.py, Premier) era el UNICO mercado que le ganaba a
 # la frecuencia base de forma concluyente. Al medir sobre las cinco ligas
 # (12_markets_multi.py, 2026-09-10) los cuatro mercados resultaron ganarle,
@@ -199,6 +200,21 @@ LIVE_MARKETS = {
         "lines": (2.5, 3.5, 4.5),
         "w": {2.5: 0.7, 3.5: 0.6, 4.5: 0.6},
         "version_suffix": "w-5l",
+    },
+    # Goles over/under, SOLO la linea 2.5, y por una razon distinta a la de
+    # tarjetas: es el unico mercado nuevo con cuota de cierre en la fuente.
+    # Contra la frecuencia base cualquier modelo decente gana; contra el mercado
+    # es la prueba de verdad, y en la Premier el modelo perdia por 0.0038. Con
+    # cinco ligas el marcador en vivo puede decir si eso es real. Las lineas
+    # 1.5 y 3.5 no tienen cuota y solo se mediran contra la base, que es lo que
+    # tarjetas ya hace; se dejan fuera para que el mercado tenga un proposito.
+    # w=0.7 es el de 12_markets_multi.py sobre cinco ligas. El sufijo lleva el
+    # nombre del mercado porque el motor de goles usa rho y el slug quedaria
+    # peligrosamente parecido al del campeon del 1X2.
+    "goles": {
+        "lines": (2.5,),
+        "w": {2.5: 0.7},
+        "version_suffix": "goles-w-5l",
     },
 }
 BASE_MODEL_VERSION = "base-freq-v1"

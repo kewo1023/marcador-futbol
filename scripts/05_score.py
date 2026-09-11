@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from marcador import db, ingest, ledger, live_markets, scoring  # noqa: E402
 from marcador.baseline import MARKET_1X2, OUTCOMES, market_probs  # noqa: E402
+from marcador.markets import ou_market_probs               # noqa: E402
 from marcador.config import (BASE_MODEL_VERSION, CURRENT_SEASON,  # noqa: E402
                              LEAGUES)
 
@@ -53,7 +54,8 @@ def collect_results(con, predicted_ids):
         for r in con.execute(
                 f"""SELECT match_id, match_date, home_team, away_team,
                            fthg, ftag, ftr, hy, ay,
-                           avgch, avgcd, avgca, psch, pscd, psca
+                           avgch, avgcd, avgca, psch, pscd, psca,
+                           avgc_o25, avgc_u25
                     FROM matches WHERE ftr IS NOT NULL AND match_id IN ({q})""",
                 chunk):
             # La probabilidad del mercado va con el resultado, no con la
@@ -61,12 +63,15 @@ def collect_results(con, predicted_ids):
             # partido ya se jugo. Sin ella, el dashboard solo podria comparar
             # contra Elo del backtest, que no es el techo de nada.
             mkt = market_probs(r) or {}
+            ou = ou_market_probs(r, 2.5) or {}
             out.append({"match_id": r["match_id"], "match_date": r["match_date"],
                         "home_team": r["home_team"], "away_team": r["away_team"],
                         "fthg": r["fthg"], "ftag": r["ftag"], "ftr": r["ftr"],
                         "market_h": f"{mkt['H']:.6f}" if mkt else "",
                         "market_d": f"{mkt['D']:.6f}" if mkt else "",
                         "market_a": f"{mkt['A']:.6f}" if mkt else "",
+                        "market_o25": f"{ou['OVER']:.6f}" if ou else "",
+                        "market_u25": f"{ou['UNDER']:.6f}" if ou else "",
                         "yellows": (r["hy"] + r["ay"]
                                     if r["hy"] is not None and r["ay"] is not None
                                     else ""),
@@ -89,9 +94,10 @@ def score_live():
         if market == MARKET_1X2:
             return r["ftr"]
         parsed = live_markets.parse_market(market)
-        if parsed and parsed[0] == "tarjetas" and r.get("yellows", "") != "":
-            return live_markets.actual_outcome(int(r["yellows"]), parsed[1])
-        return None
+        if not parsed:
+            return None
+        total = live_markets.actual_total(parsed[0], r)
+        return None if total is None else live_markets.actual_outcome(total, parsed[1])
 
     # Agrupado por (modelo, mercado): cada mercado tiene sus propios outcomes
     # (H/D/A o OVER/UNDER) y su propia columna de verdad en results.csv.
@@ -113,19 +119,27 @@ def score_live():
     # en vivo' es un numero suelto que solo se puede comparar con Elo, y Elo
     # no es el techo de nada. Solo existe para 1X2: para tarjetas la referencia
     # es la base, que 04_predict emite como un modelo mas (base-freq-v1).
+    def market_ref(market, r):
+        """La probabilidad del mercado para ese mercado, o None. Solo 1X2 y
+        goles 2.5 tienen cuota en la fuente."""
+        if market == MARKET_1X2 and r.get("market_h"):
+            return {"H": float(r["market_h"]), "D": float(r["market_d"]),
+                    "A": float(r["market_a"])}
+        if market == "GOLES_OU25" and r.get("market_o25"):
+            return {"OVER": float(r["market_o25"]), "UNDER": float(r["market_u25"])}
+        return None
+
     for (model_version, market), matches in list(by_key.items()):
-        if market != MARKET_1X2 or model_version == MARKET_REFERENCE:
+        if model_version in (MARKET_REFERENCE, BASE_MODEL_VERSION):
             continue
+        n_out = len(OUTCOMES) if market == MARKET_1X2 else len(live_markets.OUTCOMES_OU)
         mk = {}
         for mid, m in matches.items():
-            r = rows[mid]
-            if len(m["probs"]) == len(OUTCOMES) and r.get("market_h"):
-                mk[mid] = {"probs": {"H": float(r["market_h"]),
-                                     "D": float(r["market_d"]),
-                                     "A": float(r["market_a"])},
-                           "actual": m["actual"]}
+            ref = market_ref(market, rows[mid])
+            if len(m["probs"]) == n_out and ref:
+                mk[mid] = {"probs": ref, "actual": m["actual"]}
         if mk:
-            by_key[(MARKET_REFERENCE, MARKET_1X2)] = mk
+            by_key[(MARKET_REFERENCE, market)] = mk
 
     out = []
     for (model_version, market), matches in by_key.items():
@@ -215,22 +229,19 @@ def main():
     # frecuencia base (no hay cuota). Elo del backtest queda como segunda
     # referencia del 1X2.
     live = {(m["model_version"], m["market"]): m for m in metrics}
-    mkt = live.get((MARKET_REFERENCE, MARKET_1X2))
-    if mkt:
-        for (mv, mk), m in live.items():
-            if mk != MARKET_1X2 or mv == MARKET_REFERENCE:
-                continue
-            d = float(m["log_loss"]) - float(mkt["log_loss"])
-            print(f"\n  {mv} contra el mercado, mismos "
-                  f"{mkt['n_matches']} partidos: {d:+.4f} "
-                  f"({'pierde' if d > 0 else 'gana'})")
-    for (mv, mk), m in sorted(live.items()):
-        base = live.get((BASE_MODEL_VERSION, mk))
-        if mk == MARKET_1X2 or mv == BASE_MODEL_VERSION or not base:
+    print()
+    for (mv, mk), m in sorted(live.items(), key=lambda kv: (kv[0][1], kv[0][0])):
+        if mv in (MARKET_REFERENCE, BASE_MODEL_VERSION):
             continue
-        d = float(m["log_loss"]) - float(base["log_loss"])
-        print(f"  {mk}: {mv} contra la base, mismos {base['n_matches']} "
-              f"partidos: {d:+.4f} ({'pierde' if d > 0 else 'gana'})")
+        for ref_name, ref_label in ((MARKET_REFERENCE, "el mercado"),
+                                    (BASE_MODEL_VERSION, "la base")):
+            ref = live.get((ref_name, mk))
+            if not ref:
+                continue
+            d = float(m["log_loss"]) - float(ref["log_loss"])
+            print(f"  {mk:14} {mv} contra {ref_label}, mismos "
+                  f"{ref['n_matches']} partidos: {d:+.4f} "
+                  f"({'pierde' if d > 0 else 'gana'})")
     ref = {r["eval_set"] + "|" + r["model_version"]: r
            for r in ledger._read(ledger.LEDGER_METRICS)}
     base = ref.get("test|baseline-elo-v1")
