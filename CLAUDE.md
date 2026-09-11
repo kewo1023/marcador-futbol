@@ -93,6 +93,45 @@ binario, **no se escribe en el código fuente que lo genera**: se deriva en
 tiempo de ejecución. El generador del tutorial lee la URL del repositorio con
 `git remote get-url origin` por esa razón exacta.
 
+## Regla 8 — Solo el runner escribe en el ledger real
+
+La misma configuración da probabilidades distintas en una máquina local y en el
+runner de GitHub Actions a partir del sexto decimal (scipy sobre distinta
+arquitectura). Como `append_predictions` rechaza cualquier probabilidad que no
+coincida con la ya escrita, correr `04_predict.py` sin `--dry-run` en local
+contra `ledger/` termina en «INMUTABILIDAD VIOLADA» — o peor, si el ledger
+local estuviera vacío, escribiría predicciones que el runner después rechazaría.
+
+En local, `04_predict.py` y `05_score.py` se corren **siempre** con `--dry-run`
+o contra un ledger de prueba. El único que escribe en `ledger/` es el workflow.
+
+### Cómo probar sin tocar el ledger
+
+`MARCADOR_LEDGER_DIR` apunta los scripts y el dashboard a otro directorio. El
+patrón que se usó para probar cada mercado nuevo en vivo:
+
+1. Respaldar `data/marcador.sqlite` (los scripts escriben en la base local; las
+   predicciones insertadas ahí son inmutables por trigger y no se pueden borrar).
+2. Copiar el ledger real a un directorio de prueba, quitando `predictions.csv`.
+3. Generar predicciones ficticias para partidos **ya jugados** (con el motor
+   real para los mercados over/under, aleatorias para el 1X2), escribirlas en
+   el `predictions.csv` de prueba.
+4. Correr `05_score.py` con `MARCADOR_LEDGER_DIR` apuntando ahí: busca los
+   resultados en la base, escribe `results.csv` y `metrics.csv` de prueba.
+5. Levantar el dashboard con la misma variable y mirarlo.
+6. Restaurar la base desde el respaldo.
+
+Es la única forma de ver el camino completo predicción → resultado → marcador →
+dashboard sin esperar una jornada real ni contaminar el ledger.
+
+## Regla 9 — Un push que añade un módulo exige reboot en Streamlit Cloud
+
+Streamlit Cloud redespliega en cada push sin reiniciar el proceso de Python.
+Un módulo nuevo en `src/`, o un cambio en lo que un módulo exporta, se rompe
+con `ImportError` —o deja secciones en blanco— hasta hacer **Reboot app**. El
+dashboard infiere lo que puede desde el ledger para no quedarse en blanco, pero
+el reboot lo tiene que hacer una persona.
+
 ## Convenciones de código
 
 - Python 3.13, librería estándar donde alcance. Sin dependencias que no se usen.
