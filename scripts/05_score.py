@@ -29,13 +29,67 @@ MARKET_REFERENCE = "market-avgclose-v1"
 
 
 def refresh(con):
-    """Re-baja la temporada en curso de las cinco ligas."""
-    n = 0
+    """Re-baja la temporada en curso de las cinco ligas.
+
+    Devuelve cuantos partidos se cargaron y, por liga, el archivo bajado (o
+    el error), para que despues se pueda dejar en el ledger hasta donde
+    llegaba la fuente en esta corrida.
+    """
+    n, files = 0, {}
     for league in LEAGUES:
-        path = ingest.download_season(CURRENT_SEASON, league=league, force=True)
+        try:
+            sf = ingest.fetch_season(CURRENT_SEASON, league=league)
+        except Exception as exc:                        # noqa: BLE001
+            files[league] = str(exc)[:80]
+            continue
         n += ingest.upsert_matches(
-            con, ingest.rows_from_csv(path, league, CURRENT_SEASON))
-    return n
+            con, ingest.rows_from_csv(sf.path, league, CURRENT_SEASON))
+        files[league] = sf
+    return n, files
+
+
+# Un partido dura ~2 h. Antes de eso, "kickoff pasado" no significa "jugado".
+MATCH_HOURS = 2
+
+
+def awaiting_results(preds, results):
+    """Partidos predichos que ya se jugaron y aun no tienen resultado.
+
+    Es la cifra que le faltaba al marcador: la que separa "no se jugo nada"
+    de "se jugo y la fuente no lo ha publicado". Se sabe que se jugaron por la
+    hora de ledger/fixtures.csv (la ultima que se supo), no por la fuente de
+    resultados, que es justo la que puede ir atrasada.
+    """
+    played = {r["match_id"] for r in results}
+    kickoff = {f["match_id"]: f["kickoff_utc"] for f in ledger.read_fixtures()
+               if f["kickoff_utc"]}
+    limit = (dt.datetime.now(dt.timezone.utc)
+             - dt.timedelta(hours=MATCH_HOURS)).strftime("%Y-%m-%dT%H:%M")
+    ids = {p["match_id"] for p in preds if p["mode"] == "live"}
+    return sorted(m for m in ids
+                  if m not in played and m in kickoff and kickoff[m] <= limit)
+
+
+def results_health(files, awaiting):
+    """Una fila por liga con la frescura de la fuente de resultados."""
+    now = ledger.now_iso()
+    rows = []
+    for league, sf in files.items():
+        waiting = sum(1 for m in awaiting if m.startswith(league + "_"))
+        if isinstance(sf, str):
+            rows.append({"checked_at": now, "league": league, "played": "",
+                         "file_last_date": "", "file_age_hours": "",
+                         "awaiting": waiting, "error": sf})
+            continue
+        played = sf.played()
+        rows.append({"checked_at": now, "league": league,
+                     "played": len(played),
+                     "file_last_date": max((r["match_date"] for r in played),
+                                           default=""),
+                     "file_age_hours": (f"{sf.age_hours:.1f}"
+                                        if sf.age_hours is not None else ""),
+                     "awaiting": waiting, "error": ""})
+    return rows
 
 
 def collect_results(con, predicted_ids):
@@ -199,7 +253,7 @@ EXIT_MISSED = 3
 
 def main():
     con = db.init_db()
-    n = refresh(con)
+    n, files = refresh(con)
     print(f"Temporada en curso re-ingestada: {n} partidos\n")
 
     predicted = ledger.predicted_matches()
@@ -207,6 +261,25 @@ def main():
     pending = len(predicted) - len(ledger.read_results())
     print(f"Resultados: {added} nuevos registrados · "
           f"{len(ledger.read_results())} en total · {pending} partidos aun sin jugar")
+
+    # Hasta donde llega la fuente, y cuantos partidos ya jugados le faltan.
+    # Va al ledger porque el log de Actions expira y la pregunta "cuanto tarda
+    # la fuente en publicar" solo se responde con una serie de fechas.
+    awaiting = awaiting_results(ledger.read_predictions(), ledger.read_results())
+    health = results_health(files, awaiting)
+    ledger.append_results_health(health)
+    print("\nFuente de resultados:")
+    for h in health:
+        if h["error"]:
+            print(f"  {h['league']:4} ERROR {h['error']}")
+            continue
+        age = f"regenerada hace {h['file_age_hours']} h" if h["file_age_hours"] \
+            else "sin Last-Modified"
+        print(f"  {h['league']:4} {h['played']:>4} jugados, hasta "
+              f"{h['file_last_date']} · {age} · {h['awaiting']} esperando")
+    if awaiting:
+        print(f"  {len(awaiting)} partidos ya jugados que la fuente aun no "
+              "publica. No es un fallo del sistema: se cruzan cuando lleguen.")
 
     missed = find_missed(con, ledger.read_predictions())
     n_missed = ledger.record_missed(missed) if missed else 0

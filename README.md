@@ -692,6 +692,34 @@ el precio de poder juzgar la fuente nueva contra la vieja con una serie y no
 con una anécdota. El dashboard muestra la última corrida y cuenta las que
 tuvieron problema.
 
+### «0 partidos jugados» con cuatro partidos ya terminados
+
+El sábado 12/09 por la mañana el dashboard decía «Ya jugados: 0» con los cuatro
+partidos del viernes ya terminados. Nada estaba roto: `score.yml` había corrido,
+había re-bajado la temporada y la fuente de resultados llevaba desde el lunes
+sin regenerar el archivo (`Last-Modified` del 07/09, verificado a mano). La
+fuente de resultados no publica en tiempo real, y el marcador solo puede
+cruzar lo que ella trae.
+
+El problema era el mismo punto ciego del 10/09, ahora del lado de los
+resultados: el «0» no distinguía «no se jugó nada» de «se jugó y la fuente no
+lo ha publicado». Se cerró en dos partes:
+
+- El dashboard calcula **cuántos partidos predichos ya se jugaron y aún no
+  tienen resultado** con la hora de `fixtures.csv` (kickoff + 2 h), no con la
+  fuente de resultados, que es justo la que puede ir atrasada. Lo muestra al
+  lado de «Ya jugados» y los lista aparte de los próximos.
+- Cada corrida de `05_score.py` deja una fila por liga en
+  `ledger/results_health.csv`: partidos con resultado en el archivo, hasta qué
+  fecha llega, cuánto llevaba sin regenerarse y cuántos partidos esperan. Es la
+  serie que responde «¿cuánto tarda la fuente en publicar?», y cuesta un commit
+  por día aunque no haya resultados («salud de resultados»).
+
+Un botón para «actualizar» desde el dashboard se descartó: no arreglaría nada
+(la fuente seguiría sin los partidos), la app es pública y el botón necesitaría
+un token de GitHub, y solo el runner escribe en el ledger. El botón que sí
+existe es **Run workflow** en Actions, y hoy tampoco haría nada.
+
 ### `kickoff_utc` decía UTC y era hora del Reino Unido
 
 La fuente del histórico no documenta la zona de su columna `Time`. Se midió

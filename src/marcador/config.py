@@ -172,6 +172,11 @@ LEDGER_FIXTURES = LEDGER_DIR / "fixtures.csv"
 # datos. Es lo que permite juzgar la fuente nueva contra la vieja, y detectar
 # una degradacion antes de que se pierda una jornada.
 LEDGER_HEALTH = LEDGER_DIR / "source_health.csv"
+# Lo mismo para la fuente de RESULTADOS (football-data.co.uk), una fila por
+# corrida de 05_score y liga: cuando regenero la fuente su archivo y hasta que
+# fecha trae resultados. Sin esto, "0 partidos jugados" en el dashboard no
+# distingue "no se jugo nada" de "se jugo y la fuente aun no lo publica".
+LEDGER_RESULTS_HEALTH = LEDGER_DIR / "results_health.csv"
 
 # --- Mercados en vivo ademas del 1X2 ----------------------------------------
 # Tarjetas amarillas, goles over/under 2.5 y tiros a puerta. Tarjetas fue el

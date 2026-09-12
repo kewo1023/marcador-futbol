@@ -57,7 +57,16 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add ledger/
-          git commit -m "resultados y marcador: $(date -u +%Y-%m-%d)"
+          # Desde el 2026-09-12 cada corrida deja una fila en
+          # ledger/results_health.csv (hasta donde llega la fuente de
+          # resultados), asi que siempre hay algo que commitear. El mensaje
+          # distingue una corrida que cruzo resultados de una que solo
+          # registro que la fuente sigue sin publicarlos.
+          if [ -n "$(git diff --cached --name-only ledger/results.csv ledger/metrics.csv ledger/missed.csv)" ]; then
+            git commit -m "resultados y marcador: $(date -u +%Y-%m-%d)"
+          else
+            git commit -m "salud de resultados: $(date -u +%Y-%m-%dT%H:%M)"
+          fi
           git pull --rebase origin main
           git push origin main
 

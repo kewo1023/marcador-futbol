@@ -149,6 +149,25 @@ preds["prob"] = preds["prob"].astype(float)
 preds["liga"] = preds["match_id"].str.split("_").str[0]
 played = set(results["match_id"]) if not results.empty else set()
 
+
+def awaiting_results(preds, fixtures, played, match_hours=2):
+    """Partidos predichos cuyo kickoff ya paso y que aun no tienen resultado.
+
+    Es lo que separa "no se jugo nada" de "se jugo y la fuente de resultados
+    no lo ha publicado". Se decide con la hora de ledger/fixtures.csv, no con
+    la fuente de resultados, que es justo la que puede ir atrasada. Un partido
+    dura ~2 h; antes de eso "kickoff pasado" no significa "jugado".
+    """
+    if fixtures.empty or "kickoff_utc" not in fixtures:
+        return set()
+    limit = (dt.datetime.now(dt.timezone.utc)
+             - dt.timedelta(hours=match_hours)).strftime("%Y-%m-%dT%H:%M")
+    ko = fixtures[(fixtures["kickoff_utc"] != "") & (fixtures["kickoff_utc"] <= limit)]
+    return (set(ko["match_id"]) & set(preds["match_id"])) - played
+
+
+awaiting = awaiting_results(preds, fixtures, played)
+
 # Desde el 2026-09-10 el ledger trae mas de un mercado. Todo lo que sigue hasta
 # las secciones over/under es el 1X2; las filas de los otros se apartan aqui.
 all_preds = preds
@@ -161,7 +180,9 @@ test = metrics[metrics["eval_set"] == "test"] if not metrics.empty else pd.DataF
 c1, c2, c3, c4 = st.columns(4)
 n_matches = preds["match_id"].nunique()
 c1.metric("Partidos predichos", n_matches)
-c2.metric("Ya jugados", len(played))
+c2.metric("Ya jugados", len(played),
+          delta=f"{len(awaiting)} esperando resultado" if awaiting else None,
+          delta_color="off")
 if not live.empty:
     row = live[live["model_version"] == PRODUCTION_MODEL]
     if not row.empty:
@@ -184,6 +205,13 @@ if not live.empty:
                        "cambia de signo de una jornada a otra; no es concluyente "
                        "hasta que pase por el bootstrap.")
 
+if awaiting:
+    st.info(f"**{len(awaiting)} partidos ya se jugaron y todavía no cuentan.** "
+            "La fuente de resultados publica cuando quiere (no en tiempo real) "
+            "y el marcador se recalcula una vez al día cuando ya los trae. No es "
+            "un fallo del sistema: la predicción quedó escrita antes del partido "
+            "y se cruza con el resultado cuando llegue. Abajo, en «Salud de la "
+            "fuente de resultados», se ve hasta qué fecha llega la fuente.")
 if len(played) < 100:
     st.warning(f"Solo {len(played)} partidos jugados. Un log-loss con tan pocos "
                "datos se mueve muchísimo y no significa nada todavía; hacen "
@@ -191,7 +219,21 @@ if len(played) < 100:
 
 # --- Próximos partidos ------------------------------------------------------
 st.subheader("Próximos partidos")
-upcoming = preds[~preds["match_id"].isin(played)]
+upcoming = preds[~preds["match_id"].isin(played | awaiting)]
+if awaiting:
+    w = preds[preds["match_id"].isin(awaiting)]
+    wide = (w.pivot_table(index=["match_id", "match_date", "home_team",
+                                 "away_team"],
+                          columns="outcome", values="prob")
+            .reset_index().rename(columns=COLS_1X2))
+    wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
+    view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
+            [["fecha", "local", "visitante"] + ORDER_1X2])
+    st.caption(f"**Jugados, esperando resultado ({len(awaiting)}).** Lo que se "
+               "predijo queda tal cual; el resultado se cruza cuando la fuente "
+               "lo publique.")
+    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}),
+                 use_container_width=True, hide_index=True)
 if upcoming.empty:
     st.write("Nada pendiente ahora mismo.")
 else:
@@ -202,6 +244,8 @@ else:
     wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
     view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
             [["fecha", "local", "visitante"] + ORDER_1X2])
+    if awaiting:
+        st.caption(f"**Por jugar ({upcoming['match_id'].nunique()}).**")
     st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}),
                  use_container_width=True, hide_index=True)
 
@@ -439,6 +483,41 @@ if not health.empty:
     st.dataframe(view, use_container_width=True, hide_index=True)
     if not problems.empty:
         st.warning(f"{len(problems)} filas con error o nombre sin alias en el "
+                   "historial. Última: " + problems["checked_at"].max())
+
+# --- Salud de la fuente de resultados ----------------------------------------
+rhealth = pd.DataFrame(ledger.read_results_health())
+if not rhealth.empty:
+    st.subheader("Salud de la fuente de resultados")
+    st.caption("Una fila por corrida del marcador y liga, desde el ledger. "
+               "`fuente hasta` es la fecha del último partido con resultado "
+               "que traía el archivo; `archivo hace` cuánto llevaba sin "
+               "regenerarse; `esperando` cuántos partidos predichos ya se "
+               "jugaron y la fuente aún no publica. Si `esperando` es mayor que "
+               "cero y `archivo hace` crece, el 0 de arriba es de la fuente, "
+               "no del sistema.")
+    r = rhealth.copy()
+    r["checked_at"] = r["checked_at"].str[:16].str.replace("T", " ")
+    r["file_age_hours"] = pd.to_numeric(r["file_age_hours"], errors="coerce")
+    r["awaiting"] = pd.to_numeric(r["awaiting"], errors="coerce").fillna(0).astype(int)
+    last = r["checked_at"].max()
+    latest = r[r["checked_at"] == last]
+    problems = r[r["error"] != ""]
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Última revisión", last + " UTC")
+    c2.metric("Fuente hasta", latest["file_last_date"].max() or "—")
+    c3.metric("Esperando resultado", int(latest["awaiting"].sum()),
+              delta=None if problems.empty else "revisar", delta_color="inverse")
+    view = (latest.rename(columns={"league": "liga", "played": "jugados en la fuente",
+                                   "file_last_date": "fuente hasta",
+                                   "file_age_hours": "archivo hace (h)",
+                                   "awaiting": "esperando"})
+            [["liga", "jugados en la fuente", "fuente hasta",
+              "archivo hace (h)", "esperando", "error"]])
+    view["liga"] = view["liga"].map(lambda c: LEAGUES.get(c, c))
+    st.dataframe(view, use_container_width=True, hide_index=True)
+    if not problems.empty:
+        st.warning(f"{len(problems)} filas con error al bajar la fuente en el "
                    "historial. Última: " + problems["checked_at"].max())
 
 mk_path = ledger.LEDGER_DIR / "markets.csv"

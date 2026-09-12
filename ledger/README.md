@@ -28,6 +28,9 @@ evaluando; el reloj de GitHub, no. Cualquiera puede auditar el proyecto con
 | `champion.json` | Qué modelo está en producción y desde cuándo | Sí, cuando el gate promueve |
 | `challenges.csv` | Cada desafío al campeón, promovido o rechazado | Solo se agregan |
 | `diagnostics.csv` | Dónde pierde el campeón contra el mercado, por segmento | Sí, se recalcula |
+| `fixtures.csv` | Fecha y hora de cada partido predicho, la última que se supo | Sí: la hora cambia, la predicción no |
+| `source_health.csv` | Por corrida y liga, qué traía la fuente de fixtures | Solo se agregan |
+| `results_health.csv` | Por corrida y liga, hasta dónde llega la fuente de resultados y cuántos partidos ya jugados le faltan | Solo se agregan |
 
 `results.csv` guarda lo mínimo para poder verificar el marcador sin bajar nada
 (equipos, goles, resultado). No lleva cuotas, corners, tiros ni árbitro: no es

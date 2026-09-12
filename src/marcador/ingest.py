@@ -96,11 +96,69 @@ def download_season(season: str, league: str = LEAGUE,
     dest = raw_dir / f"{league}_{season}.csv"
     if dest.exists() and not force:
         return dest
-    req = urllib.request.Request(season_url(season, league),
-                                 headers={"User-Agent": USER_AGENT})
+    _download(season_url(season, league), dest)
+    return dest
+
+
+def _download(url: str, dest: Path) -> dt.datetime | None:
+    """Baja un archivo y devuelve su Last-Modified, o None si no vino."""
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=60) as resp:
         dest.write_bytes(resp.read())
-    return dest
+        header = resp.headers.get("Last-Modified")
+    if not header:
+        return None
+    try:
+        last_mod = email.utils.parsedate_to_datetime(header)
+    except (TypeError, ValueError):
+        return None
+    if last_mod.tzinfo is None:
+        last_mod = last_mod.replace(tzinfo=dt.timezone.utc)
+    return last_mod
+
+
+@dataclass
+class SeasonFile:
+    """Un CSV de temporada recien bajado, con lo que hace falta para juzgar
+    si la fuente esta al dia: cuando lo regenero por ultima vez y hasta que
+    fecha trae resultados.
+
+    POR QUE EXISTE. El 2026-09-12 el marcador decia "0 partidos jugados" con
+    cuatro partidos ya terminados: la fuente de resultados llevaba desde el
+    lunes sin regenerar el archivo. Nada estaba roto, pero desde el dashboard
+    no habia forma de distinguir "no se jugo nada" de "se jugo y la fuente no
+    lo publico aun". Es el mismo punto ciego que se cerro el 2026-09-10 para
+    los fixtures, ahora del lado de los resultados.
+    """
+    league: str
+    season: str
+    path: Path
+    last_modified: dt.datetime | None
+    fetched_at: dt.datetime
+
+    @property
+    def age_hours(self) -> float | None:
+        if self.last_modified is None:
+            return None
+        return (self.fetched_at - self.last_modified).total_seconds() / 3600
+
+    def played(self) -> list[dict]:
+        """Las filas del archivo que ya traen resultado."""
+        return [r for r in rows_from_csv(self.path, self.league, self.season)
+                if r["ftr"] is not None]
+
+
+def fetch_season(season: str, league: str = LEAGUE,
+                 raw_dir: Path = RAW_DIR) -> SeasonFile:
+    """Como download_season con force=True, pero devuelve tambien la
+    frescura del archivo. Es lo que usa 05_score para la temporada en curso,
+    la unica cuya fecha de regeneracion importa."""
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    dest = raw_dir / f"{league}_{season}.csv"
+    last_mod = _download(season_url(season, league), dest)
+    return SeasonFile(league=league, season=season, path=dest,
+                      last_modified=last_mod,
+                      fetched_at=dt.datetime.now(dt.timezone.utc))
 
 
 def _clean(value: str | None, col: str):

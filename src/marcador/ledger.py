@@ -30,7 +30,7 @@ from pathlib import Path
 
 from .config import (LEDGER_DIR, LEDGER_FIXTURES, LEDGER_HEALTH,
                      LEDGER_METRICS, LEDGER_MISSED, LEDGER_PREDICTIONS,
-                     LEDGER_RESULTS)
+                     LEDGER_RESULTS, LEDGER_RESULTS_HEALTH)
 
 PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                "model_version", "market", "outcome", "prob", "mode",
@@ -59,6 +59,13 @@ FIXTURE_FIELDS = ["match_id", "match_date", "kickoff_utc", "home_team",
 # error: que fallo al bajar, si algo. unknown_teams: nombres sin alias.
 HEALTH_FIELDS = ["checked_at", "league", "upcoming", "unconfirmed",
                  "file_last_date", "file_age_hours", "error", "unknown_teams"]
+# La fuente de resultados. played: partidos con resultado en el archivo de la
+# temporada. file_last_date: la fecha del ultimo partido con resultado, o sea
+# hasta donde llega la fuente. file_age_hours: cuanto llevaba el archivo sin
+# regenerarse (vacio si la fuente no mando Last-Modified). awaiting: partidos
+# predichos cuyo kickoff ya paso y que la fuente todavia no trae.
+RESULTS_HEALTH_FIELDS = ["checked_at", "league", "played", "file_last_date",
+                         "file_age_hours", "awaiting", "error"]
 
 
 def _read(path: Path):
@@ -214,6 +221,20 @@ def append_health(rows) -> int:
     if not rows:
         return 0
     _write(LEDGER_HEALTH, HEALTH_FIELDS, read_health() + list(rows))
+    return len(rows)
+
+
+def read_results_health():
+    return _read(LEDGER_RESULTS_HEALTH)
+
+
+def append_results_health(rows) -> int:
+    """Una fila por corrida de 05_score y liga. Append puro, como
+    source_health: es una serie de tiempo de cuando publica la fuente."""
+    if not rows:
+        return 0
+    _write(LEDGER_RESULTS_HEALTH, RESULTS_HEALTH_FIELDS,
+           read_results_health() + list(rows))
     return len(rows)
 
 

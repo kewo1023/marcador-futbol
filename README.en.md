@@ -450,6 +450,35 @@ with data. It costs one commit per run even with no new prediction (the
 message says "salud de la fuente"), and that's the price of judging the new
 source against the old with a series rather than an anecdote.
 
+### "0 matches played" with four matches already over
+
+On the morning of 2026-09-12 the dashboard said "Played: 0" with Friday's four
+matches already finished. Nothing was broken: `score.yml` had run, re-downloaded
+the season, and the results source hadn't regenerated its file since Monday
+(`Last-Modified` 09-07, checked by hand). The results source doesn't publish in
+real time, and the scoreboard can only match what it brings.
+
+It was the same blind spot as 09-10, now on the results side: the "0" didn't
+distinguish "nothing was played" from "it was played and the source hasn't
+published it". Closed in two parts:
+
+- The dashboard counts **predicted matches whose kickoff has passed and still
+  have no result**, using the time in `fixtures.csv` (kickoff + 2 h) rather
+  than the results source, which is precisely the one that can lag. Shown next
+  to "Played", listed apart from the upcoming ones.
+- Every `05_score.py` run leaves one row per league in
+  `ledger/results_health.csv`: matches with a result in the file, the last
+  date it reaches, how long it had gone without regenerating, and how many
+  matches are waiting. That's the series that answers "how long does the
+  source take to publish?", at one commit per day even with no results
+  ("salud de resultados").
+
+A "refresh" button in the dashboard was ruled out: it wouldn't fix anything
+(the source would still lack the matches), the app is public and the button
+would need a GitHub token, and only the runner writes to the ledger. The
+button that does exist is **Run workflow** in Actions — and today it wouldn't
+do anything either.
+
 ### `kickoff_utc` said UTC and was UK time
 
 The history source doesn't document the time zone of its `Time` column. It was
