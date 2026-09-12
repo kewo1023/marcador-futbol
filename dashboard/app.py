@@ -29,7 +29,8 @@ def load():
     return (pd.DataFrame(ledger.read_predictions()),
             pd.DataFrame(ledger.read_results()),
             pd.DataFrame(ledger._read(ledger.LEDGER_METRICS)),
-            pd.DataFrame(ledger.read_fixtures()))
+            pd.DataFrame(ledger.read_fixtures()),
+            pd.DataFrame(ledger.read_market_pre()))
 
 
 def viewer_tz():
@@ -77,7 +78,27 @@ def with_kickoff(df, fixtures, tz=None):
 COLS_1X2 = {"H": "gana local", "D": "empate", "A": "gana visitante"}
 ORDER_1X2 = ["gana local", "empate", "gana visitante"]
 
-preds, results, metrics, fixtures = load()
+preds, results, metrics, fixtures, market_pre = load()
+# La ultima opinion del mercado por partido. Se guarda cada cambio de linea;
+# aqui solo interesa la ultima antes del kickoff.
+PRE_COLS = {"pre_h": "mercado local", "pre_d": "mercado empate",
+            "pre_a": "mercado visitante"}
+if not market_pre.empty:
+    market_pre = (market_pre.drop_duplicates("match_id", keep="last")
+                  .set_index("match_id"))
+    for c in list(PRE_COLS) + ["pre_o25"]:
+        market_pre[c] = pd.to_numeric(market_pre[c], errors="coerce")
+
+
+def with_market_pre(wide, cols=PRE_COLS):
+    """Pega la opinion pre-partido del mercado a una tabla por partido, si
+    el ledger la tiene. Sin ella, la tabla queda igual."""
+    if market_pre.empty:
+        return wide, []
+    wide = wide.copy()
+    for src, dst in cols.items():
+        wide[dst] = wide["match_id"].map(market_pre[src])
+    return wide, list(cols.values())
 champ = promotion.read_champion()
 PRODUCTION_MODEL = champ["raw"]["model_version"] if champ else "(sin campeon)"
 # El modelo de tarjetas en produccion. Puede convivir en el ledger con
@@ -220,34 +241,41 @@ if len(played) < 100:
 # --- Próximos partidos ------------------------------------------------------
 st.subheader("Próximos partidos")
 upcoming = preds[~preds["match_id"].isin(played | awaiting)]
-if awaiting:
-    w = preds[preds["match_id"].isin(awaiting)]
-    wide = (w.pivot_table(index=["match_id", "match_date", "home_team",
-                                 "away_team"],
-                          columns="outcome", values="prob")
+if not market_pre.empty:
+    st.caption("`mercado …` es la probabilidad implícita del promedio de casas "
+               "**antes** del partido, sin margen, la última que se registró. "
+               "Es contexto, no una señal: con la brecha que el modelo trae del "
+               "backtest, una diferencia grande dice que el modelo se equivoca, "
+               "no que el mercado.")
+
+
+def table_1x2(df):
+    """Fecha y hora local, probabilidades del modelo y, si estan, las del
+    mercado pre-partido. Sirve igual para los por jugar y los que esperan."""
+    wide = (df.pivot_table(index=["match_id", "match_date", "home_team",
+                                  "away_team"],
+                           columns="outcome", values="prob")
             .reset_index().rename(columns=COLS_1X2))
     wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
+    wide, mcols = with_market_pre(wide)
     view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
-            [["fecha", "local", "visitante"] + ORDER_1X2])
+            [["fecha", "local", "visitante"] + ORDER_1X2 + mcols])
+    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2 + mcols},
+                                   na_rep="—"),
+                 use_container_width=True, hide_index=True)
+
+
+if awaiting:
     st.caption(f"**Jugados, esperando resultado ({len(awaiting)}).** Lo que se "
                "predijo queda tal cual; el resultado se cruza cuando la fuente "
                "lo publique.")
-    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}),
-                 use_container_width=True, hide_index=True)
+    table_1x2(preds[preds["match_id"].isin(awaiting)])
 if upcoming.empty:
     st.write("Nada pendiente ahora mismo.")
 else:
-    wide = (upcoming.pivot_table(index=["match_id", "match_date", "home_team",
-                                        "away_team"],
-                                 columns="outcome", values="prob")
-            .reset_index().rename(columns=COLS_1X2))
-    wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
-    view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
-            [["fecha", "local", "visitante"] + ORDER_1X2])
     if awaiting:
         st.caption(f"**Por jugar ({upcoming['match_id'].nunique()}).**")
-    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}),
-                 use_container_width=True, hide_index=True)
+    table_1x2(upcoming)
 
 # --- Lo ya jugado -----------------------------------------------------------
 if played:
@@ -385,9 +413,14 @@ def ou_section(key, title, blurb):
         wide = (up.pivot_table(index=["match_id", "match_date", "home_team", "away_team"],
                                columns="linea", values="prob").reset_index())
         wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
+        # Solo goles 2.5 tiene cuota pre-partido en la fuente.
+        mcols = []
+        if key == "goles":
+            wide, mcols = with_market_pre(wide, {"pre_o25": "mercado >2.5"})
         view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
-                [["fecha", "local", "visitante"] + lines])
-        st.dataframe(view.style.format({l: "{:.1%}" for l in lines}),
+                [["fecha", "local", "visitante"] + lines + mcols])
+        st.dataframe(view.style.format({l: "{:.1%}" for l in lines + mcols},
+                                       na_rep="—"),
                      use_container_width=True, hide_index=True)
 
     done = d_model[d_model["match_id"].isin(played)]

@@ -479,6 +479,29 @@ would need a GitHub token, and only the runner writes to the ledger. The
 button that does exist is **Run workflow** in Actions — and today it wouldn't
 do anything either.
 
+### The market enters BEFORE the match
+
+Until 09-12 the market only showed up afterwards, as the closing odds in
+`results.csv`. Since then `04_predict.py` also downloads football-data.co.uk's
+`fixtures.csv` — the **previous** fixtures source, dropped for that job because
+its snapshot freezes — and writes to `ledger/market_pre.csv` the implied
+probability of the bookmaker average before kickoff, margin removed (1X2 and
+over/under 2.5). For this the old source still works: it's the only free one
+with the pre-match average, and it speaks the same vocabulary as the history,
+so the `match_id` matches with no aliases. Only matches whose kickoff hasn't
+passed are recorded, and only when the market's opinion changed since the
+last row: six runs a day over a file that didn't regenerate are one data
+point, not six. The dashboard shows `market home / draw / away` next to the
+model for upcoming matches.
+
+Two things this is **not**. Not a model feature: feeding it the odds turns it
+into a market follower and destroys the project's question. And not a betting
+signal: given the gap the model carries from the backtest, a large difference
+against the market is evidence the model is wrong, not the market. What it
+does open is measuring live, with data nobody could inflate, what
+`09_value.py` measured in backtest: how much the line moves between what was
+available and the close.
+
 ### `kickoff_utc` said UTC and was UK time
 
 The history source doesn't document the time zone of its `Time` column. It was

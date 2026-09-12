@@ -79,6 +79,9 @@ jobs:
             git commit -m "predicciones: $(date -u +%Y-%m-%d) ($N filas)"
           elif [ -n "$(git diff --cached --name-only ledger/fixtures.csv)" ]; then
             git commit -m "horas de partido: $(date -u +%Y-%m-%d)"
+          elif [ -n "$(git diff --cached --name-only ledger/market_pre.csv)" ]; then
+            # La linea del mercado se movio y no hubo nada mas que hacer.
+            git commit -m "mercado pre-partido: $(date -u +%Y-%m-%dT%H:%M)"
           else
             # Solo la salud de la fuente. Una fila por corrida y liga, a
             # proposito: el log de Actions expira y esto no. Cuesta un commit

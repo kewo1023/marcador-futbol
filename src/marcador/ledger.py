@@ -30,7 +30,7 @@ from pathlib import Path
 
 from .config import (LEDGER_DIR, LEDGER_FIXTURES, LEDGER_HEALTH,
                      LEDGER_METRICS, LEDGER_MISSED, LEDGER_PREDICTIONS,
-                     LEDGER_RESULTS, LEDGER_RESULTS_HEALTH)
+                     LEDGER_MARKET_PRE, LEDGER_RESULTS, LEDGER_RESULTS_HEALTH)
 
 PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                "model_version", "market", "outcome", "prob", "mode",
@@ -236,6 +236,40 @@ def append_results_health(rows) -> int:
     _write(LEDGER_RESULTS_HEALTH, RESULTS_HEALTH_FIELDS,
            read_results_health() + list(rows))
     return len(rows)
+
+
+# Cuotas pre-partido. pre_*: probabilidad implicita sin margen del promedio
+# de casas antes del kickoff; file_modified: cuando la fuente escribio el
+# archivo del que salio (la prueba de que es de antes del partido).
+PRE_FIELDS = ["match_id", "match_date", "home_team", "away_team",
+              "pre_h", "pre_d", "pre_a", "pre_o25", "pre_u25",
+              "file_modified", "fetched_at"]
+PRE_VALUE_COLS = ["pre_h", "pre_d", "pre_a", "pre_o25", "pre_u25"]
+
+
+def read_market_pre():
+    return _read(LEDGER_MARKET_PRE)
+
+
+def latest_market_pre():
+    """La ultima opinion registrada del mercado por partido."""
+    out = {}
+    for r in read_market_pre():
+        out[r["match_id"]] = r
+    return out
+
+
+def append_market_pre(rows) -> int:
+    """Agrega solo las filas cuya opinion del mercado CAMBIO respecto a la
+    ultima registrada para ese partido. Seis corridas al dia sobre un archivo
+    que no se regenero son un dato, no seis. Devuelve cuantas entraron."""
+    last = latest_market_pre()
+    new = [r for r in rows
+           if r["match_id"] not in last
+           or any(last[r["match_id"]][c] != r[c] for c in PRE_VALUE_COLS)]
+    if new:
+        _write(LEDGER_MARKET_PRE, PRE_FIELDS, read_market_pre() + new)
+    return len(new)
 
 
 def read_missed():

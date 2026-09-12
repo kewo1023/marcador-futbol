@@ -177,6 +177,11 @@ LEDGER_HEALTH = LEDGER_DIR / "source_health.csv"
 # fecha trae resultados. Sin esto, "0 partidos jugados" en el dashboard no
 # distingue "no se jugo nada" de "se jugo y la fuente aun no lo publica".
 LEDGER_RESULTS_HEALTH = LEDGER_DIR / "results_health.csv"
+# Cuotas PRE-partido (probabilidad implicita sin margen, promedio de casas),
+# una fila por partido cada vez que la opinion del mercado cambia. Viene de
+# la fuente anterior de fixtures (football-data.co.uk/fixtures.csv), que para
+# esto sigue sirviendo: mismo vocabulario que el historico. Ver market_pre.py.
+LEDGER_MARKET_PRE = LEDGER_DIR / "market_pre.csv"
 
 # --- Mercados en vivo ademas del 1X2 ----------------------------------------
 # Tarjetas amarillas, goles over/under 2.5 y tiros a puerta. Tarjetas fue el

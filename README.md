@@ -720,6 +720,29 @@ Un botón para «actualizar» desde el dashboard se descartó: no arreglaría na
 un token de GitHub, y solo el runner escribe en el ledger. El botón que sí
 existe es **Run workflow** en Actions, y hoy tampoco haría nada.
 
+### El mercado entra ANTES del partido
+
+Hasta el 12/09 el mercado solo aparecía después, con la cuota de cierre en
+`results.csv`. Desde ese día `04_predict.py` baja también el `fixtures.csv`
+de football-data.co.uk —la fuente **anterior** de próximos partidos, que dejó
+de usarse para eso porque su foto se congela— y deja en `ledger/market_pre.csv`
+la probabilidad implícita del promedio de casas antes del kickoff, sin margen
+(1X2 y over/under 2.5). Para esto la fuente vieja sigue sirviendo: es la única
+gratuita con el promedio pre-partido, y habla el mismo vocabulario que el
+histórico, así que el `match_id` cae directo sin alias. Solo se registran
+partidos cuyo kickoff no ha pasado, y solo cuando la opinión del mercado
+cambió respecto a la última fila: seis corridas al día sobre un archivo que no
+se regeneró son un dato, no seis. El dashboard muestra `mercado local / empate
+/ visitante` al lado del modelo en los próximos partidos.
+
+Dos cosas que esto **no** es. No es una feature del modelo: meterle la cuota lo
+convierte en un seguidor del mercado y destruye la pregunta del proyecto. Y no
+es una señal de apuesta: con la brecha que el modelo trae del backtest, una
+diferencia grande contra el mercado es evidencia de que el modelo se equivoca,
+no de que el mercado se equivoque. Lo que sí abre es medir en vivo, con datos
+que nadie pudo inflar, lo que `09_value.py` midió en backtest: cuánto se
+mueve la línea entre lo disponible y el cierre.
+
 ### `kickoff_utc` decía UTC y era hora del Reino Unido
 
 La fuente del histórico no documenta la zona de su columna `Time`. Se midió

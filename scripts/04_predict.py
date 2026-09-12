@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import numpy as np                                        # noqa: E402
 
-from marcador import (backtest, db, dixon_coles as dc,     # noqa: E402
+from marcador import (backtest, db, dixon_coles as dc, market_pre,  # noqa: E402
                       fixtures, ingest, ledger, live_markets, promotion,
                       recalibration)
 from marcador.backtest import ModelConfig                   # noqa: E402
@@ -95,6 +95,29 @@ def report_source(snap, today, dry=False):
             print(f"    {lg}: {name!r}  -> agregar a src/marcador/aliases.py")
         print("  05_score.py los va a reportar en missed.csv cuando se jueguen.")
     return bool(snap.errors) or bool(snap.unknown)
+
+
+def record_market_pre(window_ids, dry=False):
+    """Baja las cuotas pre-partido y deja en el ledger las que cambiaron.
+
+    Solo para partidos cuyo kickoff no ha pasado (los de la ventana): asi
+    'pre' es pre de verdad. La fuente es la anterior de fixtures, que se
+    congela a ratos; un partido sin fila aqui no pierde nada mas que esta
+    columna de contexto.
+    """
+    try:
+        snap = market_pre.fetch()
+        rows = market_pre.ledger_rows(market_pre.rows(snap), snap, window_ids,
+                                      fetched_at=ledger.now_iso())
+    except Exception as exc:                            # noqa: BLE001
+        print(f"Cuotas pre-partido: no se pudieron bajar ({str(exc)[:60]}). "
+              "Se sigue sin ellas.")
+        return 0
+    n = 0 if dry else ledger.append_market_pre(rows)
+    print(f"Cuotas pre-partido: {len(rows)} de {len(window_ids)} partidos en "
+          f"la ventana traen cuota · archivo {snap.describe()} · "
+          f"{n} filas nuevas en ledger/market_pre.csv")
+    return n
 
 
 def pending_fixtures(con, today, league, now_utc=None,
@@ -220,6 +243,13 @@ def main():
             for f in in_window])
         if n_fx:
             print(f"Horas de partido: {n_fx} actualizadas en ledger/fixtures.csv")
+
+    # La opinion del mercado ANTES del partido, para todo lo que esta en la
+    # ventana. Va antes del 'nada que hacer' por la misma razon que las horas:
+    # la linea se mueve aunque no haya nada nuevo que predecir. Un fallo aqui
+    # no puede frenar las predicciones: es un dato de contexto, no del modelo.
+    if in_window:
+        record_market_pre({f["match_id"] for f in in_window}, dry=dry)
 
     if not todo_by_league and not any(todo_ou.values()):
         # Los dos casos se leian igual hasta el 2026-09-10, y no son el mismo:
