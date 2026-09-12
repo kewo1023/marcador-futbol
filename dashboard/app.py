@@ -96,8 +96,13 @@ def with_market_pre(wide, cols=PRE_COLS):
     if market_pre.empty:
         return wide, []
     wide = wide.copy()
+    # Texto, no numero: un partido sin cuota pre-partido (ya arranco cuando el
+    # sistema miro, o esta fuera de la foto de la fuente) tiene que verse como
+    # un guion. Streamlit Cloud pintaba 'None' en los nulos aunque el Styler
+    # dijera otra cosa; con el texto hecho aqui no hay nada que interpretar.
     for src, dst in cols.items():
-        wide[dst] = wide["match_id"].map(market_pre[src])
+        v = wide["match_id"].map(market_pre[src])
+        wide[dst] = v.map(lambda x: "—" if pd.isna(x) else f"{x:.1%}")
     return wide, list(cols.values())
 champ = promotion.read_champion()
 PRODUCTION_MODEL = champ["raw"]["model_version"] if champ else "(sin campeon)"
@@ -260,8 +265,7 @@ def table_1x2(df):
     wide, mcols = with_market_pre(wide)
     view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
             [["fecha", "local", "visitante"] + ORDER_1X2 + mcols])
-    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2 + mcols},
-                                   na_rep="—"),
+    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}),
                  use_container_width=True, hide_index=True)
 
 
@@ -419,8 +423,7 @@ def ou_section(key, title, blurb):
             wide, mcols = with_market_pre(wide, {"pre_o25": "mercado >2.5"})
         view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
                 [["fecha", "local", "visitante"] + lines + mcols])
-        st.dataframe(view.style.format({l: "{:.1%}" for l in lines + mcols},
-                                       na_rep="—"),
+        st.dataframe(view.style.format({l: "{:.1%}" for l in lines}),
                      use_container_width=True, hide_index=True)
 
     done = d_model[d_model["match_id"].isin(played)]
