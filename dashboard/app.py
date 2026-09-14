@@ -528,6 +528,15 @@ def ou_section(key, title, blurb):
     done = d_model[d_model["match_id"].isin(played)]
     if done.empty:
         return
+    # El marcador llega en horas por la API; el total de tarjetas o tiros solo
+    # llega cuando la fuente oficial completa la fila. Mientras tanto, decirlo
+    # en vez de dejar un selector sobre una tabla vacia.
+    have = results[results["match_id"].isin(done["match_id"])]
+    if not any(live_markets.actual_total(key, r) is not None for _, r in have.iterrows()):
+        st.caption(f"{done['match_id'].nunique()} partidos jugados, pero el total de "
+                   f"{BY_KEY[key].label.lower()} solo llega cuando la fuente oficial "
+                   "completa la fila (cuota de cierre, tarjetas y tiros). Todavía no.")
+        return
     pick = (st.selectbox("Línea", lines, index=min(1, len(lines) - 1), key=f"{key}_line")
             if len(lines) > 1 else lines[0])
     code = code_prefix + pick[1] + pick[3]
