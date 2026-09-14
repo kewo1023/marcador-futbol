@@ -52,8 +52,12 @@ METRIC_FIELDS = ["model_version", "market", "eval_set", "n_matches",
                  "log_loss", "brier", "accuracy", "computed_at"]
 MISSED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                  "ftr", "detected_at"]
+# prov_score: el marcador segun la fuente de FIXTURES ('1-0'), provisional.
+# Vive aqui y no en results.csv a proposito: este archivo es el que cambia; el
+# de resultados es el que cuenta, y solo lo escribe 05_score desde la fuente
+# de resultados. Vacio hasta que la fuente de fixtures lo publique.
 FIXTURE_FIELDS = ["match_id", "match_date", "kickoff_utc", "home_team",
-                  "away_team", "updated_at"]
+                  "away_team", "prov_score", "updated_at"]
 # checked_at: cuando se miro. upcoming/unconfirmed: partidos en la ventana y
 # cuantos sin hora. file_age_hours: cuanto llevaba el archivo sin regenerarse.
 # error: que fallo al bajar, si algo. unknown_teams: nombres sin alias.
@@ -202,11 +206,37 @@ def upsert_fixtures(rows) -> int:
         if old and (old["kickoff_utc"], old["match_date"]) == \
                    (r["kickoff_utc"] or "", r["match_date"]):
             continue
-        by_id[r["match_id"]] = {**r, "kickoff_utc": r["kickoff_utc"] or ""}
+        # El marcador provisional que ya hubiera se conserva: esta funcion
+        # solo sabe de horas.
+        by_id[r["match_id"]] = {**r, "kickoff_utc": r["kickoff_utc"] or "",
+                                "prov_score": (old or {}).get("prov_score") or ""}
         changed += 1
     if changed:
-        _write(LEDGER_FIXTURES, FIXTURE_FIELDS,
-               sorted(by_id.values(), key=lambda x: (x["match_date"], x["match_id"])))
+        _write_fixtures(by_id)
+    return changed
+
+
+def _write_fixtures(by_id):
+    rows = [{**{"prov_score": ""}, **r} for r in by_id.values()]
+    _write(LEDGER_FIXTURES, FIXTURE_FIELDS,
+           sorted(rows, key=lambda x: (x["match_date"], x["match_id"])))
+
+
+def update_provisional(scores: dict) -> int:
+    """Escribe el marcador provisional de los partidos que ya estan en
+    fixtures.csv y que la fuente de fixtures da por jugados. Devuelve cuantos
+    cambiaron. Solo toca partidos ya registrados: este archivo no es una
+    copia de la fuente, es la hora (y ahora el marcador) de lo predicho."""
+    by_id = {r["match_id"]: r for r in read_fixtures()}
+    changed = 0
+    for mid, score in scores.items():
+        r = by_id.get(mid)
+        if r is None or (r.get("prov_score") or "") == score:
+            continue
+        r["prov_score"] = score
+        changed += 1
+    if changed:
+        _write_fixtures(by_id)
     return changed
 
 

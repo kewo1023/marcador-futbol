@@ -167,6 +167,37 @@ def fixture_rows(snap: FixturesSnapshot, league: str):
         yield row
 
 
+def provisional_scores(snap: FixturesSnapshot, league: str) -> dict:
+    """{match_id: 'hg-ag'} de los partidos que el archivo ya da por jugados.
+
+    ES PROVISIONAL Y NO CUENTA. El resultado que evalua al modelo viene de
+    football-data.co.uk, con la cuota de cierre, tarjetas y tiros en la misma
+    fila, y ese tarda dias en publicarse (una semana entera la del 11/09).
+    Esto existe para que, mientras tanto, el dashboard pueda mostrar que paso
+    en vez de un guion. No entra a results.csv ni a metrics.csv: una sola
+    verdad para lo que cuenta, y una vista previa para lo que se espera.
+    """
+    path = snap.path(league)
+    if path is None:
+        return {}
+    out = {}
+    for r in _parse(path):
+        if not r["result"]:
+            continue
+        try:
+            hg, ag = (int(x) for x in r["result"].split("-"))
+        except ValueError:
+            continue                          # formato raro: mejor sin dato
+        try:
+            home = canonical(FIXTUREDOWNLOAD, league, r["home"])
+            away = canonical(FIXTUREDOWNLOAD, league, r["away"])
+        except UnknownTeam:
+            continue                          # ya lo anoto fixture_rows
+        date_iso = r["when"].date().isoformat()
+        out[make_match_id(league, date_iso, home, away)] = f"{hg}-{ag}"
+    return out
+
+
 def health(snap: FixturesSnapshot, today: dt.date,
            lookahead_days: int = FIXTURES_LOOKAHEAD_DAYS) -> dict:
     """Por liga: cuantos partidos vienen en la ventana y cuantos sin hora.

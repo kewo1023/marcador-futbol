@@ -479,6 +479,23 @@ would need a GitHub token, and only the runner writes to the ledger. The
 button that does exist is **Run workflow** in Actions — and today it wouldn't
 do anything either.
 
+### The provisional score, while the official source publishes
+
+On Monday 09-14 the results source had gone **a full week** without
+regenerating its file (`Last-Modified` 09-07, with 43 predicted matches
+already played). The dashboard said so honestly — "43 awaiting result" — but
+didn't say what had happened on the pitch. Since then `04_predict.py` reads
+the `Result` column of the fixtures source (which publishes scores within
+hours) and stores it in `fixtures.csv` as `prov_score`. The dashboard shows
+the score and ✓/✗ in the waiting table, plus a one-line provisional summary
+(hits, model log-loss, and against the pre-match market on the same matches).
+
+**None of it enters `results.csv` or `metrics.csv`.** The result that counts
+is still football-data.co.uk's, because it arrives with closing odds, cards
+and shots in the same row; the provisional one is so nobody stares at a dash
+for a week. Two sources of truth in the metrics ledger would have been worse
+than the wait.
+
 ### The market enters BEFORE the match
 
 Until 09-12 the market only showed up afterwards, as the closing odds in

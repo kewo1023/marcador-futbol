@@ -194,6 +194,19 @@ def awaiting_results(preds, fixtures, played, match_hours=2):
 
 awaiting = awaiting_results(preds, fixtures, played)
 
+# El marcador PROVISIONAL (fuente de fixtures) de lo que espera el oficial.
+# Se muestra y se resume, pero no entra a ninguna metrica del ledger.
+prov = {}
+if not fixtures.empty and "prov_score" in fixtures:
+    prov = {r["match_id"]: r["prov_score"]
+            for _, r in fixtures.iterrows()
+            if r["prov_score"] and r["match_id"] in awaiting}
+
+
+def prov_outcome(score):
+    hg, ag = (int(x) for x in score.split("-"))
+    return "H" if hg > ag else ("A" if ag > hg else "D")
+
 # Desde el 2026-09-10 el ledger trae mas de un mercado. Todo lo que sigue hasta
 # las secciones over/under es el 1X2; las filas de los otros se apartan aqui.
 all_preds = preds
@@ -238,6 +251,33 @@ if awaiting:
             "un fallo del sistema: la predicción quedó escrita antes del partido "
             "y se cruza con el resultado cuando llegue. Abajo, en «Salud de la "
             "fuente de resultados», se ve hasta qué fecha llega la fuente.")
+if prov:
+    # Vista previa con el marcador provisional: acierto y log-loss del
+    # campeon, y el mercado pre-partido sobre los MISMOS partidos cuando lo
+    # hay. Se calcula aqui, al vuelo, y no se guarda: no es el track record.
+    from marcador.scoring import log_loss as _ll
+    pm = preds[(preds["model_version"] == PRODUCTION_MODEL)
+               & preds["match_id"].isin(prov)]
+    probs = {m: dict(zip(g["outcome"], g["prob"])) for m, g in pm.groupby("match_id")}
+    probs = {m: p for m, p in probs.items() if len(p) == 3}
+    actual = {m: prov_outcome(prov[m]) for m in probs}
+    hits = sum(max(p, key=p.get) == actual[m] for m, p in probs.items())
+    ids = list(probs)
+    ll_model = _ll([probs[m] for m in ids], [actual[m] for m in ids]) if ids else 0.0
+    with_mkt = [m for m in ids if not market_pre.empty and m in market_pre.index
+                and pd.notna(market_pre.loc[m, "pre_h"])]
+    txt = (f"**Provisional, con el marcador de la fuente de fixtures "
+           f"({len(probs)} partidos):** acierto {hits}/{len(probs)} · "
+           f"log-loss del modelo {ll_model:.4f}")
+    if with_mkt:
+        ll_m = _ll([probs[m] for m in with_mkt], [actual[m] for m in with_mkt])
+        ll_k = _ll([{"H": market_pre.loc[m, "pre_h"], "D": market_pre.loc[m, "pre_d"],
+                     "A": market_pre.loc[m, "pre_a"]} for m in with_mkt],
+                   [actual[m] for m in with_mkt])
+        txt += (f" · sobre los {len(with_mkt)} con cuota pre-partido: modelo "
+                f"{ll_m:.4f} vs mercado {ll_k:.4f} ({ll_m - ll_k:+.4f})")
+    st.caption(txt + ". No entra al ledger de métricas; el oficial llega con "
+               "la cuota de cierre. Con tan pocos partidos es ruido (regla 6).")
 if len(played) < 100:
     st.warning(f"Solo {len(played)} partidos jugados. Un log-loss con tan pocos "
                "datos se mueve muchísimo y no significa nada todavía; hacen "
@@ -254,17 +294,30 @@ if not market_pre.empty:
                "no que el mercado.")
 
 
-def table_1x2(df):
+def table_1x2(df, provisional=False):
     """Fecha y hora local, probabilidades del modelo y, si estan, las del
-    mercado pre-partido. Sirve igual para los por jugar y los que esperan."""
+    mercado pre-partido. Sirve igual para los por jugar y los que esperan;
+    a estos ultimos se les pega el marcador provisional si ya se sabe."""
     wide = (df.pivot_table(index=["match_id", "match_date", "home_team",
                                   "away_team"],
                            columns="outcome", values="prob")
             .reset_index().rename(columns=COLS_1X2))
     wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
     wide, mcols = with_market_pre(wide)
+    extra = []
+    if provisional:
+        wide["provisional"] = wide["match_id"].map(prov).fillna("—")
+        inv = {v: k for k, v in COLS_1X2.items()}
+
+        def _hit(r):
+            if r["provisional"] == "—":
+                return "—"
+            best = inv[max(ORDER_1X2, key=lambda c: r[c])]
+            return "✓" if best == prov_outcome(r["provisional"]) else "✗"
+        wide["acertó"] = wide.apply(_hit, axis=1)
+        extra = ["provisional", "acertó"]
     view = (wide.rename(columns={"home_team": "local", "away_team": "visitante"})
-            [["fecha", "local", "visitante"] + ORDER_1X2 + mcols])
+            [["fecha", "local", "visitante"] + extra + ORDER_1X2 + mcols])
     st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}),
                  use_container_width=True, hide_index=True)
 
@@ -273,7 +326,7 @@ if awaiting:
     st.caption(f"**Jugados, esperando resultado ({len(awaiting)}).** Lo que se "
                "predijo queda tal cual; el resultado se cruza cuando la fuente "
                "lo publique.")
-    table_1x2(preds[preds["match_id"].isin(awaiting)])
+    table_1x2(preds[preds["match_id"].isin(awaiting)], provisional=True)
 if upcoming.empty:
     st.write("Nada pendiente ahora mismo.")
 else:

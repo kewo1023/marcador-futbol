@@ -78,7 +78,9 @@ jobs:
           if [ -n "$N" ]; then
             git commit -m "predicciones: $(date -u +%Y-%m-%d) ($N filas)"
           elif [ -n "$(git diff --cached --name-only ledger/fixtures.csv)" ]; then
-            git commit -m "horas de partido: $(date -u +%Y-%m-%d)"
+            # Desde el 2026-09-14 este archivo lleva tambien el marcador
+            # provisional (fuente de fixtures), que no cuenta para nada.
+            git commit -m "horas o marcador provisional: $(date -u +%Y-%m-%d)"
           elif [ -n "$(git diff --cached --name-only ledger/market_pre.csv)" ]; then
             # La linea del mercado se movio y no hubo nada mas que hacer.
             git commit -m "mercado pre-partido: $(date -u +%Y-%m-%dT%H:%M)"

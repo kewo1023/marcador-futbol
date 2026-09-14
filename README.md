@@ -720,6 +720,24 @@ Un botón para «actualizar» desde el dashboard se descartó: no arreglaría na
 un token de GitHub, y solo el runner escribe en el ledger. El botón que sí
 existe es **Run workflow** en Actions, y hoy tampoco haría nada.
 
+### El marcador provisional, mientras la fuente oficial publica
+
+El lunes 14/09 la fuente de resultados llevaba **una semana** sin regenerar el
+archivo (`Last-Modified` del 07/09 con 43 partidos predichos ya jugados). El
+dashboard lo decía con honestidad —«43 esperando resultado»— pero no decía qué
+había pasado en la cancha. Desde ese día `04_predict.py` lee la columna
+`Result` de la fuente de fixtures (que publica el marcador en horas) y la deja
+en `fixtures.csv` como `prov_score`. El dashboard muestra el marcador y el
+✓/✗ en la tabla de los que esperan, y una línea de resumen provisional
+(acierto, log-loss del modelo, y contra el mercado pre-partido sobre los
+mismos partidos).
+
+**Nada de eso entra a `results.csv` ni a `metrics.csv`.** El resultado que
+cuenta sigue siendo el de football-data.co.uk, porque llega con la cuota de
+cierre, tarjetas y tiros en la misma fila; el provisional es para no mirar un
+guion durante una semana. Dos fuentes de verdad en el ledger de métricas
+habrían sido peor que la espera.
+
 ### El mercado entra ANTES del partido
 
 Hasta el 12/09 el mercado solo aparecía después, con la cuota de cierre en

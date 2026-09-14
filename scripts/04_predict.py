@@ -244,6 +244,18 @@ def main():
         if n_fx:
             print(f"Horas de partido: {n_fx} actualizadas en ledger/fixtures.csv")
 
+    # El marcador PROVISIONAL de lo ya jugado, segun la fuente de fixtures,
+    # para lo que espera el resultado oficial. No cuenta para nada: es lo que
+    # el dashboard muestra mientras la fuente de resultados publica.
+    if not dry:
+        scores = {}
+        for lg in LEAGUES:
+            scores.update(fixtures.provisional_scores(snap, lg))
+        n_prov = ledger.update_provisional(scores)
+        if n_prov:
+            print(f"Marcador provisional: {n_prov} partidos actualizados en "
+                  "ledger/fixtures.csv (no cuentan hasta que llegue el oficial)")
+
     # La opinion del mercado ANTES del partido, para todo lo que esta en la
     # ventana. Va antes del 'nada que hacer' por la misma razon que las horas:
     # la linea se mueve aunque no haya nada nuevo que predecir. Un fallo aqui
