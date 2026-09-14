@@ -45,9 +45,16 @@ PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
 # over/under 2.5 goles, sin margen — el techo del unico mercado over/under que
 # lo tiene. Vacios si la fuente no los trae para ese partido.
 # sot: total de tiros a puerta del partido, para ese mercado.
+# score_source: de donde llego el marcador primero ('api' = football-data.org,
+# 'csv' = football-data.co.uk). completed_at: cuando football-data.co.uk
+# completo la fila con cuota, tarjetas y tiros (vacio mientras no lo haga).
 RESULT_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                  "fthg", "ftag", "ftr", "market_h", "market_d", "market_a",
-                 "market_o25", "market_u25", "yellows", "sot", "recorded_at"]
+                 "market_o25", "market_u25", "yellows", "sot", "recorded_at",
+                 "score_source", "completed_at"]
+# Lo que football-data.co.uk puede COMPLETAR en una fila que ya tiene marcador.
+RESULT_COMPLETABLE = ["market_h", "market_d", "market_a", "market_o25",
+                      "market_u25", "yellows", "sot"]
 METRIC_FIELDS = ["model_version", "market", "eval_set", "n_matches",
                  "log_loss", "brier", "accuracy", "computed_at"]
 MISSED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
@@ -81,10 +88,12 @@ def _read(path: Path):
 
 def _write(path: Path, fields, rows):
     LEDGER_DIR.mkdir(parents=True, exist_ok=True)
+    blank = {f: "" for f in fields}
     with path.open("w", encoding="utf-8", newline="") as fh:
         wr = csv.DictWriter(fh, fieldnames=fields)
         wr.writeheader()
-        wr.writerows(rows)
+        # Filas escritas antes de que existiera una columna no la tienen.
+        wr.writerows({**blank, **r} for r in rows)
 
 
 def read_predictions():
@@ -137,7 +146,15 @@ def append_predictions(rows) -> int:
 
 def upsert_results(rows) -> int:
     """Los resultados si se pueden completar: un partido pasa de sin jugar a
-    jugado. Lo que no cambia nunca es un resultado ya registrado."""
+    jugado. Lo que no cambia nunca es un resultado ya registrado.
+
+    Desde el 2026-09-14 el marcador puede llegar primero por la API
+    (football-data.org) y la cuota de cierre, las tarjetas y los tiros
+    despues, por football-data.co.uk. Esa segunda llegada COMPLETA columnas
+    vacias de la misma fila; no toca el marcador ni `recorded_at`. Dos
+    marcadores distintos para el mismo partido abortan: es la senal de que
+    una de las dos fuentes esta mal, y eso lo mira una persona.
+    """
     by_id = {r["match_id"]: r for r in read_results()}
     changed = 0
     for r in rows:
@@ -149,11 +166,18 @@ def upsert_results(rows) -> int:
                 f"{old['fthg']}-{old['ftag']} y ahora llega "
                 f"{r['fthg']}-{r['ftag']}. Revisar la fuente a mano.")
         if old:
-            # Mismo resultado. Lo unico que puede completarse despues es el
-            # mercado, si la fuente lo publico mas tarde que el marcador.
-            # Filas anteriores a la columna no la tienen (get, no []).
-            if old.get("market_h") or not r.get("market_h"):
+            # Mismo marcador. Solo se completa lo que estaba vacio y ahora
+            # viene lleno. Filas anteriores a una columna no la tienen (get).
+            fill = {c: r[c] for c in RESULT_COMPLETABLE
+                    if not old.get(c) and r.get(c) not in ("", None)}
+            if not fill:
                 continue
+            merged = {**old, **fill}
+            if any(k.startswith("market") for k in fill) or "yellows" in fill or "sot" in fill:
+                merged["completed_at"] = r.get("completed_at") or r["recorded_at"]
+            by_id[r["match_id"]] = merged
+            changed += 1
+            continue
         by_id[r["match_id"]] = r
         changed += 1
     if changed:

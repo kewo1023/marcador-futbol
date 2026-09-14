@@ -42,6 +42,32 @@ SEASONS = ["1516", "1617", "1718", "1819", "1920", "2021",
 # las cerradas ya no cambian.
 CURRENT_SEASON = SEASONS[-1]
 
+# --- Fuente rapida de RESULTADOS: football-data.org (API v4) -----------------
+# Desde el 2026-09-14. El marcador oficial de football-data.co.uk tardo una
+# semana en publicarse la primera jornada en vivo; esta API lo da en horas.
+# Solo trae el marcador: la cuota de cierre, las tarjetas y los tiros siguen
+# llegando por football-data.co.uk y COMPLETAN la fila cuando aparezcan.
+# El token es personal y nunca va al repo: variable de entorno o `.env`
+# (en .gitignore). En Actions llega como secret.
+RESULTS_API_BASE = "https://api.football-data.org/v4"
+RESULTS_API_CODES = {"E0": "PL", "SP1": "PD", "D1": "BL1", "I1": "SA", "F1": "FL1"}
+RESULTS_API_TOKEN_VAR = "FOOTBALL_DATA_TOKEN"
+
+
+def results_api_token() -> str | None:
+    """El token, del entorno o de `.env` en la raiz. None si no hay."""
+    tok = os.environ.get(RESULTS_API_TOKEN_VAR)
+    if tok:
+        return tok.strip()
+    env = ROOT / ".env"
+    if env.exists():
+        for line in env.read_text().splitlines():
+            k, _, v = line.partition("=")
+            if k.strip() == RESULTS_API_TOKEN_VAR and v.strip():
+                return v.strip().strip("'\"")
+    return None
+
+
 # --- Fuente ------------------------------------------------------------------
 # OJO: el subdominio www.football-data.co.uk responde 503 a peticiones
 # programáticas. El dominio pelado sí responde. Verificado al construir F1.

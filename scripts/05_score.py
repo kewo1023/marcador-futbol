@@ -17,7 +17,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from marcador import db, ingest, ledger, live_markets, scoring  # noqa: E402
+from marcador import (db, ingest, ledger, live_markets, results_api,  # noqa: E402
+                      scoring)
 from marcador.baseline import MARKET_1X2, OUTCOMES, market_probs  # noqa: E402
 from marcador.markets import ou_market_probs               # noqa: E402
 from marcador.config import (BASE_MODEL_VERSION, CURRENT_SEASON,  # noqa: E402
@@ -26,6 +27,10 @@ from marcador.config import (BASE_MODEL_VERSION, CURRENT_SEASON,  # noqa: E402
 # El mismo nombre con el que 02_baseline registra el mercado en el backtest,
 # para que 'test' y 'live' de la misma referencia se lean uno al lado del otro.
 MARKET_REFERENCE = "market-avgclose-v1"
+# El mercado ANTES del partido (ledger/market_pre.csv). Existe desde que el
+# marcador puede llegar dias antes que la cuota de cierre: es la referencia
+# que se puede calcular el mismo dia. No sustituye al cierre; convive.
+MARKET_PRE_REFERENCE = "market-pre-v1"
 
 
 def refresh(con):
@@ -92,6 +97,33 @@ def results_health(files, awaiting):
     return rows
 
 
+def collect_api_results(predicted_ids, preds):
+    """El marcador de los partidos predichos, desde football-data.org.
+
+    Solo el marcador: el resto de la fila lo completa football-data.co.uk
+    cuando publique. Sin token, o si la API falla, se devuelve vacio y se
+    dice; el ciclo sigue con la fuente oficial.
+    """
+    live = [p for p in preds if p["mode"] == "live"]
+    if not live or not predicted_ids:
+        return [], None
+    since = dt.date.fromisoformat(min(p["match_date"] for p in live))
+    try:
+        snap = results_api.fetch_finished(since, dt.date.today())
+    except results_api.NoToken as exc:
+        print(f"Fuente rapida de resultados: sin token ({exc}). Solo la oficial.")
+        return [], None
+    now = ledger.now_iso()
+    rows = [{"match_id": r.match_id, "match_date": r.match_date,
+             "home_team": r.home_team, "away_team": r.away_team,
+             "fthg": r.fthg, "ftag": r.ftag, "ftr": r.ftr,
+             "market_h": "", "market_d": "", "market_a": "",
+             "market_o25": "", "market_u25": "", "yellows": "", "sot": "",
+             "recorded_at": now, "score_source": "api", "completed_at": ""}
+            for r in snap.results if r.match_id in predicted_ids]
+    return rows, snap
+
+
 def collect_results(con, predicted_ids):
     """Los resultados de los partidos que ya habiamos predicho.
 
@@ -132,7 +164,8 @@ def collect_results(con, predicted_ids):
                         "sot": (r["hst"] + r["ast"]
                                 if r["hst"] is not None and r["ast"] is not None
                                 else ""),
-                        "recorded_at": now})
+                        "recorded_at": now, "score_source": "csv",
+                        "completed_at": now})
     return out
 
 
@@ -166,7 +199,7 @@ def score_live():
         actual = actual_for(p["market"], r)
         if actual is None:
             continue                      # se jugo, pero sin ese dato
-        slot = by_key.setdefault((p["model_version"], p["market"]), {})
+        slot = by_key.setdefault((p["model_version"], p["market"], "live"), {})
         m = slot.setdefault(p["match_id"], {"probs": {}, "actual": actual})
         m["probs"][p["outcome"]] = float(p["prob"])
 
@@ -186,20 +219,53 @@ def score_live():
             return {"OVER": float(r["market_o25"]), "UNDER": float(r["market_u25"])}
         return None
 
-    for (model_version, market), matches in list(by_key.items()):
-        if model_version in (MARKET_REFERENCE, BASE_MODEL_VERSION):
+    pre = ledger.latest_market_pre()
+
+    def market_pre_ref(market, mid):
+        """La probabilidad pre-partido del mercado, o None."""
+        r = pre.get(mid)
+        if not r:
+            return None
+        if market == MARKET_1X2 and r.get("pre_h"):
+            return {"H": float(r["pre_h"]), "D": float(r["pre_d"]),
+                    "A": float(r["pre_a"])}
+        if market == "GOLES_OU25" and r.get("pre_o25"):
+            return {"OVER": float(r["pre_o25"]), "UNDER": float(r["pre_u25"])}
+        return None
+
+    # Cada referencia existe solo en un subconjunto (el cierre llega dias
+    # despues del marcador; el pre-partido solo para lo que estaba en la foto).
+    # Comparar el modelo sobre TODOS contra el mercado sobre ALGUNOS es
+    # comparar dos partidos distintos. Por eso el modelo se evalua ademas
+    # sobre exactamente el subconjunto de cada referencia: 'live@close' y
+    # 'live@pre'. El dashboard compara 'live@close' con el cierre y
+    # 'live@pre' con el pre-partido, mismos partidos a los dos lados.
+    for (model_version, market, eval_set), matches in list(by_key.items()):
+        if model_version in (MARKET_REFERENCE, MARKET_PRE_REFERENCE,
+                             BASE_MODEL_VERSION) or eval_set != "live":
             continue
         n_out = len(OUTCOMES) if market == MARKET_1X2 else len(live_markets.OUTCOMES_OU)
-        mk = {}
+        mk, mp, at_close, at_pre = {}, {}, {}, {}
         for mid, m in matches.items():
+            if len(m["probs"]) != n_out:
+                continue
             ref = market_ref(market, rows[mid])
-            if len(m["probs"]) == n_out and ref:
+            if ref:
                 mk[mid] = {"probs": ref, "actual": m["actual"]}
+                at_close[mid] = m
+            ref_pre = market_pre_ref(market, mid)
+            if ref_pre:
+                mp[mid] = {"probs": ref_pre, "actual": m["actual"]}
+                at_pre[mid] = m
         if mk:
-            by_key[(MARKET_REFERENCE, market)] = mk
+            by_key[(MARKET_REFERENCE, market, "live")] = mk
+            by_key[(model_version, market, "live@close")] = at_close
+        if mp:
+            by_key[(MARKET_PRE_REFERENCE, market, "live")] = mp
+            by_key[(model_version, market, "live@pre")] = at_pre
 
     out = []
-    for (model_version, market), matches in by_key.items():
+    for (model_version, market, eval_set), matches in by_key.items():
         outcomes = OUTCOMES if market == MARKET_1X2 else live_markets.OUTCOMES_OU
         pairs = [(m["probs"], m["actual"]) for m in matches.values()
                  if len(m["probs"]) == len(outcomes)]
@@ -208,7 +274,7 @@ def score_live():
         res = scoring.evaluate([p for p, _ in pairs], [a for _, a in pairs],
                                outcomes=outcomes)
         out.append({"model_version": model_version, "market": market,
-                    "eval_set": "live", "n_matches": res["n_matches"],
+                    "eval_set": eval_set, "n_matches": res["n_matches"],
                     "log_loss": f"{res['log_loss']:.6f}",
                     "brier": f"{res['brier']:.6f}",
                     "accuracy": f"{res['accuracy']:.6f}",
@@ -257,10 +323,24 @@ def main():
     print(f"Temporada en curso re-ingestada: {n} partidos\n")
 
     predicted = ledger.predicted_matches()
+    # Primero el marcador rapido (API), despues la fila completa (CSV). El
+    # orden importa: la segunda completa a la primera, nunca al reves.
+    api_rows, api_snap = collect_api_results(predicted, ledger.read_predictions())
+    added_api = ledger.upsert_results(api_rows) if api_rows else 0
+    if api_snap is not None:
+        print(f"Fuente rapida de resultados: {len(api_rows)} partidos predichos "
+              f"terminados segun la API · {added_api} nuevos en el ledger")
+        for lg, err in api_snap.errors.items():
+            print(f"  {lg}: ERROR {err}")
+        for lg, name in api_snap.unknown:
+            print(f"  {lg}: nombre sin alias en la API: {name!r} -> aliases.py")
     added = ledger.upsert_results(collect_results(con, predicted))
-    pending = len(predicted) - len(ledger.read_results())
-    print(f"Resultados: {added} nuevos registrados · "
-          f"{len(ledger.read_results())} en total · {pending} partidos aun sin jugar")
+    results_now = ledger.read_results()
+    completed = sum(1 for r in results_now if r.get("completed_at"))
+    pending = len(predicted) - len(results_now)
+    print(f"Resultados: {added} completados/nuevos desde la fuente oficial · "
+          f"{len(results_now)} en total ({completed} con cuota y stats) · "
+          f"{pending} partidos aun sin jugar")
 
     # Hasta donde llega la fuente, y cuantos partidos ya jugados le faltan.
     # Va al ledger porque el log de Actions expira y la pregunta "cuanto tarda
@@ -304,17 +384,21 @@ def main():
     # 1X2 la que importa es el mercado sobre ESTOS partidos; para tarjetas, la
     # frecuencia base (no hay cuota). Elo del backtest queda como segunda
     # referencia del 1X2.
-    live = {(m["model_version"], m["market"]): m for m in metrics}
+    live = {(m["model_version"], m["market"], m["eval_set"]): m for m in metrics}
     print()
-    for (mv, mk), m in sorted(live.items(), key=lambda kv: (kv[0][1], kv[0][0])):
-        if mv in (MARKET_REFERENCE, BASE_MODEL_VERSION):
+    for (mv, mk, es), m in sorted(live.items(), key=lambda kv: (kv[0][1], kv[0][0])):
+        if mv in (MARKET_REFERENCE, MARKET_PRE_REFERENCE, BASE_MODEL_VERSION) \
+                or es != "live":
             continue
-        for ref_name, ref_label in ((MARKET_REFERENCE, "el mercado"),
-                                    (BASE_MODEL_VERSION, "la base")):
-            ref = live.get((ref_name, mk))
-            if not ref:
+        for ref_name, ref_label, subset in (
+                (MARKET_REFERENCE, "el cierre", "live@close"),
+                (MARKET_PRE_REFERENCE, "el mercado pre-partido", "live@pre"),
+                (BASE_MODEL_VERSION, "la base", "live")):
+            ref = live.get((ref_name, mk, "live"))
+            own = live.get((mv, mk, subset))
+            if not ref or not own:
                 continue
-            d = float(m["log_loss"]) - float(ref["log_loss"])
+            d = float(own["log_loss"]) - float(ref["log_loss"])
             print(f"  {mk:14} {mv} contra {ref_label}, mismos "
                   f"{ref['n_matches']} partidos: {d:+.4f} "
                   f"({'pierde' if d > 0 else 'gana'})")

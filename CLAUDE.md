@@ -124,6 +124,19 @@ patrón que se usó para probar cada mercado nuevo en vivo:
 Es la única forma de ver el camino completo predicción → resultado → marcador →
 dashboard sin esperar una jornada real ni contaminar el ledger.
 
+## Regla 10 — Dos fuentes de resultados, una sola fila, y el marcador no se pisa
+
+Desde el 2026-09-14 el marcador llega por football-data.org (API, con token)
+y la cuota de cierre, tarjetas y tiros por football-data.co.uk, días después.
+Las dos escriben en la MISMA fila de `results.csv`: la segunda solo llena
+columnas vacías. Si traen marcadores distintos, `upsert_results` aborta, y
+eso lo resuelve una persona mirando las dos fuentes — nunca un `--force`.
+
+El token (`FOOTBALL_DATA_TOKEN`) vive en el entorno, en `.env` (ignorado) o
+en los secrets de Actions. **Jamás en el repo, ni en un log, ni en el chat.**
+Si se filtra, se revoca y se genera otro; borrarlo de un commit no lo saca del
+historial.
+
 ## Regla 9 — Un push que añade un módulo exige reboot en Streamlit Cloud
 
 Streamlit Cloud redespliega en cada push sin reiniciar el proceso de Python.

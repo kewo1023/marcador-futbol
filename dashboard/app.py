@@ -222,27 +222,56 @@ c1.metric("Partidos predichos", n_matches)
 c2.metric("Ya jugados", len(played),
           delta=f"{len(awaiting)} esperando resultado" if awaiting else None,
           delta_color="off")
+# Subconjuntos del modelo sobre exactamente los partidos de cada referencia
+# (05_score los escribe como 'live@close' y 'live@pre'): asi la diferencia
+# es sobre los mismos partidos a los dos lados, o no se muestra.
+live_all = metrics[metrics["eval_set"].str.startswith("live")] if not metrics.empty else pd.DataFrame()
+
+
+def paired(model, market, ref_name, subset):
+    """(log-loss modelo, log-loss referencia, n) sobre los mismos partidos,
+    o None si la referencia no tiene filas para ese mercado."""
+    if live_all.empty:
+        return None
+    ref = live_all[(live_all["model_version"] == ref_name) & (live_all["market"] == market)
+                   & (live_all["eval_set"] == "live")]
+    own = live_all[(live_all["model_version"] == model) & (live_all["market"] == market)
+                   & (live_all["eval_set"] == subset)]
+    if ref.empty or own.empty:
+        return None
+    return (float(own.iloc[0]["log_loss"]), float(ref.iloc[0]["log_loss"]),
+            int(ref.iloc[0]["n_matches"]))
+
+
 if not live.empty:
     row = live[live["model_version"] == PRODUCTION_MODEL]
     if not row.empty:
         ll = float(row.iloc[0]["log_loss"])
-        # La referencia que importa es el mercado sobre ESTOS mismos partidos.
-        # Elo del backtest solo se muestra si el mercado aun no tiene filas.
-        mkt = live[live["model_version"] == "market-avgclose-v1"]
+        # La referencia que importa es la cuota de CIERRE, que llega dias
+        # despues del marcador. Mientras no este, se compara contra el
+        # mercado PRE-partido; y si tampoco, contra Elo del backtest.
+        close = paired(PRODUCTION_MODEL, "1X2", "market-avgclose-v1", "live@close")
+        pre = paired(PRODUCTION_MODEL, "1X2", "market-pre-v1", "live@pre")
         ref = test[test["model_version"] == "baseline-elo-v1"]
-        delta = None
-        if not mkt.empty:
-            delta = f"{ll - float(mkt.iloc[0]['log_loss']):+.4f} vs mercado"
+        delta, note = None, None
+        if close:
+            delta = f"{close[0] - close[1]:+.4f} vs cierre"
+            note = (f"Cuota de cierre sobre {close[2]} partidos: {close[1]:.4f} "
+                    f"(modelo sobre esos mismos: {close[0]:.4f}).")
+        elif pre:
+            delta = f"{pre[0] - pre[1]:+.4f} vs mercado pre"
+            note = (f"Todavía sin cuota de cierre (llega días después del marcador). "
+                    f"Mercado pre-partido sobre {pre[2]} partidos: {pre[1]:.4f} "
+                    f"(modelo sobre esos mismos: {pre[0]:.4f}).")
         elif not ref.empty:
             delta = f"{ll - float(ref.iloc[0]['log_loss']):+.4f} vs Elo (backtest)"
-        c3.metric("log-loss en vivo", f"{ll:.4f}", delta, delta_color="inverse")
+        c3.metric(f"log-loss en vivo · {row.iloc[0]['n_matches']} partidos",
+                  f"{ll:.4f}", delta, delta_color="inverse")
         c4.metric("Acierto", f"{float(row.iloc[0]['accuracy'])*100:.0f}%")
-        if not mkt.empty:
-            st.caption(f"Mercado sobre los mismos {mkt.iloc[0]['n_matches']} "
-                       f"partidos: {float(mkt.iloc[0]['log_loss']):.4f}. "
-                       "Negativo = el modelo va por delante. Con pocos partidos "
-                       "cambia de signo de una jornada a otra; no es concluyente "
-                       "hasta que pase por el bootstrap.")
+        if note:
+            st.caption(note + " Negativo = el modelo va por delante. Con pocos "
+                       "partidos cambia de signo de una jornada a otra; no es "
+                       "concluyente hasta que pase por el bootstrap.")
 
 if awaiting:
     st.info(f"**{len(awaiting)} partidos ya se jugaron y todavía no cuentan.** "
@@ -358,20 +387,31 @@ if played:
     # le dio la cuota de cierre a lo que paso, y la diferencia con el modelo.
     # Es la comparacion que define el proyecto, partido a partido.
     def _mkt(r):
+        """(probabilidad, 'cierre'|'pre'|'—'): la cuota de cierre si el
+        ledger ya la tiene; si no, la pre-partido; si no, nada."""
         v = r.get("market_" + r["ftr"].lower(), "")
-        return float(v) if v not in ("", None) and v == v else None
-    merged["mercado le dio"] = [_mkt(r) for _, r in merged.iterrows()]
+        if v not in ("", None) and v == v:
+            return float(v), "cierre"
+        if not market_pre.empty and r["match_id"] in market_pre.index:
+            v = market_pre.loc[r["match_id"], "pre_" + r["ftr"].lower()]
+            if pd.notna(v):
+                return float(v), "pre"
+        return None, "—"
+    _m = [_mkt(r) for _, r in merged.iterrows()]
+    merged["mercado le dio"] = [x[0] for x in _m]
+    merged["cuota"] = [x[1] for x in _m]
     merged["vs mercado"] = merged["le dio al resultado"] - merged["mercado le dio"]
     merged = with_kickoff(merged.rename(columns=COLS_1X2), fixtures)
     view = (merged.sort_values(["match_date", "fecha"], ascending=False)
             .rename(columns={"home_team": "local", "away_team": "visitante"})
             [["fecha", "local", "visitante", "marcador", "resultado", "acerto"]
-             + ORDER_1X2 + ["le dio al resultado", "mercado le dio", "vs mercado"]])
+             + ORDER_1X2 + ["le dio al resultado", "mercado le dio", "cuota", "vs mercado"]])
     st.caption("`acertó` es si el resultado real era el más probable. Es "
                "contexto, no criterio. Las que cuentan son las tres últimas: "
                "cuánta probabilidad puso el modelo en lo que pasó, cuánta puso "
-               "la cuota de cierre, y la diferencia. **Positivo = el modelo vio "
-               "más que el mercado en ese partido.** Sumado sobre cientos de "
+               "el mercado (`cuota` dice si es la de cierre o, mientras no "
+               "llegue, la pre-partido), y la diferencia. **Positivo = el modelo "
+               "vio más que el mercado en ese partido.** Sumado sobre cientos de "
                "partidos, eso es el log-loss de arriba.")
     st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}
                                    | {"le dio al resultado": "{:.1%}",
@@ -452,18 +492,24 @@ def ou_section(key, title, blurb):
             code = code_prefix + line[1] + line[3]
             m = live_ou[(live_ou["market"] == code) & (live_ou["model_version"] == model)]
             b = live_ou[(live_ou["market"] == code) & (live_ou["model_version"] == BASE_MODEL)]
-            k = live_ou[(live_ou["market"] == code) & (live_ou["model_version"] == "market-avgclose-v1")]
             if m.empty:
                 continue
-            ref = k if not k.empty else b
-            ref_label = "mercado" if not k.empty else "base"
-            delta = (f"{float(m.iloc[0]['log_loss']) - float(ref.iloc[0]['log_loss']):+.4f} vs {ref_label}"
-                     if not ref.empty else None)
+            # Cierre si ya llego; si no, pre-partido; si no, la base. Siempre
+            # sobre los mismos partidos a los dos lados.
+            close = paired(model, code, "market-avgclose-v1", "live@close")
+            pre = paired(model, code, "market-pre-v1", "live@pre")
+            if close:
+                delta, cap = f"{close[0] - close[1]:+.4f} vs cierre", f"cierre {close[1]:.4f} ({close[2]})"
+            elif pre:
+                delta, cap = f"{pre[0] - pre[1]:+.4f} vs mercado pre", f"mercado pre {pre[1]:.4f} ({pre[2]})"
+            elif not b.empty:
+                delta, cap = f"{float(m.iloc[0]['log_loss']) - float(b.iloc[0]['log_loss']):+.4f} vs base", None
+            else:
+                delta, cap = None, None
             col.metric(f"log-loss {line} · {m.iloc[0]['n_matches']} partidos",
                        f"{float(m.iloc[0]['log_loss']):.4f}", delta, delta_color="inverse")
-            if not k.empty and not b.empty:
-                col.caption(f"mercado {float(k.iloc[0]['log_loss']):.4f} · "
-                            f"base {float(b.iloc[0]['log_loss']):.4f}")
+            if not b.empty:
+                col.caption((cap + " · " if cap else "") + f"base {float(b.iloc[0]['log_loss']):.4f}")
 
     up = d_model[~d_model["match_id"].isin(played)]
     if not up.empty:

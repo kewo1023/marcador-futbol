@@ -22,7 +22,7 @@ evaluando; el reloj de GitHub, no. Cualquiera puede auditar el proyecto con
 | Archivo | Qué es | Se reescribe |
 |---|---|---|
 | `predictions.csv` | Una fila por (partido, modelo, mercado, resultado posible) | **Nunca.** Solo se agregan filas |
-| `results.csv` | El marcador de los partidos que se predijeron | Solo se completa; un resultado registrado no cambia |
+| `results.csv` | El marcador de los partidos que se predijeron (`score_source`: quién lo trajo primero) y, cuando football-data.co.uk publica, la cuota de cierre, tarjetas y tiros (`completed_at`) | Solo se completa; un resultado registrado no cambia |
 | `metrics.csv` | log-loss, Brier y accuracy por modelo | Sí: son derivadas, se recalculan |
 | `missed.csv` | Partidos que se jugaron sin que el sistema los predijera | Solo se agregan |
 | `champion.json` | Qué modelo está en producción y desde cuándo | Sí, cuando el gate promueve |

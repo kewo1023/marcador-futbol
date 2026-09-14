@@ -479,6 +479,41 @@ would need a GitHub token, and only the runner writes to the ledger. The
 button that does exist is **Run workflow** in Actions — and today it wouldn't
 do anything either.
 
+### The score arrives from another source, and the row is completed later
+
+The provisional score above lasted a few hours. The official source was still
+frozen on the night of Monday 09-14 — a full week with the whole round played —
+so the **score** now comes from [football-data.org](https://www.football-data.org)
+(API v4, free plan with a token, all five leagues in `TIER_ONE`), while the
+**closing odds, cards and shots** keep arriving from football-data.co.uk and
+**complete the same row** when they show up. Measured while building it:
+Sunday night's matches were in the API at 00:20 UTC on Monday.
+
+What changes, and what doesn't:
+
+- `results.csv` gains `score_source` (`api` or `csv`, who brought the score
+  first) and `completed_at` (when football-data.co.uk completed the row). A
+  recorded result still never changes: the second source only fills empty
+  columns, and if it brings a **different score**, `05_score` aborts with an
+  error. A person looks at that, not the code.
+- API team names are translated in `aliases.FOOTBALL_DATA_ORG` (96 teams,
+  four manual fixes: Leeds, Nott'm Forest, Ath Bilbao, Ath Madrid). Validated
+  before writing anything: the 146 matches of 2026/27 the official source
+  already had matched **146/146** by `match_id` and score.
+- Since the close arrives days later, 1X2 and goals 2.5 are also measured
+  against the **pre-match market** (`market-pre-v1`, from `market_pre.csv`),
+  and the model is additionally evaluated on exactly each reference's matches
+  (`live@close`, `live@pre` in `metrics.csv`): comparing the model over 45
+  matches against the market over 28 would be comparing two different games.
+  The dashboard shows "vs close" when it exists and "vs pre-match market"
+  meanwhile, always on the same matches.
+- The token is personal and not in the repo: `FOOTBALL_DATA_TOKEN` in the
+  environment or in `.env` (ignored), and as an Actions secret. Without a
+  token, `05_score` runs with the official source only and says so.
+
+The provisional score from the previous section stays in `fixtures.csv` as a
+safety net: if the API fails, the dashboard still shows something.
+
 ### The provisional score, while the official source publishes
 
 On Monday 09-14 the results source had gone **a full week** without

@@ -43,6 +43,10 @@ jobs:
       # despues, para que el agujero de cobertura se vea en rojo.
       - name: Ingerir resultados y medir
         id: medir
+        # El token de football-data.org es un secret del repositorio; el
+        # runner lo enmascara en el log y el codigo nunca lo imprime.
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
         run: |
           set +e
           python scripts/05_score.py

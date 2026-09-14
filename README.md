@@ -720,6 +720,42 @@ Un botón para «actualizar» desde el dashboard se descartó: no arreglaría na
 un token de GitHub, y solo el runner escribe en el ledger. El botón que sí
 existe es **Run workflow** en Actions, y hoy tampoco haría nada.
 
+### El marcador llega por otra fuente, y la fila se completa después
+
+El marcador provisional de arriba duró unas horas. La fuente oficial seguía
+congelada el lunes 14/09 por la noche —una semana con la jornada entera
+jugada— y se decidió que el **marcador** entre por
+[football-data.org](https://www.football-data.org) (API v4, plan gratuito con
+token, las cinco ligas en `TIER_ONE`), mientras que la **cuota de cierre, las
+tarjetas y los tiros** siguen llegando por football-data.co.uk y **completan
+la misma fila** cuando aparezcan. Medido al construirlo: los partidos del
+domingo por la noche estaban en la API a las 00:20 UTC del lunes.
+
+Lo que esto cambia, y lo que no:
+
+- `results.csv` gana `score_source` (`api` o `csv`, quién trajo el marcador
+  primero) y `completed_at` (cuándo football-data.co.uk completó la fila).
+  Un resultado registrado sigue sin cambiar nunca: la segunda fuente solo
+  llena columnas vacías, y si trae **otro marcador**, `05_score` aborta con
+  error. Eso lo mira una persona, no el código.
+- Los nombres de la API se traducen en `aliases.FOOTBALL_DATA_ORG` (96
+  equipos, cuatro correcciones a mano: Leeds, Nott'm Forest, Ath Bilbao, Ath
+  Madrid). Validado antes de escribir nada: los 146 partidos de 2026/27 que
+  la fuente oficial ya tenía casaron **146/146** por `match_id` y marcador.
+- Como el cierre llega días después, el 1X2 y goles 2.5 se miden también
+  contra el **mercado pre-partido** (`market-pre-v1`, desde
+  `market_pre.csv`), y el modelo se evalúa además sobre exactamente los
+  partidos de cada referencia (`live@close`, `live@pre` en `metrics.csv`):
+  comparar el modelo sobre 45 partidos contra el mercado sobre 28 sería
+  comparar dos partidos distintos. El dashboard muestra «vs cierre» cuando
+  existe y «vs mercado pre» mientras tanto, siempre sobre los mismos.
+- El token es personal y no está en el repo: `FOOTBALL_DATA_TOKEN` en el
+  entorno o en `.env` (ignorado), y como secret en Actions. Sin token,
+  `05_score` sigue solo con la fuente oficial y lo dice.
+
+El marcador provisional de la sección anterior queda en `fixtures.csv` como
+red: si la API falla, el dashboard sigue mostrando algo.
+
 ### El marcador provisional, mientras la fuente oficial publica
 
 El lunes 14/09 la fuente de resultados llevaba **una semana** sin regenerar el
@@ -823,6 +859,13 @@ El loop y el dashboard:
 El dashboard lee **solo el ledger**, nunca la base local. Si necesitara la base,
 nadie de afuera podría reproducir lo que muestra.
 
+**El token de resultados.** `05_score.py` trae el marcador desde
+football-data.org, que exige un token gratuito. Va en la variable de entorno
+`FOOTBALL_DATA_TOKEN` o en un archivo `.env` en la raíz (una línea,
+`FOOTBALL_DATA_TOKEN=…`; está en `.gitignore`). En GitHub Actions es un secret
+del repositorio con el mismo nombre. Sin token el script funciona igual, solo
+con la fuente oficial, y lo avisa.
+
 **Sobre el despliegue en Streamlit Cloud.** Cada push a `main` lo redespliega
 solo, pero **sin reiniciar el proceso de Python**: los módulos de `src/` que ya
 estaban importados se quedan en memoria con su versión anterior. Un push que
@@ -897,6 +940,11 @@ más altos que los que reportaba el README antes de la F4. El baseline viejo
 — CSV por temporada y liga, gratuitos. Traen resultado, corners, tarjetas,
 tiros, tiros a puerta, árbitro y cuotas de varias casas incluyendo las de
 cierre.
+
+**Marcador en horas:** [football-data.org](https://www.football-data.org) —
+API v4, plan gratuito con registro. Solo se usa para el marcador de los
+partidos ya predichos; el resto de la fila lo completa football-data.co.uk.
+Requiere `FOOTBALL_DATA_TOKEN` (ver «Cómo correrlo»). Desde el 2026-09-14.
 
 **Próximos partidos:** [fixturedownload.com](https://fixturedownload.com) —
 un CSV por liga con la temporada completa y hora en UTC. Desde el 2026-09-10;
