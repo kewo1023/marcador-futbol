@@ -66,7 +66,9 @@ jobs:
           # resultados), asi que siempre hay algo que commitear. El mensaje
           # distingue una corrida que cruzo resultados de una que solo
           # registro que la fuente sigue sin publicarlos.
-          if [ -n "$(git diff --cached --name-only ledger/results.csv ledger/metrics.csv ledger/missed.csv)" ]; then
+          # El '--' importa: sin el, un archivo que aun no existe (missed.csv)
+          # hace fallar a git y el mensaje cae siempre en la rama de abajo.
+          if [ -n "$(git diff --cached --name-only -- ledger/results.csv ledger/metrics.csv ledger/missed.csv)" ]; then
             git commit -m "resultados y marcador: $(date -u +%Y-%m-%d)"
           else
             git commit -m "salud de resultados: $(date -u +%Y-%m-%dT%H:%M)"
