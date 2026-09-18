@@ -34,3 +34,8 @@ checked_at,league,played,file_last_date,file_age_hours,awaiting,error
 2026-09-17T08:02:59+00:00,D1,,,,0,<urlopen error [Errno 111] Connection refused>
 2026-09-17T08:02:59+00:00,I1,,,,0,<urlopen error [Errno 111] Connection refused>
 2026-09-17T08:02:59+00:00,F1,,,,0,<urlopen error [Errno 111] Connection refused>
+2026-09-18T07:40:28+00:00,E0,40,2026-09-14,80.7,0,
+2026-09-18T07:40:28+00:00,SP1,59,2026-09-17,9.0,1,
+2026-09-18T07:40:28+00:00,D1,27,2026-09-13,80.7,0,
+2026-09-18T07:40:28+00:00,I1,40,2026-09-14,80.7,0,
+2026-09-18T07:40:28+00:00,F1,36,2026-09-13,80.7,0,
