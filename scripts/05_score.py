@@ -399,17 +399,29 @@ def main():
             if not ref or not own:
                 continue
             d = float(own["log_loss"]) - float(ref["log_loss"])
-            print(f"  {mk:14} {mv} contra {ref_label}, mismos "
-                  f"{ref['n_matches']} partidos: {d:+.4f} "
-                  f"({'pierde' if d > 0 else 'gana'})")
+            # La diferencia se lee en el intervalo, no en el promedio (regla 6),
+            # y sobre los partidos que tienen los DOS: un modelo que empezó a
+            # emitir tarde no se compara contra toda la historia de la base.
+            res = scoring.live_paired(by_model.get((mv, mk, "live"), {}),
+                                      by_model.get((ref_name, mk, "live"), {}))
+            if res:
+                d, lo, hi, _, n = res
+                lectura = ("gana" if hi < 0 else "pierde" if lo > 0
+                           else "no concluyente")
+                print(f"  {mk:14} {mv} contra {ref_label}, mismos {n} "
+                      f"partidos: {d:+.4f} [IC 95 % {lo:+.4f}, {hi:+.4f}] "
+                      f"({lectura})")
+            else:
+                print(f"  {mk:14} {mv} contra {ref_label}, mismos "
+                      f"{ref['n_matches']} partidos: {d:+.4f} "
+                      f"({'pierde' if d > 0 else 'gana'})")
     ref = {r["eval_set"] + "|" + r["model_version"]: r
            for r in ledger._read(ledger.LEDGER_METRICS)}
     base = ref.get("test|baseline-elo-v1")
     if base:
         print(f"  Referencia del backtest — Elo: {float(base['log_loss']):.4f}")
-    print("  Ojo: con pocos partidos este numero se mueve muchisimo. "
-          "No significa nada hasta tener ~100, y la diferencia contra el")
-    print("  mercado no es concluyente hasta que pase por el bootstrap (regla 6).")
+    print("  Manda el intervalo (bootstrap pareado, regla 6): "
+          "si contiene 0, no hay diferencia demostrada.")
 
     if missed:
         print(f"\n  {'!' * 60}")

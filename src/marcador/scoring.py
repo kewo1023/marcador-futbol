@@ -189,6 +189,36 @@ def bootstrap_diff(losses_a, losses_b, n_boot=20000, seed=0):
     return float(d.mean()), float(lo), float(hi), float(p), len(d)
 
 
+def live_paired(model_matches, ref_matches, n_boot=20000, seed=0):
+    """Bootstrap pareado EN VIVO: un modelo contra una referencia (el mercado),
+    sobre los partidos que tienen los dos.
+
+    Recibe dos diccionarios match_id -> {"probs": {outcome: p}, "actual": o},
+    que es la forma en que 05_score.score_live agrupa el ledger. No toca la
+    base: el track record en vivo se audita desde el ledger, igual que el
+    marcador.
+
+    Es la regla 6 aplicada al track record: la diferencia de log-loss contra
+    el mercado no se lee en el promedio, se lee en el intervalo. Con ~100
+    partidos el intervalo es ancho, y eso tambien es informacion: dice cuanta
+    diferencia se podria haber visto con estos datos (potencia).
+
+    Devuelve (diferencia_media, lo, hi, p, n) o None si hay menos de 30
+    partidos en comun. Negativo = el modelo es mejor que la referencia.
+    """
+    common = sorted(k for k in set(model_matches) & set(ref_matches)
+                    if model_matches[k]["actual"] == ref_matches[k]["actual"])
+    if len(common) < 30:
+        return None
+
+    def loss(m):
+        return -math.log(max(m["probs"].get(m["actual"], 0.0), EPS))
+
+    la = [loss(model_matches[k]) for k in common]
+    lb = [loss(ref_matches[k]) for k in common]
+    return bootstrap_diff(la, lb, n_boot=n_boot, seed=seed)
+
+
 def paired_bootstrap(con, model_a, model_b, market="1X2", seasons=None,
                      n_boot=20000, seed=0):
     """Compara dos modelos sobre los MISMOS partidos y dice si la diferencia
