@@ -459,3 +459,8 @@ checked_at,league,upcoming,unconfirmed,file_last_date,file_age_hours,error,unkno
 2026-10-05T06:29:02+00:00,D1,0,0,2027-05-22,13.7,,
 2026-10-05T06:29:02+00:00,I1,0,0,2027-05-29,13.6,,
 2026-10-05T06:29:02+00:00,F1,0,0,2027-05-28,0.4,,
+2026-10-05T17:47:04+00:00,E0,0,0,2027-05-30,140.2,,
+2026-10-05T17:47:04+00:00,SP1,,,,,TimeoutError: The read operation timed out,
+2026-10-05T17:47:04+00:00,D1,,,,,TimeoutError: The read operation timed out,
+2026-10-05T17:47:04+00:00,I1,,,,,TimeoutError: The read operation timed out,
+2026-10-05T17:47:04+00:00,F1,,,,,TimeoutError: The read operation timed out,
