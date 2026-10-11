@@ -33,6 +33,7 @@ evaluando; el reloj de GitHub, no. Cualquiera puede auditar el proyecto con
 | `market_pre.csv` | Probabilidad implícita del mercado **antes** del partido (promedio de casas, sin margen), una fila por cada cambio de línea | Solo se agregan |
 | `postponed.csv` | Partidos predichos que la fuente movió a otra fecha: id viejo → id nuevo, con la hora vieja y la nueva (hora vieja vacía = la fecha original era provisional). Un aplazamiento **no se evalúa**; una fecha provisional corregida sí, con el resultado del id real | Solo se agregan (una fila por cada cambio de fecha; la última manda) |
 | `results_health.csv` | Por corrida y liga, hasta dónde llega la fuente de resultados y cuántos partidos ya jugados le faltan | Solo se agregan |
+| `calendar.csv` | Los parones de la temporada (8+ días entre dos fechas con partido), por liga y para las cinco juntas (`ALL`, la firma de una fecha FIFA). Derivado del calendario completo de la fuente de fixtures: solo fechas, ningún partido | Sí: se rehace cuando el calendario cambia |
 
 `results.csv` guarda lo mínimo para poder verificar el marcador sin bajar nada
 (equipos, goles, resultado). No lleva cuotas, corners, tiros ni árbitro: no es

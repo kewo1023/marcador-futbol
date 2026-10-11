@@ -161,6 +161,33 @@ def record_postponed(snap, now_utc=None, dry=False):
     return n
 
 
+def report_calendar(snap, today, dry=False):
+    """Los parones de la temporada, desde el calendario de la propia fuente.
+
+    Deja ledger/calendar.csv al dia y devuelve el paron general (ALL) que
+    cubre hoy, o None. Es lo que permite decir "no hay jornada porque es
+    fecha FIFA hasta el X" en vez de "no hay jornada" a secas, que se lee
+    igual que una fuente rota.
+    """
+    rows = fixtures.calendar_rows(snap, computed_at=ledger.now_iso())
+    if snap.errors:
+        # Con una liga sin bajar, reescribir borraria sus parones hasta la
+        # proxima corrida. Se conserva el ultimo calendario completo.
+        rows = ledger.read_calendar() or rows
+    elif not dry and ledger.write_calendar(rows):
+        print("Calendario: parones actualizados en ledger/calendar.csv")
+    general = fixtures.break_at(rows, "ALL", today)
+    if general:
+        print(f"Paron general: ninguna liga juega entre el "
+              f"{general['last_match']} y el {general['next_match']} "
+              f"({general['idle_days']} dias). Esta en el calendario de la fuente.")
+    for lg in LEAGUES:
+        own = fixtures.break_at(rows, lg, today)
+        if own and not general:
+            print(f"  {league_label(lg):16} en paron hasta el {own['next_match']}")
+    return general
+
+
 def record_market_pre(window_ids, dry=False):
     """Baja las cuotas pre-partido y deja en el ledger las que cambiaron.
 
@@ -279,6 +306,7 @@ def main():
     # Antes del 'nada que hacer', como las horas: un aplazamiento se detecta
     # aunque no haya nada nuevo que predecir.
     record_postponed(snap, dry=dry)
+    general_break = report_calendar(snap, today, dry=dry)
 
     champ = promotion.read_champion()
     cfg = champ["config"] if champ else ModelConfig(
@@ -349,6 +377,10 @@ def main():
             print("Sin partidos que predecir, pero la fuente tuvo problemas "
                   "(ver arriba): NO se puede")
             print("concluir que no haya jornada.")
+        elif general_break:
+            print("No hay partidos por jugar sin prediccion: es el paron "
+                  f"general que el calendario anuncia hasta el "
+                  f"{general_break['next_match']}. Nada que hacer.")
         else:
             print("No hay partidos por jugar sin prediccion, y la fuente "
                   "esta completa:")

@@ -28,7 +28,7 @@ import csv
 import datetime as dt
 from pathlib import Path
 
-from .config import (LEDGER_DIR, LEDGER_FIXTURES, LEDGER_HEALTH,
+from .config import (LEDGER_CALENDAR, LEDGER_DIR, LEDGER_FIXTURES, LEDGER_HEALTH,
                      LEDGER_METRICS, LEDGER_MISSED, LEDGER_PREDICTIONS,
                      LEDGER_MARKET_PRE, LEDGER_POSTPONED, LEDGER_RESULTS,
                      LEDGER_RESULTS_HEALTH)
@@ -443,3 +443,28 @@ def provisional_aliases(preds=None, postponed=None) -> dict:
         if created[old][:16] < kickoff:
             out[old] = new
     return out
+
+
+# Un paron por fila. last_match: el ultimo dia con partido antes del hueco;
+# next_match: el primero despues. idle_days: dias enteros sin partido entre
+# los dos. league es el codigo de liga, o ALL para el hueco en que ninguna de
+# las cinco juega (la firma de una fecha FIFA).
+CALENDAR_FIELDS = ["league", "last_match", "next_match", "idle_days",
+                   "computed_at"]
+
+
+def read_calendar():
+    return _read(LEDGER_CALENDAR)
+
+
+def write_calendar(rows) -> bool:
+    """Reescribe el archivo SOLO si algun paron cambio. computed_at no cuenta
+    como cambio: seis corridas al dia sobre el mismo calendario no son seis
+    commits. Devuelve True si escribio."""
+    def key(rs):
+        return [tuple(r[f] for f in CALENDAR_FIELDS[:-1]) for r in rs]
+    rows = list(rows)
+    if key(read_calendar()) == key(rows):
+        return False
+    _write(LEDGER_CALENDAR, CALENDAR_FIELDS, rows)
+    return True

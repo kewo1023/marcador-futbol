@@ -31,8 +31,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .aliases import FIXTUREDOWNLOAD, UnknownTeam, canonical
-from .config import (CURRENT_SEASON, FIXTURE_SOURCES, FIXTURES_BASE_URL,
-                     FIXTURES_LOOKAHEAD_DAYS, RAW_DIR, USER_AGENT)
+from .config import (BREAK_MIN_DAYS, CURRENT_SEASON, FIXTURE_SOURCES,
+                     FIXTURES_BASE_URL, FIXTURES_LOOKAHEAD_DAYS, RAW_DIR,
+                     USER_AGENT)
 from .ingest import FIELD_MAP, make_match_id
 
 
@@ -270,3 +271,61 @@ def health(snap: FixturesSnapshot, today: dt.date,
         out[lg] = {"upcoming": n, "unconfirmed": unconfirmed,
                    "first": first, "last": last, "age_hours": f.age_hours}
     return out
+
+
+# --- Parones ------------------------------------------------------------------
+# El archivo de cada liga es la temporada ENTERA, jugados y por jugar. Eso
+# quiere decir que el sistema sabe desde agosto cuando no va a haber partidos.
+# Hasta el 2026-10-11 no lo usaba: una triple fecha FIFA dejo 19 dias sin
+# predicciones y la lectura fue "algo se rompio", cuando el calendario lo
+# decia. Un hueco que la fuente anuncia no es un fallo; uno que no anuncia, si.
+
+def season_dates(snap: FixturesSnapshot) -> dict:
+    """{liga: [fechas con partido]} de toda la temporada, ordenadas."""
+    return {lg: sorted({r["when"].date() for r in _parse(f.path)})
+            for lg, f in snap.files.items()}
+
+
+def breaks(dates, min_days: int = BREAK_MIN_DAYS):
+    """[(ultimo dia con partido, siguiente dia con partido)] de cada hueco de
+    `min_days` o mas entre dos fechas consecutivas."""
+    return [(a, b) for a, b in zip(dates, dates[1:]) if (b - a).days >= min_days]
+
+
+def calendar_rows(snap: FixturesSnapshot, computed_at: str = "",
+                  min_days: int = BREAK_MIN_DAYS):
+    """Filas para ledger/calendar.csv: los parones de cada liga y los de las
+    cinco juntas (ALL), que es la firma de una fecha FIFA.
+
+    ALL solo se calcula si bajaron todas las ligas: con una que falte, un
+    hueco de las demas pareceria general sin serlo.
+    """
+    by_lg = season_dates(snap)
+    out = []
+    for lg in sorted(by_lg):
+        for a, b in breaks(by_lg[lg], min_days):
+            out.append(_break_row(lg, a, b, computed_at))
+    if by_lg and not snap.errors:
+        union = sorted(set().union(*by_lg.values()))
+        for a, b in breaks(union, min_days):
+            out.append(_break_row("ALL", a, b, computed_at))
+    return out
+
+
+def _break_row(league, a, b, computed_at):
+    return {"league": league, "last_match": a.isoformat(),
+            "next_match": b.isoformat(), "idle_days": str((b - a).days - 1),
+            "computed_at": computed_at}
+
+
+def break_at(calendar, league: str, day: dt.date):
+    """La fila del paron que cubre `day` para esa liga (o ALL), o None.
+
+    `calendar` son filas de ledger/calendar.csv. Un dia 'esta en paron' si
+    cae estrictamente entre el ultimo partido y el siguiente.
+    """
+    iso = day.isoformat()
+    for r in calendar:
+        if r["league"] == league and r["last_match"] < iso < r["next_match"]:
+            return r
+    return None

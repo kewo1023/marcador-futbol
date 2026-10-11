@@ -115,6 +115,13 @@ FIXTURE_SOURCES = {
 # "cuando se escribio el archivo", es "los partidos que vienen, ¿tienen hora?".
 FIXTURES_LOOKAHEAD_DAYS = 3
 
+# Cuantos dias entre dos fechas con partido de una liga cuentan como paron
+# (fecha FIFA, copa, fin de ano) y no como una semana normal. Entre jornadas
+# consecutivas hay a lo sumo ~5 dias; 8 no se da sin un paron de por medio.
+# Medido el 2026-10-11 sobre el calendario 26/27 de las cinco ligas: todos
+# los huecos de 8+ dias son parones o fines de semana de copa.
+BREAK_MIN_DAYS = 8
+
 # --- Fuente ANTERIOR de fixtures (football-data.co.uk) ------------------------
 # Ya no se usa en produccion. Se conserva la URL y las funciones de ingest.py
 # que la leen para poder volver a medirla si hiciera falta.
@@ -212,6 +219,13 @@ LEDGER_MARKET_PRE = LEDGER_DIR / "market_pre.csv"
 # asi que un aplazamiento deja la prediccion vieja sin resultado para siempre;
 # este archivo dice a que id nuevo se movio, sin tocar predictions.csv.
 LEDGER_POSTPONED = LEDGER_DIR / "postponed.csv"
+# Los parones de la temporada, derivados del calendario completo de la fuente
+# de fixtures: una fila por hueco de BREAK_MIN_DAYS o mas, por liga y para las
+# cinco juntas. Existe por el 2026-10-11: una triple fecha FIFA dejo 19 dias
+# sin un solo partido, y eso se leyo como un fallo cuando el calendario lo
+# traia desde agosto. Se reescribe entero en cada corrida (el calendario se
+# mueve); no publica partidos, solo las fechas de cada hueco (regla 2).
+LEDGER_CALENDAR = LEDGER_DIR / "calendar.csv"
 
 # --- Mercados en vivo ademas del 1X2 ----------------------------------------
 # Tarjetas amarillas, goles over/under 2.5 y tiros a puerta. Tarjetas fue el
