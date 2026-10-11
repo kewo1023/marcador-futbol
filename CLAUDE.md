@@ -145,6 +145,28 @@ con `ImportError` —o deja secciones en blanco— hasta hacer **Reboot app**. E
 dashboard infiere lo que puede desde el ledger para no quedarse en blanco, pero
 el reboot lo tiene que hacer una persona.
 
+## Regla 11 — Un hueco sin partidos se consulta, no se diagnostica
+
+Días sin predicciones, una fuente que no regenera su archivo o un `missed.csv`
+vacío pueden ser un fallo o un parón (fecha FIFA, copa, fin de año). La
+diferencia no se adivina: `ledger/calendar.csv` lo dice. Lo escribe
+`04_predict.py` desde el calendario completo de la temporada, y la fila `ALL`
+es el hueco en que ninguna de las cinco ligas juega. Si el hueco está ahí, no
+es un fallo; si no está, sí lo es y se investiga.
+
+De dónde sale: una triple fecha FIFA dejó 18 días sin partidos y se leyó como
+algo roto, cuando el calendario de la fuente lo traía desde agosto.
+
+## Regla 12 — El tablero recomienda lo que el bootstrap demuestra
+
+El tablero de decisión (`src/marcador/betting.py`, `scripts/16_paper.py`)
+no recomienda apostar sin un semáforo en verde: el modelo tiene que ganarle al
+mercado de forma concluyente (regla 6). Una probabilidad alta no es una
+recomendación. Cualquier regla de apuesta nueva se mide primero en paper
+trading, que se deriva del ledger y no escribe nada. El dashboard público
+mide y avisa; "apostar a esto" solo se muestra en local con
+`MARCADOR_MODO_APUESTAS=1`.
+
 ## Convenciones de código
 
 - Python 3.13, librería estándar donde alcance. Sin dependencias que no se usen.

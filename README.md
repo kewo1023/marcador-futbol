@@ -50,6 +50,7 @@ le ganaba a su frecuencia base de forma demostrable; con cinco ligas le ganan
 | F5 | Mercados nuevos: corners, tarjetas, tiros | ✅ |
 | F6 | Empaquetado y documentación | ✅ |
 | F7 | Valor contra el mercado (opcional) | ✅ · sin ventaja |
+| F8 | Tablero de decisión: semáforo por mercado, cuota mínima y paper trading en vivo (`scripts/16_paper.py`) | ✅ · hoy dice «no apostar» |
 
 ## El marcador hoy
 

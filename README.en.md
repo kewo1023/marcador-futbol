@@ -58,6 +58,7 @@ strongest, is emitted live.
 | F5 | New markets: corners, cards, shots | ✅ |
 | F6 | Packaging and documentation | ✅ |
 | F7 | Edge against the market (optional) | ✅ · no edge |
+| F8 | Decision board: per-market traffic light, minimum odds and live paper trading (`scripts/16_paper.py`) | ✅ · currently says "don't bet" |
 
 ## The scoreboard
 
