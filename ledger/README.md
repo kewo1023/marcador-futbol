@@ -32,6 +32,7 @@ evaluando; el reloj de GitHub, no. Cualquiera puede auditar el proyecto con
 | `source_health.csv` | Por corrida y liga, qué traía la fuente de fixtures | Solo se agregan |
 | `market_pre.csv` | Probabilidad implícita del mercado **antes** del partido (promedio de casas, sin margen), una fila por cada cambio de línea | Solo se agregan |
 | `results_health.csv` | Por corrida y liga, hasta dónde llega la fuente de resultados y cuántos partidos ya jugados le faltan | Solo se agregan |
+| `calendar.csv` | Los parones de la temporada (8+ días entre dos fechas con partido), por liga y para las cinco juntas (`ALL`, la firma de una fecha FIFA). Derivado del calendario completo de la fuente de fixtures: solo fechas, ningún partido | Sí: se rehace cuando el calendario cambia |
 
 `results.csv` guarda lo mínimo para poder verificar el marcador sin bajar nada
 (equipos, goles, resultado). No lleva cuotas, corners, tiros ni árbitro: no es

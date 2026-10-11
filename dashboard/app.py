@@ -7,6 +7,7 @@ podria reproducir lo que muestra. Leyendo del ledger, cualquiera que clone el
 repo ve exactamente los mismos numeros sin bajar un solo dato de la fuente.
 """
 import datetime as dt
+import os
 import sys
 import zoneinfo
 from pathlib import Path
@@ -315,6 +316,30 @@ if len(played) < 100:
 # --- Próximos partidos ------------------------------------------------------
 st.subheader("Próximos partidos")
 upcoming = preds[~preds["match_id"].isin(played | awaiting)]
+
+# Los parones salen del calendario completo de la fuente (ledger/calendar.csv,
+# lo escribe 04_predict). Se lee con _read y no con una funcion nueva del
+# ledger para no depender de un Reboot app en Streamlit Cloud (regla 9).
+calendar = pd.DataFrame(ledger._read(ledger.LEDGER_DIR / "calendar.csv"))
+today_iso = dt.datetime.now(dt.timezone.utc).date().isoformat()
+current_break = next_break = None
+if not calendar.empty:
+    general = calendar[calendar["league"] == "ALL"].sort_values("last_match")
+    now_rows = general[(general["last_match"] < today_iso)
+                       & (general["next_match"] > today_iso)]
+    ahead = general[general["last_match"] >= today_iso]
+    current_break = now_rows.iloc[0] if not now_rows.empty else None
+    next_break = ahead.iloc[0] if not ahead.empty else None
+if current_break is not None:
+    st.info(f"**Parón general:** ninguna de las cinco ligas juega entre el "
+            f"{current_break['last_match']} y el {current_break['next_match']} "
+            f"({current_break['idle_days']} días sin partidos). Lo anuncia el "
+            "calendario de la fuente; que no haya predicciones nuevas no es un "
+            "fallo.")
+elif next_break is not None:
+    st.caption(f"Próximo parón general según el calendario: sin partidos del "
+               f"día siguiente al {next_break['last_match']} hasta el "
+               f"{next_break['next_match']} ({next_break['idle_days']} días).")
 if not market_pre.empty:
     st.caption("`mercado …` es la probabilidad implícita del promedio de casas "
                "**antes** del partido, sin margen, la última que se registró. "
@@ -362,6 +387,126 @@ else:
     if awaiting:
         st.caption(f"**Por jugar ({upcoming['match_id'].nunique()}).**")
     table_1x2(upcoming)
+
+# --- Tablero de decisión ----------------------------------------------------
+# Modulo nuevo desde el 2026-10-11. Si Streamlit Cloud no se reinicio despues
+# del push que lo trajo, el import falla (regla 9): se avisa y el resto del
+# dashboard sigue.
+try:
+    from marcador import betting
+except ImportError:
+    betting = None
+
+# Lo que dice "apuesta a esto" solo se muestra en local, con
+# MARCADOR_MODO_APUESTAS=1. El dashboard publico mide y avisa; no da picks.
+PRIVATE_BETS = os.environ.get("MARCADOR_MODO_APUESTAS") == "1"
+OUT_LABEL = {"H": "local", "D": "empate", "A": "visitante",
+             "OVER": "más de", "UNDER": "menos de"}
+LIGHT = {"verde": "🟢", "amarillo": "🟡", "rojo": "🔴", "gris": "⚪"}
+
+st.subheader("Tablero de decisión")
+if betting is None:
+    st.warning("Esta sección necesita un **Reboot app** en Streamlit Cloud "
+               "(llegó un módulo nuevo y el proceso no se reinició).")
+else:
+    st.caption("Una probabilidad alta no es una buena apuesta: el favorito al "
+               "80 % ya lo paga la casa a 1.20. Lo que decide es si el modelo "
+               "le gana **al mercado**, medido con bootstrap pareado (regla 6). "
+               "Sin 🟢, la recomendación es no apostar.")
+    prod_versions = {PRODUCTION_MODEL} | set(OU_MODEL.values())
+    b_pre = betting.pre_before_kickoff(ledger.read_market_pre(),
+                                       ledger.read_fixtures())
+    b_sels = betting.selections(ledger.read_predictions(), b_pre, prod_versions)
+    b_results = {r["match_id"]: r for r in ledger.read_results()}
+
+    lights = {}
+    cols = st.columns(len(betting.PRICED_MARKETS) + 1)
+    for col, market in zip(cols, betting.PRICED_MARKETS):
+        state, detail = betting.traffic_light(b_sels, b_results, b_pre, market)
+        lights[market] = state
+        advice = betting.ADVICE[state]
+        if state == "verde" and not PRIVATE_BETS:
+            advice = "Ventaja demostrada en vivo."
+        lines = [f"**{market}** {LIGHT[state]}", advice]
+        for ref, res in detail.items():
+            if res:
+                d, lo, hi, _, n = res
+                lines.append(f"vs {ref}: {d:+.4f} [{lo:+.4f}, {hi:+.4f}] · n={n}")
+        col.markdown("  \n".join(lines))
+    cols[-1].markdown("**Tarjetas y tiros** ⚪  \n" + betting.ADVICE["gris"] +
+                      "  \nLe ganan a su frecuencia base; contra la casa no "
+                      "se puede medir.")
+
+    # Las 10 mas probables de la proxima jornada. Por jugar = kickoff por
+    # delante; "sin resultado" incluiria partidos aplazados.
+    now16 = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M")
+    ko_map = ({} if fixtures.empty else
+              dict(zip(fixtures["match_id"], fixtures["kickoff_utc"].fillna(""))))
+    pend = [x for x in b_sels if x["match_id"] not in b_results
+            and (ko_map.get(x["match_id"]) > now16 if ko_map.get(x["match_id"])
+                 else x["match_date"] >= now16[:10])]
+    if pend:
+        nxt = min(x["jornada"] for x in pend)
+        only_priced = st.toggle("Solo mercados con precio (1X2 y goles)",
+                                value=True,
+                                help="Sin precio no hay forma de saber si la "
+                                     "cuota de la casa paga lo que el modelo dice.")
+        top = betting.top_by_jornada([x for x in pend if x["jornada"] == nxt],
+                                     priced_only=only_priced)
+        st.markdown(f"**Las 10 más probables · jornada que empieza el {nxt}**")
+        if not top:
+            st.write("Todavía no hay líneas del mercado para esta jornada.")
+        else:
+            tv = pd.DataFrame(top)
+            tv = with_kickoff(tv, fixtures)
+            tv["selección"] = [f"{m} · {OUT_LABEL.get(o, o)}"
+                               for m, o in zip(tv["market"], tv["outcome"])]
+            tv["modelo"] = tv["p_model"].map(lambda x: f"{x:.1%}")
+            tv["mercado"] = tv["p_pre"].map(
+                lambda x: "—" if x is None or pd.isna(x) else f"{x:.1%}")
+            tv["cuota mínima"] = tv["min_odds"].map(lambda x: f"{x:.2f}")
+            tv["qué hacer"] = [
+                ("Apostar si la cuota ≥ mínima" if PRIVATE_BETS else "Ventaja demostrada")
+                if lights.get(m) == "verde" else "No apostar"
+                for m in tv["market"]]
+            st.dataframe(tv.rename(columns={"home_team": "local",
+                                            "away_team": "visitante"})
+                         [["fecha", "local", "visitante", "selección", "modelo",
+                           "mercado", "cuota mínima", "qué hacer"]],
+                         use_container_width=True, hide_index=True)
+            st.caption("`cuota mínima` = 1 / probabilidad del modelo: a una cuota "
+                       "menor la apuesta pierde dinero aunque el modelo tenga "
+                       "razón. `mercado` es el promedio de casas sin margen, la "
+                       "última línea antes del partido.")
+
+    # Paper trading: las reglas aplicadas a lo ya jugado, sin dinero.
+    st.markdown("**Paper trading** — qué habría pasado apostando 1 unidad con "
+                "cada regla, sobre los partidos ya jugados")
+
+    def _ci(t):
+        m, lo, hi = t
+        if m is None:
+            return "—"
+        if lo is None:
+            return f"{m:+.1%} (sin IC)"
+        return f"{m:+.1%} [{lo:+.1%}, {hi:+.1%}]"
+    pt_rows = []
+    for key, (label, sm, _) in betting.paper_trading(b_sels, b_results).items():
+        pt_rows.append({
+            "regla": label, "apuestas": sm["n"],
+            "acierto": "—" if sm["hit_rate"] is None else f"{sm['hit_rate']:.0%}",
+            "ROI sin margen (techo)": _ci(sm["roi_fair"]),
+            f"ROI con margen {betting.TYPICAL_MARGIN:.1%}": _ci(sm["roi_net"]),
+            "CLV": _ci(sm["clv"])})
+    st.dataframe(pd.DataFrame(pt_rows), use_container_width=True, hide_index=True)
+    st.caption("Se calcula del ledger, no se guarda aparte: la predicción y la "
+               "línea del mercado ya están escritas antes del kickoff. La "
+               "apuesta se toma a la línea pre-partido. `techo` es esa cuota "
+               "sin margen, que ninguna casa paga; `con margen` resta el margen "
+               "promedio medido en el histórico. `CLV` es cuánto se movió el "
+               "mercado hacia la apuesta hasta el cierre: positivo es la señal "
+               "temprana de que se sabe algo. Con menos de 30 apuestas no hay "
+               "intervalo (sin IC) y el número es ruido.")
 
 # --- Lo ya jugado -----------------------------------------------------------
 if played:
@@ -660,6 +805,24 @@ if not rhealth.empty:
               "archivo hace (h)", "esperando", "error"]])
     view["liga"] = view["liga"].map(lambda c: LEAGUES.get(c, c))
     st.dataframe(view, use_container_width=True, hide_index=True)
+    # Un archivo que lleva cientos de horas sin regenerarse asusta, y durante
+    # un paron es lo esperable: no hubo partidos que publicar. Se dice cuando
+    # la fuente llega justo hasta el ultimo partido antes de un paron.
+    if not calendar.empty:
+        src_last = latest["file_last_date"].max()
+        gen = calendar[(calendar["league"] == "ALL")
+                       & (calendar["last_match"] == src_last)]
+        if not gen.empty:
+            nxt_match = gen.iloc[0]["next_match"]
+            txt = (f"La fuente llega hasta el {src_last}, el último día antes "
+                   f"del parón general que termina el {nxt_match}: las horas de "
+                   "`archivo hace` incluyen el parón, en el que no había nada "
+                   "que publicar.")
+            if today_iso >= nxt_match:
+                txt += (f" Lo jugado desde el {nxt_match} sí está pendiente: "
+                        "eso es el atraso normal de la fuente, que publica "
+                        "días después.")
+            st.caption(txt)
     if not problems.empty:
         st.warning(f"{len(problems)} filas con error al bajar la fuente en el "
                    "historial. Última: " + problems["checked_at"].max())
