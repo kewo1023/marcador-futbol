@@ -30,7 +30,8 @@ from pathlib import Path
 
 from .config import (LEDGER_CALENDAR, LEDGER_DIR, LEDGER_FIXTURES, LEDGER_HEALTH,
                      LEDGER_METRICS, LEDGER_MISSED, LEDGER_PREDICTIONS,
-                     LEDGER_MARKET_PRE, LEDGER_RESULTS, LEDGER_RESULTS_HEALTH)
+                     LEDGER_MARKET_PRE, LEDGER_POSTPONED, LEDGER_RESULTS,
+                     LEDGER_RESULTS_HEALTH)
 
 PRED_FIELDS = ["match_id", "match_date", "home_team", "away_team",
                "model_version", "market", "outcome", "prob", "mode",
@@ -219,9 +220,8 @@ def upsert_fixtures(rows) -> int:
     aplaza cambia de hora y de dia, y el ledger tiene que decir la ultima que
     se supo. Lo que nunca cambia es el match_id — ese lleva la fecha con la
     que se emitio la prediccion, y si un partido se mueve de dia, el resultado
-    va a llegar con otra fecha y otro id. Ese caso lo detecta 05_score.py como
-    un partido sin prediccion, y esta tabla es lo que permite ver que en
-    realidad si se predijo, para otro dia.
+    va a llegar con otra fecha y otro id. Ese caso lo detecta 04_predict.py y
+    lo deja en postponed.csv (ver record_postponed).
     """
     by_id = {r["match_id"]: r for r in read_fixtures()}
     changed = 0
@@ -346,6 +346,103 @@ def record_missed(rows) -> int:
     _write(LEDGER_MISSED, MISSED_FIELDS,
            sorted(read_missed() + fresh, key=lambda r: r["match_date"]))
     return len(fresh)
+
+
+# Aplazamientos. old_match_id: la prediccion emitida para la fecha original.
+# new_match_id: el id con la fecha nueva segun la fuente de fixtures.
+# new_kickoff_utc: la hora nueva, vacia si la liga no la ha confirmado.
+# old_kickoff_utc: la hora con la que se predijo. Vacia quiere decir que la
+# fecha original era provisional (la fuente escribe 00:00 cuando la liga no
+# confirmo): no se aplazo un partido, se corrigio una fecha que nunca fue firme.
+POSTPONED_FIELDS = ["old_match_id", "old_kickoff_utc", "new_match_id",
+                    "new_kickoff_utc", "detected_at"]
+
+
+def read_postponed():
+    return _read(LEDGER_POSTPONED)
+
+
+def latest_postponed():
+    """{old_match_id: fila} con la ultima fecha nueva que se supo."""
+    out = {}
+    for r in read_postponed():
+        out[r["old_match_id"]] = r
+    return out
+
+
+def record_postponed(rows) -> int:
+    """Registra partidos predichos que la fuente movio a otra fecha.
+
+    POR QUE EXISTE: el match_id lleva la fecha. Un partido aplazado vuelve con
+    otro id, y la prediccion emitida para la fecha original queda con kickoff
+    pasado y sin resultado nunca: el dashboard la contaria "esperando
+    resultado" para siempre. Corregirla no se puede (regla 3), y tampoco hace
+    falta: se anota aqui a donde se movio.
+
+    QUE PASA CON ESA PREDICCION depende de si la fecha original era firme:
+
+    · Aplazamiento (se predijo con hora confirmada): no se evalua nunca. Se
+      emitio para un partido que ese dia no se jugo, con la informacion de ese
+      dia; el partido se predice de nuevo con el id nuevo, y esa cuenta.
+    · Fecha provisional corregida (se predijo sin hora): SI se evalua, contra
+      el resultado del id real. Es el mismo partido, predicho antes de jugarse;
+      lo unico mal era la fecha que la fuente puso de comodin. Ver
+      provisional_aliases para las dos condiciones.
+
+    En ningun caso se toca predictions.csv. Si un resultado llegara con el id
+    viejo, el partido si se jugo en su fecha, y el resultado manda.
+
+    Append de cambios, como market_pre: entra una fila solo si el id nuevo o su
+    hora cambiaron respecto a la ultima registrada para ese partido (uno que se
+    aplaza dos veces deja dos filas). La ultima es la que vale.
+    """
+    last = latest_postponed()
+    new = [r for r in rows
+           if r["old_match_id"] not in last
+           or (last[r["old_match_id"]]["new_match_id"],
+               last[r["old_match_id"]]["new_kickoff_utc"])
+           != (r["new_match_id"], r["new_kickoff_utc"] or "")]
+    if new:
+        _write(LEDGER_POSTPONED, POSTPONED_FIELDS,
+               read_postponed() + [{**r, "new_kickoff_utc": r["new_kickoff_utc"] or ""}
+                                   for r in new])
+    return len(new)
+
+
+def provisional_aliases(preds=None, postponed=None) -> dict:
+    """{id viejo: id real} de las predicciones con fecha provisional que se
+    evaluan contra el resultado del id real.
+
+    Una fila de postponed.csv sin old_kickoff_utc dice que la fecha con que se
+    predijo nunca fue firme. Esa prediccion cuenta como la del partido real
+    si se cumplen las dos:
+
+    · Se emitio antes del kickoff real (la regla 3 aplicada al partido que de
+      verdad se jugo). Sin hora real confirmada, antes del inicio de ese dia.
+    · El id real no tiene prediccion propia. Si la tiene, cuenta esa: es la
+      que se emitio con la fecha correcta y mas cerca del partido, y evaluar
+      las dos seria contar el mismo partido dos veces.
+
+    Un solo lugar para la regla, porque la usan 05_score (que resultados
+    buscar, que cuenta y que no es un partido sin prediccion) y el dashboard.
+    """
+    preds = read_predictions() if preds is None else preds
+    postponed = latest_postponed() if postponed is None else postponed
+    created, predicted = {}, set()
+    for p in preds:
+        if p["mode"] != "live":
+            continue
+        predicted.add(p["match_id"])
+        created[p["match_id"]] = max(created.get(p["match_id"], ""), p["created_at"])
+    out = {}
+    for old, r in postponed.items():
+        new = r["new_match_id"]
+        if r.get("old_kickoff_utc") or old not in created or new in predicted:
+            continue
+        kickoff = r.get("new_kickoff_utc") or new.split("_")[1] + "T00:00"
+        if created[old][:16] < kickoff:
+            out[old] = new
+    return out
 
 
 # Un paron por fila. last_match: el ultimo dia con partido antes del hueco;

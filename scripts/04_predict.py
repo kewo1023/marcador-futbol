@@ -97,6 +97,70 @@ def report_source(snap, today, dry=False):
     return bool(snap.errors) or bool(snap.unknown)
 
 
+def record_postponed(snap, now_utc=None, dry=False):
+    """Detecta predicciones cuyo partido se movio de fecha y lo deja en
+    ledger/postponed.csv.
+
+    El match_id lleva la fecha, asi que un aplazamiento no es un cambio de
+    hora en fixtures.csv: es un id nuevo, que este mismo script predice cuando
+    entre en la ventana, y una prediccion vieja cuyo id nunca va a tener
+    resultado. predictions.csv no se toca (regla 3); que se evalua y que no
+    esta en ledger.record_postponed. Candidatos: predichos en
+    vivo, kickoff pasado y sin resultado; de esos, los que la fuente trae en
+    otra fecha (fixtures.rescheduled).
+
+    Solo con kickoff pasado, a proposito: antes de eso un cambio de fecha en
+    la fuente puede deshacerse, y una fila aqui saca al partido de "esperando
+    resultado". Pasado el kickoff, si la fuente lo tiene en otro dia, ese dia
+    no se jugo.
+    """
+    now_utc = now_utc or dt.datetime.now(dt.timezone.utc)
+    now_s = now_utc.strftime("%Y-%m-%dT%H:%M")
+    played = {r["match_id"] for r in ledger.read_results()}
+    kickoff = {f["match_id"]: f["kickoff_utc"] for f in ledger.read_fixtures()}
+    by_league, seen = {}, set()
+    for p in ledger.read_predictions():
+        mid = p["match_id"]
+        if p["mode"] != "live" or mid in played or mid in seen:
+            continue
+        seen.add(mid)
+        ko = kickoff.get(mid) or ""
+        # Sin hora en el ledger, el dia entero tiene que haber pasado.
+        if not (ko <= now_s if ko else p["match_date"] < now_utc.date().isoformat()):
+            continue
+        by_league.setdefault(mid.split("_")[0], []).append(
+            {"match_id": mid, "home_team": p["home_team"],
+             "away_team": p["away_team"], "kickoff_utc": ko})
+    stamp = ledger.now_iso()
+    rows = [{**r, "detected_at": stamp}
+            for lg in LEAGUES
+            for r in fixtures.rescheduled(snap, lg, by_league.get(lg, []))]
+    if not rows:
+        return 0
+    n = 0 if dry else ledger.record_postponed(rows)
+    print(f"Aplazados: {len(rows)} partidos predichos se jugaran (o jugaron) "
+          f"en otra fecha · {n} filas nuevas en ledger/postponed.csv")
+    aliases = ledger.provisional_aliases(
+        postponed={r["old_match_id"]: r for r in rows})
+    for r in rows:
+        if r["old_kickoff_utc"]:
+            # Aplazamiento: la vieja no cuenta. Si la fecha nueva ya paso, no
+            # hubo "de nuevo" y 05_score lo registra en missed.csv.
+            late = (r["new_kickoff_utc"] or r["new_match_id"].split("_")[1]) <= now_s
+            why = ("aplazado, no se evalua; ya se jugo sin prediccion: va a "
+                   "missed.csv" if late else
+                   "aplazado, no se evalua; se predice de nuevo con la fecha nueva")
+        elif r["old_match_id"] in aliases:
+            why = "fecha provisional corregida: se evalua con el resultado del id real"
+        else:
+            why = ("fecha provisional corregida, pero no se evalua: el id real "
+                   "tiene prediccion propia o la vieja es posterior al kickoff")
+        print(f"  {r['old_match_id']}  ->  {r['new_match_id']}"
+              f"  ({r['new_kickoff_utc'] or 'hora sin confirmar'})\n      {why}")
+    print("  predictions.csv no se toca en ningun caso (ledger/README.md).")
+    return n
+
+
 def report_calendar(snap, today, dry=False):
     """Los parones de la temporada, desde el calendario de la propia fuente.
 
@@ -165,6 +229,15 @@ def pending_fixtures(con, today, league, now_utc=None,
       y como una prediccion escrita no se reemplaza, esa seria la que quedaria.
       Cada partido se predice lo mas cerca posible del kickoff, no lo mas
       pronto posible.
+
+    Lo que NO filtra, a proposito: los partidos sin hora confirmada (00:00 en
+    la fuente). Su fecha puede ser provisional, y si el partido se juega otro
+    dia la prediccion queda con el id equivocado. Se probo saltarlos contra la
+    jornada 5 de la Bundesliga (2026-10-09): la fuente no confirmo ninguna de
+    las nueve horas en doce corridas, hasta pasada la fecha, asi que saltarlos
+    era perder la jornada entera, incluido el partido que si se jugo ese dia.
+    Una prediccion con fecha equivocada se recupera (record_postponed la
+    enlaza con el id real cuando la fuente corrige); una que no se emitio, no.
     """
     now_utc = now_utc or dt.datetime.now(dt.timezone.utc)
     horizon = today + dt.timedelta(days=horizon_days)
@@ -230,6 +303,9 @@ def main():
     print(f"Datos: {n_played} partidos de la temporada en curso · "
           f"{n_new} fixtures nuevos")
     source_problem = report_source(snap, today, dry=dry)
+    # Antes del 'nada que hacer', como las horas: un aplazamiento se detecta
+    # aunque no haya nada nuevo que predecir.
+    record_postponed(snap, dry=dry)
     general_break = report_calendar(snap, today, dry=dry)
 
     champ = promotion.read_champion()

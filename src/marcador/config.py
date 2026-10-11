@@ -215,6 +215,10 @@ LEDGER_RESULTS_HEALTH = LEDGER_DIR / "results_health.csv"
 # la fuente anterior de fixtures (football-data.co.uk/fixtures.csv), que para
 # esto sigue sirviendo: mismo vocabulario que el historico. Ver market_pre.py.
 LEDGER_MARKET_PRE = LEDGER_DIR / "market_pre.csv"
+# Partidos predichos que se jugaron en OTRA fecha. El match_id lleva la fecha,
+# asi que un aplazamiento deja la prediccion vieja sin resultado para siempre;
+# este archivo dice a que id nuevo se movio, sin tocar predictions.csv.
+LEDGER_POSTPONED = LEDGER_DIR / "postponed.csv"
 # Los parones de la temporada, derivados del calendario completo de la fuente
 # de fixtures: una fila por hueco de BREAK_MIN_DAYS o mas, por liga y para las
 # cinco juntas. Existe por el 2026-10-11: una triple fecha FIFA dejo 19 dias
