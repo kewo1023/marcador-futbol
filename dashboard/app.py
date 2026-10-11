@@ -30,7 +30,11 @@ def load():
             pd.DataFrame(ledger.read_results()),
             pd.DataFrame(ledger._read(ledger.LEDGER_METRICS)),
             pd.DataFrame(ledger.read_fixtures()),
-            pd.DataFrame(ledger.read_market_pre()))
+            pd.DataFrame(ledger.read_market_pre()),
+            # Por ruta y no por ledger.read_postponed(): Streamlit Cloud puede
+            # tener un ledger.py viejo en memoria hasta el reboot (regla 9), y
+            # asi la seccion funciona igual.
+            pd.DataFrame(ledger._read(ledger.LEDGER_DIR / "postponed.csv")))
 
 
 def viewer_tz():
@@ -63,14 +67,16 @@ def with_kickoff(df, fixtures, tz=None):
     hours = fixtures.set_index("match_id")["kickoff_utc"]
     ko = df["match_id"].map(hours).fillna("")
     df = df.copy()
-
-    def fmt(k, d):
-        if not k:
-            return d
-        utc = dt.datetime.fromisoformat(k).replace(tzinfo=dt.timezone.utc)
-        return utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
-    df["fecha"] = [fmt(k, d) for k, d in zip(ko, df["match_date"])]
+    df["fecha"] = [fmt_kickoff(k, d, tz) for k, d in zip(ko, df["match_date"])]
     return df
+
+
+def fmt_kickoff(k, d, tz):
+    """Hora UTC del ledger en la zona de quien mira; sin hora, la fecha sola."""
+    if not k:
+        return d
+    utc = dt.datetime.fromisoformat(k).replace(tzinfo=dt.timezone.utc)
+    return utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
 
 
 # Local primero, empate en medio, visitante al final: el orden en que se lee
@@ -78,7 +84,7 @@ def with_kickoff(df, fixtures, tz=None):
 COLS_1X2 = {"H": "gana local", "D": "empate", "A": "gana visitante"}
 ORDER_1X2 = ["gana local", "empate", "gana visitante"]
 
-preds, results, metrics, fixtures, market_pre = load()
+preds, results, metrics, fixtures, market_pre, postponed_log = load()
 # La ultima opinion del mercado por partido. Se guarda cada cambio de linea;
 # aqui solo interesa la ultima antes del kickoff.
 PRE_COLS = {"pre_h": "mercado local", "pre_d": "mercado empate",
@@ -173,26 +179,55 @@ preds["prob"] = preds["prob"].astype(float)
 # El match_id empieza por el codigo de liga, asi que la liga se deduce sin
 # guardar una columna aparte.
 preds["liga"] = preds["match_id"].str.split("_").str[0]
+# La ultima fecha nueva que se supo de cada partido movido (el archivo guarda
+# cada cambio).
+postponed_all = ({} if postponed_log.empty else
+                 {r["old_match_id"]: r.to_dict() for _, r in
+                  postponed_log.drop_duplicates("old_match_id", keep="last").iterrows()})
+# Fechas provisionales corregidas: el resultado del id real evalua a la
+# prediccion vieja (la regla esta en ledger.provisional_aliases, la misma que
+# usa 05_score). Aqui se le pone al resultado el id de la prediccion, y desde
+# ahi todo el dashboard lo trata como un partido jugado mas. getattr: con un
+# ledger.py viejo en memoria (regla 9) se salta el remapeo en vez de romperse.
+_aliases_fn = getattr(ledger, "provisional_aliases", None)
+aliases = (_aliases_fn(preds.to_dict("records"), postponed_all)
+           if _aliases_fn and postponed_all else {})
+if aliases and not results.empty:
+    own = set(results["match_id"])
+    results["match_id"] = results["match_id"].replace(
+        {new: old for old, new in aliases.items() if old not in own})
 played = set(results["match_id"]) if not results.empty else set()
+# Aplazados: los movidos que no tienen resultado. Uno que lo tenga con el id
+# viejo se jugo en su fecha (el resultado manda); uno con fecha provisional
+# corregida y resultado ya quedo arriba como jugado.
+postponed = {m: r for m, r in postponed_all.items() if m not in played}
 
 
-def awaiting_results(preds, fixtures, played, match_hours=2):
+def awaiting_results(preds, fixtures, played, postponed=(), match_hours=2):
     """Partidos predichos cuyo kickoff ya paso y que aun no tienen resultado.
 
     Es lo que separa "no se jugo nada" de "se jugo y la fuente de resultados
     no lo ha publicado". Se decide con la hora de ledger/fixtures.csv, no con
     la fuente de resultados, que es justo la que puede ir atrasada. Un partido
-    dura ~2 h; antes de eso "kickoff pasado" no significa "jugado".
+    dura ~2 h; antes de eso "kickoff pasado" no significa "jugado". Sin hora
+    confirmada, cuenta cuando el dia entero ya paso. Los aplazados no esperan
+    nada: su resultado llega con otro id.
     """
+    now = dt.datetime.now(dt.timezone.utc)
+    limit = (now - dt.timedelta(hours=match_hours)).strftime("%Y-%m-%dT%H:%M")
     if fixtures.empty or "kickoff_utc" not in fixtures:
-        return set()
-    limit = (dt.datetime.now(dt.timezone.utc)
-             - dt.timedelta(hours=match_hours)).strftime("%Y-%m-%dT%H:%M")
-    ko = fixtures[(fixtures["kickoff_utc"] != "") & (fixtures["kickoff_utc"] <= limit)]
-    return (set(ko["match_id"]) & set(preds["match_id"])) - played
+        with_ko, ko_past = set(), set()
+    else:
+        known = fixtures[fixtures["kickoff_utc"] != ""]
+        with_ko = set(known["match_id"])
+        ko_past = set(known.loc[known["kickoff_utc"] <= limit, "match_id"])
+    dates = preds.drop_duplicates("match_id").set_index("match_id")["match_date"]
+    day_past = {m for m, d in dates.items()
+                if m not in with_ko and d < now.date().isoformat()}
+    return ((ko_past & set(dates.index)) | day_past) - played - set(postponed)
 
 
-awaiting = awaiting_results(preds, fixtures, played)
+awaiting = awaiting_results(preds, fixtures, played, postponed)
 
 # El marcador PROVISIONAL (fuente de fixtures) de lo que espera el oficial.
 # Se muestra y se resume, pero no entra a ninguna metrica del ledger.
@@ -314,7 +349,7 @@ if len(played) < 100:
 
 # --- Próximos partidos ------------------------------------------------------
 st.subheader("Próximos partidos")
-upcoming = preds[~preds["match_id"].isin(played | awaiting)]
+upcoming = preds[~preds["match_id"].isin(played | awaiting | set(postponed))]
 if not market_pre.empty:
     st.caption("`mercado …` es la probabilidad implícita del promedio de casas "
                "**antes** del partido, sin margen, la última que se registró. "
@@ -354,12 +389,60 @@ def table_1x2(df, provisional=False):
 if awaiting:
     st.caption(f"**Jugados, esperando resultado ({len(awaiting)}).** Lo que se "
                "predijo queda tal cual; el resultado se cruza cuando la fuente "
-               "lo publique.")
+               "lo publique. Los que muestran solo la fecha se predijeron sin "
+               "hora confirmada, y esa fecha puede haber sido provisional: si "
+               "el partido se jugó otro día, pasa a «Aplazados» cuando la "
+               "fuente la corrija.")
     table_1x2(preds[preds["match_id"].isin(awaiting)], provisional=True)
+
+
+def table_postponed(df):
+    """La prediccion emitida para la fecha original, con la fecha nueva al lado.
+
+    No se evalua nunca: se emitio para un partido que ese dia no se jugo. El
+    partido se vuelve a predecir con su id nuevo cuando entra en la ventana, y
+    esa es la prediccion que cuenta.
+    """
+    if df.empty:
+        return
+    tz = viewer_tz()
+    wide = (df.pivot_table(index=["match_id", "match_date", "home_team",
+                                  "away_team"],
+                           columns="outcome", values="prob")
+            .reset_index().rename(columns=COLS_1X2))
+    wide = with_kickoff(wide, fixtures).sort_values(["match_date", "fecha"])
+    wide["nueva fecha"] = [
+        fmt_kickoff(postponed[m]["new_kickoff_utc"],
+                    postponed[m]["new_match_id"].split("_")[1] + " (hora sin confirmar)",
+                    tz)
+        for m in wide["match_id"]]
+    view = (wide.rename(columns={"home_team": "local", "away_team": "visitante",
+                                 "fecha": "fecha original"})
+            [["fecha original", "nueva fecha", "local", "visitante"] + ORDER_1X2])
+    # Sin hora con la que se predijo = la fecha original nunca fue firme.
+    view.insert(2, "motivo", [
+        "aplazado · no se evalúa" if postponed[m].get("old_kickoff_utc")
+        else "fecha provisional · se evalúa" if m in aliases
+        else "fecha provisional · cuenta la nueva"
+        for m in wide["match_id"]])
+    st.dataframe(view.style.format({c: "{:.1%}" for c in ORDER_1X2}),
+                 use_container_width=True, hide_index=True)
+
+
+if postponed:
+    st.caption(f"**Movidos de fecha ({len(postponed)}).** Lo que se predijo "
+               "queda en el ledger tal cual. Un **aplazado** (se predijo con "
+               "hora confirmada) **no se evalúa**: ese día no se jugó, y el "
+               "partido se predice de nuevo con su fecha nueva. Una **fecha "
+               "provisional corregida** (se predijo sin hora, y la fecha era un "
+               "comodín de la fuente) **sí se evalúa** con el resultado del "
+               "partido real: es el mismo partido, predicho antes de jugarse. "
+               "Si el partido real ya tiene predicción propia, cuenta esa.")
+    table_postponed(preds[preds["match_id"].isin(postponed)])
 if upcoming.empty:
     st.write("Nada pendiente ahora mismo.")
 else:
-    if awaiting:
+    if awaiting or postponed:
         st.caption(f"**Por jugar ({upcoming['match_id'].nunique()}).**")
     table_1x2(upcoming)
 
@@ -511,7 +594,7 @@ def ou_section(key, title, blurb):
             if not b.empty:
                 col.caption((cap + " · " if cap else "") + f"base {float(b.iloc[0]['log_loss']):.4f}")
 
-    up = d_model[~d_model["match_id"].isin(played)]
+    up = d_model[~d_model["match_id"].isin(played | set(postponed))]
     if not up.empty:
         wide = (up.pivot_table(index=["match_id", "match_date", "home_team", "away_team"],
                                columns="linea", values="prob").reset_index())

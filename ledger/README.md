@@ -31,6 +31,7 @@ evaluando; el reloj de GitHub, no. Cualquiera puede auditar el proyecto con
 | `fixtures.csv` | Fecha y hora de cada partido predicho, la última que se supo, y el marcador **provisional** según la fuente de fixtures (`prov_score`, no cuenta) | Sí: la hora cambia, la predicción no |
 | `source_health.csv` | Por corrida y liga, qué traía la fuente de fixtures | Solo se agregan |
 | `market_pre.csv` | Probabilidad implícita del mercado **antes** del partido (promedio de casas, sin margen), una fila por cada cambio de línea | Solo se agregan |
+| `postponed.csv` | Partidos predichos que la fuente movió a otra fecha: id viejo → id nuevo, con la hora vieja y la nueva (hora vieja vacía = la fecha original era provisional). Un aplazamiento **no se evalúa**; una fecha provisional corregida sí, con el resultado del id real | Solo se agregan (una fila por cada cambio de fecha; la última manda) |
 | `results_health.csv` | Por corrida y liga, hasta dónde llega la fuente de resultados y cuántos partidos ya jugados le faltan | Solo se agregan |
 
 `results.csv` guarda lo mínimo para poder verificar el marcador sin bajar nada
@@ -71,3 +72,51 @@ Se registra en vez de solo avisarse porque un agujero que solo existe en el log
 de un job que ya expiró no es un agujero documentado, es uno invisible. Quien
 audite el track record tiene que poder ver qué partidos faltan en vez de
 suponer que se predijeron todos.
+
+## Por qué existe `postponed.csv`
+
+El `match_id` lleva la fecha del partido. Cuando un partido se aplaza, vuelve
+con otro id —el resultado va a llegar con la fecha en que se juegue— y la
+predicción emitida para la fecha original queda con el kickoff pasado y sin
+resultado nunca. Corregirla no se puede: una predicción no se toca (regla 3).
+
+`04_predict.py` lo detecta con la temporada completa de la fuente de fixtures:
+si un partido predicho ya pasó su kickoff, no tiene resultado, y la fuente
+trae ese mismo cruce (liga, local, visitante) en otro día, se movió. En una
+liga cada cruce se juega una sola vez por temporada, así que no hay nada que
+adivinar. Si la fuente lo saca sin fecha nueva, no se concluye nada y sigue
+contando como "esperando resultado".
+
+**Aplazamiento: la predicción vieja no se evalúa.** Se predijo con hora
+confirmada para un partido que ese día no se jugó, y con información de ese
+día. El partido se predice de nuevo con su id nuevo cuando entra en la
+ventana, y esa es la que cuenta. Si la fecha nueva ya pasó cuando la fuente la
+publica, no hubo predicción válida y el partido queda en `missed.csv`.
+
+**Fecha provisional corregida: la predicción vieja SÍ se evalúa.** Cuando la
+liga no ha confirmado la hora, la fuente escribe 00:00, y a veces la fecha
+misma es un comodín para toda la jornada. El sistema predice esos partidos
+igual: saltarlos habría perdido jornadas enteras (la 5 de la Bundesliga nunca
+tuvo hora confirmada antes de jugarse, y uno de sus partidos sí se jugó en la
+fecha publicada). Si la fecha resulta otra, la fila de este archivo lleva
+`old_kickoff_utc` vacío. Esa predicción es del mismo partido, emitida antes de
+jugarse; lo único mal era la fecha. Se evalúa con el resultado del id real si
+se cumplen las dos condiciones de `ledger.provisional_aliases`:
+
+- se emitió antes del kickoff real (regla 3, aplicada al partido que sí se
+  jugó), y
+- el id real no tiene predicción propia. Si la tiene, cuenta esa, que se
+  emitió con la fecha correcta y más cerca del partido; contar las dos sería
+  contar el mismo partido dos veces.
+
+`05_score.py` busca entonces el resultado del id real, lo guarda en
+`results.csv` con su propio id, y lo cruza con la predicción vieja al calcular
+el marcador. El id real no se cuenta en `missed.csv`. Mientras la fuente no
+corrija la fecha, un partido sin hora cuenta como "esperando resultado" desde
+que su fecha termina.
+
+En ningún caso se toca `predictions.csv`. Si un resultado llegara con el id
+viejo, el partido sí se jugó en su fecha, y el resultado manda.
+
+El dashboard y `results_health.csv` sacan los partidos movidos de "esperando
+resultado", y el dashboard los muestra con su fecha nueva y si se evalúan.

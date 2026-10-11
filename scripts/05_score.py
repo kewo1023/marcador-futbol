@@ -64,15 +64,25 @@ def awaiting_results(preds, results):
     de "se jugo y la fuente no lo ha publicado". Se sabe que se jugaron por la
     hora de ledger/fixtures.csv (la ultima que se supo), no por la fuente de
     resultados, que es justo la que puede ir atrasada.
+
+    Sin hora confirmada, cuenta cuando el dia entero ya paso: antes de eso
+    no se sabe si se jugo. Sin esta regla, un partido predicho con 00:00 en la
+    fuente nunca pasaba a "esperando" y se quedaba como por jugar con la fecha
+    vencida.
+
+    Los aplazados (ledger/postponed.csv) no cuentan: su resultado va a llegar
+    con otro id, y contarlos aqui los dejaria "esperando" para siempre.
     """
-    played = {r["match_id"] for r in results}
+    settled = {r["match_id"] for r in results} | set(ledger.latest_postponed())
     kickoff = {f["match_id"]: f["kickoff_utc"] for f in ledger.read_fixtures()
                if f["kickoff_utc"]}
-    limit = (dt.datetime.now(dt.timezone.utc)
-             - dt.timedelta(hours=MATCH_HOURS)).strftime("%Y-%m-%dT%H:%M")
-    ids = {p["match_id"] for p in preds if p["mode"] == "live"}
-    return sorted(m for m in ids
-                  if m not in played and m in kickoff and kickoff[m] <= limit)
+    now = dt.datetime.now(dt.timezone.utc)
+    limit = (now - dt.timedelta(hours=MATCH_HOURS)).strftime("%Y-%m-%dT%H:%M")
+    today = now.date().isoformat()
+    dates = {p["match_id"]: p["match_date"] for p in preds if p["mode"] == "live"}
+    return sorted(m for m, d in dates.items()
+                  if m not in settled
+                  and (kickoff[m] <= limit if m in kickoff else d < today))
 
 
 def results_health(files, awaiting):
@@ -177,7 +187,14 @@ def score_live():
     nadie de afuera podria comprobarlo.
     """
     preds = [p for p in ledger.read_predictions() if p["mode"] == "live"]
-    rows = {r["match_id"]: r for r in ledger.read_results()}
+    by_result_id = {r["match_id"]: r for r in ledger.read_results()}
+    # Una prediccion con fecha provisional corregida se evalua con el
+    # resultado del id real (ledger.provisional_aliases). Se indexa por el id
+    # de la PREDICCION: la cuota pre-partido se guardo con ese id.
+    aliases = ledger.provisional_aliases(preds)
+    rows = {**{old: by_result_id[new] for old, new in aliases.items()
+               if new in by_result_id},
+            **by_result_id}
 
     def actual_for(market, r):
         """Lo que paso, en el vocabulario del mercado. None si falta el dato."""
@@ -282,7 +299,7 @@ def score_live():
     return out, by_key
 
 
-def find_missed(con, preds):
+def find_missed(con, preds, covered=()):
     """Partidos jugados que el sistema nunca predijo.
 
     ES LA COMPROBACION QUE FALTABA. La ventana de fixtures de la fuente cubre
@@ -293,12 +310,15 @@ def find_missed(con, preds):
     El alcance arranca en la fecha del primer partido que SI se predijo en
     vivo. Antes de eso el sistema no existia y no tiene sentido reclamarle
     cobertura.
+
+    `covered`: ids reales que si tienen prediccion, emitida con una fecha
+    provisional que la fuente corrigio despues (ledger.provisional_aliases).
     """
     live = [p for p in preds if p["mode"] == "live"]
     if not live:
         return []
     since = min(p["match_date"] for p in live)
-    predicted = {p["match_id"] for p in live}
+    predicted = {p["match_id"] for p in live} | set(covered)
     q = ",".join("?" * len(LEAGUES))
     rows = con.execute(
         f"""SELECT match_id, match_date, home_team, away_team, ftr
@@ -322,7 +342,10 @@ def main():
     n, files = refresh(con)
     print(f"Temporada en curso re-ingestada: {n} partidos\n")
 
-    predicted = ledger.predicted_matches()
+    # Ademas de lo predicho, el id real de las fechas provisionales corregidas:
+    # su resultado es el que evalua a la prediccion vieja.
+    aliases = ledger.provisional_aliases()
+    predicted = ledger.predicted_matches() | set(aliases.values())
     # Primero el marcador rapido (API), despues la fila completa (CSV). El
     # orden importa: la segunda completa a la primera, nunca al reves.
     api_rows, api_snap = collect_api_results(predicted, ledger.read_predictions())
@@ -337,10 +360,18 @@ def main():
     added = ledger.upsert_results(collect_results(con, predicted))
     results_now = ledger.read_results()
     completed = sum(1 for r in results_now if r.get("completed_at"))
-    pending = len(predicted) - len(results_now)
+    done = {r["match_id"] for r in results_now}
+    postponed = set(ledger.latest_postponed()) - done
+    corrected = {o for o in postponed if o in aliases}
+    pending = len(ledger.predicted_matches() - done - postponed)
     print(f"Resultados: {added} completados/nuevos desde la fuente oficial · "
           f"{len(results_now)} en total ({completed} con cuota y stats) · "
-          f"{pending} partidos aun sin jugar")
+          f"{pending} partidos aun sin jugar"
+          + (f" · {len(postponed - corrected)} aplazados (no se evaluan)"
+             if postponed - corrected else "")
+          + (f" · {len(corrected)} con fecha provisional corregida (se evaluan "
+             f"con el id real, {sum(aliases[o] in done for o in corrected)} ya "
+             "con resultado)" if corrected else ""))
 
     # Hasta donde llega la fuente, y cuantos partidos ya jugados le faltan.
     # Va al ledger porque el log de Actions expira y la pregunta "cuanto tarda
@@ -361,7 +392,7 @@ def main():
         print(f"  {len(awaiting)} partidos ya jugados que la fuente aun no "
               "publica. No es un fallo del sistema: se cruzan cuando lleguen.")
 
-    missed = find_missed(con, ledger.read_predictions())
+    missed = find_missed(con, ledger.read_predictions(), aliases.values())
     n_missed = ledger.record_missed(missed) if missed else 0
 
     metrics, by_model = score_live()

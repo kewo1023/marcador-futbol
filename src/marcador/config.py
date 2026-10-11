@@ -208,6 +208,10 @@ LEDGER_RESULTS_HEALTH = LEDGER_DIR / "results_health.csv"
 # la fuente anterior de fixtures (football-data.co.uk/fixtures.csv), que para
 # esto sigue sirviendo: mismo vocabulario que el historico. Ver market_pre.py.
 LEDGER_MARKET_PRE = LEDGER_DIR / "market_pre.csv"
+# Partidos predichos que se jugaron en OTRA fecha. El match_id lleva la fecha,
+# asi que un aplazamiento deja la prediccion vieja sin resultado para siempre;
+# este archivo dice a que id nuevo se movio, sin tocar predictions.csv.
+LEDGER_POSTPONED = LEDGER_DIR / "postponed.csv"
 
 # --- Mercados en vivo ademas del 1X2 ----------------------------------------
 # Tarjetas amarillas, goles over/under 2.5 y tiros a puerta. Tarjetas fue el

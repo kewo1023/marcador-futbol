@@ -198,6 +198,51 @@ def provisional_scores(snap: FixturesSnapshot, league: str) -> dict:
     return out
 
 
+def rescheduled(snap: FixturesSnapshot, league: str, candidates) -> list[dict]:
+    """De los partidos `candidates` (predichos, kickoff pasado, sin resultado),
+    los que el archivo de la temporada tiene en OTRA fecha.
+
+    Es determinista porque en una liga cada (local, visitante) se juega una
+    sola vez por temporada: si el archivo trae ese cruce en otro dia, el
+    partido se movio. Se exige que aparezca exactamente una vez; con cero (la
+    liga lo saco sin fecha nueva) o con mas de una no se concluye nada, y el
+    partido sigue contando como "esperando resultado", que es lo honesto.
+
+    `candidates`: dicts con match_id, home_team, away_team (vocabulario
+    canonico, el del ledger) y kickoff_utc (la hora con que se predijo, o
+    vacia). Devuelve old_match_id, old_kickoff_utc, new_match_id y
+    new_kickoff_utc (None si la liga no confirmo la hora).
+    """
+    path = snap.path(league)
+    if path is None or not candidates:
+        return []
+    by_pair = {}
+    for r in _parse(path):
+        try:
+            pair = (canonical(FIXTUREDOWNLOAD, league, r["home"]),
+                    canonical(FIXTUREDOWNLOAD, league, r["away"]))
+        except UnknownTeam:
+            continue                          # ya lo anoto fixture_rows
+        by_pair.setdefault(pair, []).append(r["when"])
+    out = []
+    for c in candidates:
+        whens = by_pair.get((c["home_team"], c["away_team"]), [])
+        if len(whens) != 1:
+            continue
+        when = whens[0]
+        new_id = make_match_id(league, when.date().isoformat(),
+                               c["home_team"], c["away_team"])
+        if new_id == c["match_id"]:
+            continue                          # misma fecha: no se movio
+        confirmed = not (when.hour == 0 and when.minute == 0)
+        out.append({"old_match_id": c["match_id"],
+                    "old_kickoff_utc": c.get("kickoff_utc") or "",
+                    "new_match_id": new_id,
+                    "new_kickoff_utc": (when.strftime("%Y-%m-%dT%H:%M")
+                                        if confirmed else None)})
+    return out
+
+
 def health(snap: FixturesSnapshot, today: dt.date,
            lookahead_days: int = FIXTURES_LOOKAHEAD_DAYS) -> dict:
     """Por liga: cuantos partidos vienen en la ventana y cuantos sin hora.
