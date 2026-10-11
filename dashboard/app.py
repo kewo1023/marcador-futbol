@@ -372,9 +372,10 @@ if current_break is not None:
             "calendario de la fuente; que no haya predicciones nuevas no es un "
             "fallo.")
 elif next_break is not None:
-    st.caption(f"Próximo parón general según el calendario: sin partidos del "
-               f"día siguiente al {next_break['last_match']} hasta el "
-               f"{next_break['next_match']} ({next_break['idle_days']} días).")
+    st.caption(f"Próximo parón general según el calendario: ninguna liga "
+               f"juega entre el {next_break['last_match']} y el "
+               f"{next_break['next_match']} ({next_break['idle_days']} días "
+               "sin partidos).")
 if not market_pre.empty:
     st.caption("`mercado …` es la probabilidad implícita del promedio de casas "
                "**antes** del partido, sin margen, la última que se registró. "
@@ -552,10 +553,11 @@ else:
                 ("Apostar si la cuota ≥ mínima" if PRIVATE_BETS else "Ventaja demostrada")
                 if lights.get(m) == "verde" else "No apostar"
                 for m in tv["market"]]
-            st.dataframe(tv.rename(columns={"home_team": "local",
-                                            "away_team": "visitante"})
-                         [["fecha", "local", "visitante", "selección", "modelo",
-                           "mercado", "cuota mínima", "qué hacer"]],
+            tv["partido"] = tv["home_team"] + " – " + tv["away_team"]
+            # Lo que decide va a la izquierda: en un celular la tabla se
+            # corta por la derecha y lo ultimo solo se ve desplazando.
+            st.dataframe(tv[["qué hacer", "partido", "selección", "cuota mínima",
+                             "modelo", "mercado", "fecha"]],
                          use_container_width=True, hide_index=True)
             st.caption("`cuota mínima` = 1 / probabilidad del modelo: a una cuota "
                        "menor la apuesta pierde dinero aunque el modelo tenga "
@@ -575,12 +577,13 @@ else:
         return f"{m:+.1%} [{lo:+.1%}, {hi:+.1%}]"
     pt_rows = []
     for key, (label, sm, _) in betting.paper_trading(b_sels, b_results).items():
+        # CLV y el ROI realista primero, por la misma razon que en el top 10.
         pt_rows.append({
-            "regla": label, "apuestas": sm["n"],
-            "acierto": "—" if sm["hit_rate"] is None else f"{sm['hit_rate']:.0%}",
-            "ROI sin margen (techo)": _ci(sm["roi_fair"]),
+            "regla": label, "CLV": _ci(sm["clv"]),
             f"ROI con margen {betting.TYPICAL_MARGIN:.1%}": _ci(sm["roi_net"]),
-            "CLV": _ci(sm["clv"])})
+            "apuestas": sm["n"],
+            "acierto": "—" if sm["hit_rate"] is None else f"{sm['hit_rate']:.0%}",
+            "ROI sin margen (techo)": _ci(sm["roi_fair"])})
     st.dataframe(pd.DataFrame(pt_rows), use_container_width=True, hide_index=True)
     st.caption("Se calcula del ledger, no se guarda aparte: la predicción y la "
                "línea del mercado ya están escritas antes del kickoff. La "
