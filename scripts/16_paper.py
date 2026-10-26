@@ -13,7 +13,8 @@ Dice tres cosas:
 2. Paper trading de dos reglas sobre los partidos ya jugados: las 10 mas
    probables de cada jornada, y valor (modelo > mercado pre). ROI a la cuota
    sin margen (techo), ROI con el margen tipico (lo realista) y CLV.
-3. Las 10 mas probables de la proxima jornada, con su cuota minima.
+3. Las 10 mas probables de la proxima jornada, con su cuota minima: un solo
+   lado por partido y mercado, y menos de 10 si ya no quedan mas.
 """
 import sys
 from pathlib import Path
@@ -85,7 +86,10 @@ def main():
         nxt = min(s["jornada"] for s in pending)
         top = betting.top_by_jornada([s for s in pending if s["jornada"] == nxt],
                                      priced_only=False)
-        print(f"\nLAS 10 MAS PROBABLES · jornada del {nxt}")
+        title = f"LAS {len(top)} MAS PROBABLES · jornada del {nxt}"
+        if top and len(top) < 10:
+            title += f" · quedan {len({s['match_id'] for s in top})} partidos por jugar"
+        print(f"\n{title}")
         print(f"  {'partido':40}{'mercado':>20}{'modelo':>8}{'mercado':>9}{'cuota min':>10}")
         for s in top:
             sel = f"{s['market']} {OUTCOME_LABEL.get(s['outcome'], s['outcome'])}"

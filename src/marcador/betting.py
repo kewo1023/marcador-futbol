@@ -28,8 +28,8 @@ QUE NO ES
 ---------
 No es una feature del modelo ni cambia ninguna prediccion. Y "probabilidad
 alta" no es "buena apuesta": el favorito al 80 % ya lo paga la casa a 1.20.
-La regla "las 10 mas probables" se mide aqui como una estrategia mas, no se
-recomienda.
+La regla "las 10 mas probables" (un solo lado por partido y mercado) se mide
+aqui como una estrategia mas, no se recomienda.
 """
 import datetime as dt
 
@@ -140,10 +140,22 @@ def selections(preds, pre, versions):
 
 def top_by_jornada(sels, n=10, priced_only=True):
     """Las `n` selecciones mas probables de cada jornada. Es la regla que se
-    pidio el 2026-10-11, y por eso se mide: no porque se espere que gane."""
+    pidio el 2026-10-11, y por eso se mide: no porque se espere que gane.
+
+    Un solo lado por (partido, mercado): el que el modelo ve mas probable.
+    Sin esto, con pocos partidos por jugar la lista se llenaba con todas las
+    opciones y mostraba a la vez «gana el local» y «gana el visitante» del
+    mismo partido (2026-10-26: dos partidos x cinco opciones = las 10). Si
+    quedan menos de `n` selecciones, se devuelven las que hay.
+    """
     pool = [s for s in sels if s["p_pre"] is not None] if priced_only else list(sels)
-    by_j = {}
+    best = {}
     for s in pool:
+        k = (s["match_id"], s["market"])
+        if k not in best or s["p_model"] > best[k]["p_model"]:
+            best[k] = s
+    by_j = {}
+    for s in best.values():
         by_j.setdefault(s["jornada"], []).append(s)
     out = []
     for j in sorted(by_j):

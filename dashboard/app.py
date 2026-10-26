@@ -537,7 +537,14 @@ else:
                                      "cuota de la casa paga lo que el modelo dice.")
         top = betting.top_by_jornada([x for x in pend if x["jornada"] == nxt],
                                      priced_only=only_priced)
-        st.markdown(f"**Las 10 más probables · jornada que empieza el {nxt}**")
+        # Con menos de 10 ya estan todas las de la jornada: el titulo dice
+        # cuantas son y cuantos partidos quedan, en vez de prometer 10.
+        title = f"Las {len(top)} más probables · jornada que empieza el {nxt}"
+        if top and len(top) < 10:
+            n_left = len({x["match_id"] for x in top})
+            title += (f" · {'queda' if n_left == 1 else 'quedan'} {n_left} "
+                      f"{'partido' if n_left == 1 else 'partidos'} por jugar")
+        st.markdown(f"**{title}**")
         if not top:
             st.write("Todavía no hay líneas del mercado para esta jornada.")
         else:
@@ -562,7 +569,9 @@ else:
             st.caption("`cuota mínima` = 1 / probabilidad del modelo: a una cuota "
                        "menor la apuesta pierde dinero aunque el modelo tenga "
                        "razón. `mercado` es el promedio de casas sin margen, la "
-                       "última línea antes del partido.")
+                       "última línea antes del partido. De cada partido y "
+                       "mercado sale un solo lado: el que el modelo ve más "
+                       "probable.")
 
     # Paper trading: las reglas aplicadas a lo ya jugado, sin dinero.
     st.markdown("**Paper trading** — qué habría pasado apostando 1 unidad con "
