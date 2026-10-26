@@ -1,0 +1,50 @@
+# Tema del dashboard. Es la mitad de la identidad visual que Streamlit
+# entiende de forma nativa: fuentes, escala de titulos y colores de los dos
+# modos. Lo que el tema no alcanza (caption, etiquetas de metrica, logo,
+# marca de agua) esta en dashboard/theme.py, con los mismos valores.
+#
+# Streamlit Cloud lee este archivo solo al arrancar: un cambio aqui pide
+# Reboot app, igual que un modulo nuevo (regla 9).
+
+[theme]
+# Cuerpo y controles en Inter; titulos en Space Grotesk.
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap, sans-serif"
+headingFont = "Space Grotesk:https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap, sans-serif"
+
+# La escala tiene cinco pasos (28 / 20 / 16 / 14 / 12) y no se amplia.
+#   h1  st.title      -> titulo de pagina
+#   h2  st.header     -> no se usa; mismo paso que la seccion
+#   h3  st.subheader  -> seccion
+#   h4  "#### ..."    -> bloque dentro de una seccion
+#   h5, h6            -> no se usan
+headingFontSizes = ["28px", "20px", "20px", "16px", "14px", "12px"]
+headingFontWeights = [600, 600, 600, 500, 500, 500]
+baseFontSize = 16
+# Un numero de metrica es un dato: Inter 600, en el paso mas grande.
+metricValueFontSize = "28px"
+metricValueFontWeight = 600
+
+[theme.light]
+primaryColor = "#2563EB"
+backgroundColor = "#F8FAFC"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#0F172A"
+linkColor = "#2563EB"
+borderColor = "#E2E8F0"
+dataframeBorderColor = "#E2E8F0"
+# Los nombres de modelo van en codigo en linea. El verde por defecto de
+# Streamlit no llega a AA sobre el fondo claro y choca con la paleta.
+codeTextColor = "#0F172A"
+# Calibracion: el modelo en el color de accion, la diagonal ideal apagada.
+chartCategoricalColors = ["#2563EB", "#94A3B8"]
+
+[theme.dark]
+primaryColor = "#3B82F6"
+backgroundColor = "#0B1120"
+secondaryBackgroundColor = "#111827"
+textColor = "#F8FAFC"
+linkColor = "#3B82F6"
+borderColor = "#334155"
+dataframeBorderColor = "#334155"
+codeTextColor = "#F8FAFC"
+chartCategoricalColors = ["#3B82F6", "#94A3B8"]

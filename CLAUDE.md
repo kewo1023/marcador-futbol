@@ -167,6 +167,28 @@ trading, que se deriva del ledger y no escribe nada. El dashboard público
 mide y avisa; "apostar a esto" solo se muestra en local con
 `MARCADOR_MODO_APUESTAS=1`.
 
+## Regla 13 — Cada texto del tablero cae en un solo nivel de la escala
+
+El tablero es largo y se escanea antes de leerse. La escala tiene cinco
+pasos (28 / 20 / 16 / 14 / 12) y no se amplía:
+
+- `st.title` — la página, una vez.
+- `st.subheader` — cada sección. Lleva filete y aire arriba; es lo que se
+  ve al bajar rápido.
+- `st.markdown("#### …")` — un bloque dentro de una sección (una tabla con
+  nombre propio, una tarjeta). **Nunca `**negrita**` como título**: no entra
+  en la jerarquía y se pierde.
+- Cuerpo — lo que hay que hacer o el veredicto.
+- `st.caption` — la explicación y el detalle (intervalos, definiciones de
+  columna). Va **después** del dato que explica o del título que presenta.
+
+Lo que separa niveles es el tamaño y el aire, nunca un color nuevo. Los
+colores, fuentes y escala viven en `.streamlit/config.toml` y en
+`dashboard/theme.py`, con los valores de la identidad visual; un componente
+no lleva un hex propio. Los dos archivos piden **Reboot app** al cambiar
+(regla 9). La marca de agua va al final de la página, nunca fija: fija
+pasaría sobre las tablas.
+
 ## Convenciones de código
 
 - Python 3.13, librería estándar donde alcance. Sin dependencias que no se usen.
