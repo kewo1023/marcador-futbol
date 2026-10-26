@@ -21,8 +21,10 @@ from marcador import ledger, live_markets, promotion  # noqa: E402
 from marcador.config import (BASE_MODEL_VERSION as BASE_MODEL,  # noqa: E402
                              LEAGUES, LIVE_MARKETS)
 from marcador.markets import BY_KEY                  # noqa: E402
+import theme                                         # noqa: E402
 
-st.set_page_config(page_title="Marcador", page_icon="⚽", layout="wide")
+st.set_page_config(page_title="Marcador", page_icon=theme.FAVICON, layout="wide")
+theme.apply()
 
 
 @st.cache_data(ttl=300)
@@ -167,13 +169,13 @@ if diag_path.exists():
                      .rename(columns={"peso": "aporta"}),
                      use_container_width=True, hide_index=True)
 
-st.divider()
-
+st.subheader("Estado en vivo")
 if preds.empty:
     st.info("El ledger todavía no tiene predicciones en vivo. El loop las "
             "escribe cuando los próximos partidos entren en la ventana de la "
             "fuente, que es de pocos días. Lo de arriba no depende de eso: "
             "sale del backtest.")
+    theme.watermark()
     st.stop()
 
 preds["prob"] = preds["prob"].astype(float)
@@ -413,9 +415,9 @@ def table_1x2(df, provisional=False):
 
 
 if awaiting:
-    st.caption(f"**Jugados, esperando resultado ({len(awaiting)}).** Lo que se "
-               "predijo queda tal cual; el resultado se cruza cuando la fuente "
-               "lo publique. Los que muestran solo la fecha se predijeron sin "
+    st.markdown(f"#### Jugados, esperando resultado ({len(awaiting)})")
+    st.caption("Lo que se predijo queda tal cual; el resultado se cruza "
+               "cuando la fuente lo publique. Los que muestran solo la fecha se predijeron sin "
                "hora confirmada, y esa fecha puede haber sido provisional: si "
                "el partido se jugó otro día, pasa a «Aplazados» cuando la "
                "fuente la corrija.")
@@ -456,9 +458,9 @@ def table_postponed(df):
 
 
 if postponed:
-    st.caption(f"**Movidos de fecha ({len(postponed)}).** Lo que se predijo "
-               "queda en el ledger tal cual. Un **aplazado** (se predijo con "
-               "hora confirmada) **no se evalúa**: ese día no se jugó, y el "
+    st.markdown(f"#### Movidos de fecha ({len(postponed)})")
+    st.caption("Lo que se predijo queda en el ledger tal cual. Un "
+               "**aplazado** (se predijo con hora confirmada) **no se evalúa**: ese día no se jugó, y el "
                "partido se predice de nuevo con su fecha nueva. Una **fecha "
                "provisional corregida** (se predijo sin hora, y la fecha era un "
                "comodín de la fuente) **sí se evalúa** con el resultado del "
@@ -469,7 +471,7 @@ if upcoming.empty:
     st.write("Nada pendiente ahora mismo.")
 else:
     if awaiting or postponed:
-        st.caption(f"**Por jugar ({upcoming['match_id'].nunique()}).**")
+        st.markdown(f"#### Por jugar ({upcoming['match_id'].nunique()})")
     table_1x2(upcoming)
 
 # --- Tablero de decisión ----------------------------------------------------
@@ -511,15 +513,21 @@ else:
         advice = betting.ADVICE[state]
         if state == "verde" and not PRIVATE_BETS:
             advice = "Ventaja demostrada en vivo."
-        lines = [f"**{market}** {LIGHT[state]}", advice]
+        # Tres niveles: el mercado y su semaforo, lo que hay que hacer, y
+        # los intervalos que lo respaldan, que son el detalle.
+        col.markdown(f"#### {market} {LIGHT[state]}")
+        col.markdown(advice)
+        lines = []
         for ref, res in detail.items():
             if res:
                 d, lo, hi, _, n = res
                 lines.append(f"vs {ref}: {d:+.4f} [{lo:+.4f}, {hi:+.4f}] · n={n}")
-        col.markdown("  \n".join(lines))
-    cols[-1].markdown("**Tarjetas y tiros** ⚪  \n" + betting.ADVICE["gris"] +
-                      "  \nLe ganan a su frecuencia base; contra la casa no "
-                      "se puede medir.")
+        if lines:
+            col.caption("  \n".join(lines))
+    cols[-1].markdown("#### Tarjetas y tiros ⚪")
+    cols[-1].markdown(betting.ADVICE["gris"])
+    cols[-1].caption("Le ganan a su frecuencia base; contra la casa no se "
+                     "puede medir.")
 
     # Las 10 mas probables de la proxima jornada. Por jugar = kickoff por
     # delante; "sin resultado" incluiria partidos aplazados.
@@ -544,7 +552,7 @@ else:
             n_left = len({x["match_id"] for x in top})
             title += (f" · {'queda' if n_left == 1 else 'quedan'} {n_left} "
                       f"{'partido' if n_left == 1 else 'partidos'} por jugar")
-        st.markdown(f"**{title}**")
+        st.markdown(f"#### {title}")
         if not top:
             st.write("Todavía no hay líneas del mercado para esta jornada.")
         else:
@@ -574,8 +582,9 @@ else:
                        "probable.")
 
     # Paper trading: las reglas aplicadas a lo ya jugado, sin dinero.
-    st.markdown("**Paper trading** — qué habría pasado apostando 1 unidad con "
-                "cada regla, sobre los partidos ya jugados")
+    st.markdown("#### Paper trading")
+    st.caption("Qué habría pasado apostando 1 unidad con cada regla, sobre "
+               "los partidos ya jugados.")
 
     def _ci(t):
         m, lo, hi = t
@@ -681,7 +690,11 @@ if played:
     if grp.empty:
         st.write("Aún no hay suficientes predicciones por bucket para dibujarla.")
     else:
-        chart = grp.set_index("prometio")[["ocurrio"]]
+        # Streamlit reparte los colores del tema por orden alfabetico de la
+        # serie: "frecuencia real" va antes que "ideal" y se lleva el color de
+        # accion; la diagonal queda apagada.
+        chart = grp.set_index("prometio")[["ocurrio"]].rename(
+            columns={"ocurrio": "frecuencia real"})
         chart["ideal"] = chart.index
         st.line_chart(chart)
         st.dataframe(grp.style.format({"prometio": "{:.1%}", "ocurrio": "{:.1%}"}),
@@ -957,9 +970,9 @@ if mk_path.exists():
                             "gana_a_base": float, "p_value": float})
             mm["veredicto"] = ["gana a la base" if (c == "si" and g > 0) else "no concluyente"
                                for c, g in zip(mm["concluyente"], mm["gana_a_base"])]
-            st.caption("**Sobre las cinco ligas** (~3.500 partidos en vez de "
-                       "760). Con una liga solo tarjetas era concluyente; con "
-                       "cinco lo son los cuatro mercados. `w por liga` muestra "
+            st.markdown("#### Sobre las cinco ligas")
+            st.caption("~3.500 partidos en vez de 760. Con una liga solo "
+                       "tarjetas era concluyente; con cinco lo son los cuatro mercados. `w por liga` muestra "
                        "cuánto se le cree al modelo en cada una: la Premier es "
                        "la que más, y de ahí venía el `w` original.")
             st.dataframe(mm[["etiqueta", "linea", "w", "w_por_liga", "n",
@@ -983,3 +996,5 @@ if not test.empty:
     st.dataframe(view.rename(columns={"model_version": "modelo",
                                       "n_matches": "partidos"}),
                  use_container_width=True, hide_index=True)
+
+theme.watermark()
