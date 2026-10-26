@@ -72,10 +72,10 @@ CSS = f"""<style>
   --brand-display: 'Space Grotesk', sans-serif;
 }}
 
-/* Cuerpo: 16/24, y una linea de lectura que no cruce la pantalla entera. */
+/* Cuerpo: 16/24. Ocupa todo el ancho, como las tablas: cortarlo a media
+   pantalla hacia que el layout ancho pareciera una ventana minimizada. */
 [data-testid="stMarkdownContainer"] p,
 [data-testid="stMarkdownContainer"] li {{ line-height: 24px; }}
-[data-testid="stMarkdownContainer"] p {{ max-width: 75ch; }}
 
 /* Titulo de pagina: 28/34. */
 [data-testid="stHeading"] h1 {{ line-height: 34px; padding: 0 0 4px; }}
@@ -106,7 +106,6 @@ CSS = f"""<style>
   font-size: 14px;
   line-height: 20px;
   color: var(--brand-text-secondary);
-  max-width: 75ch;
 }}
 [data-testid="stCaptionContainer"] strong {{ color: var(--brand-text); }}
 
