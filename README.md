@@ -532,9 +532,11 @@ fuera de esa foto, no que no se juegue.
 Por eso el job de predecir corre **cada cuatro horas**: para recoger la foto
 nueva poco después de que la fuente la escriba. Y por eso, después de cada
 jornada, `05_score.py` comprueba si algún partido se jugó sin haber sido
-predicho y lo registra en `ledger/missed.csv`. Si encuentra alguno, el workflow
-queda en rojo: un partido sin predecir es un agujero en el track record, y un
-agujero silencioso vale menos que ninguno.
+predicho y lo registra en `ledger/missed.csv`. Si encuentra alguno nuevo, el
+workflow queda en rojo: un partido sin predecir es un agujero en el track record,
+y un agujero silencioso vale menos que ninguno. Uno ya registrado no vuelve a
+poner el job en rojo: queda documentado en `missed.csv`, y un rojo que se repite
+todos los días por el mismo partido termina tapando los fallos nuevos.
 
 **El punto ciego que tenía esta parte, y cómo se cerró.** Hasta el 2026-09-10,
 una corrida sin partidos imprimía «No hay partidos por jugar sin predicción» y

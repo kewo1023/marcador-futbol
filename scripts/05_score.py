@@ -333,7 +333,10 @@ def find_missed(con, preds, covered=()):
 
 
 # Codigo de salida propio: el trabajo se hizo, pero hay un agujero de cobertura
-# que alguien tiene que ver. El workflow commitea primero y falla despues.
+# NUEVO que alguien tiene que ver. El workflow commitea primero y falla despues.
+# Solo los nuevos: un agujero ya registrado en missed.csv queda documentado ahi
+# para siempre, y si siguiera poniendo el job en rojo cada dia, el rojo dejaria
+# de decir nada (un fallo real del push se veria igual que el agujero viejo).
 EXIT_MISSED = 3
 
 
@@ -465,7 +468,10 @@ def main():
         print(f"  Causa mas probable: la ventana de fixtures de la fuente no los")
         print(f"  cubrio a tiempo, o el job de predecir fallo ese dia.")
         print(f"  {'!' * 60}")
-        return EXIT_MISSED
+        if n_missed:
+            return EXIT_MISSED
+        print("  Ninguno es nuevo: ya estaban en ledger/missed.csv. "
+              "No se vuelve a fallar por ellos.")
     return 0
 
 
