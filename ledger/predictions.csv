@@ -11510,3 +11510,809 @@ F1_2026-11-20_Troyes_Le-Havre,2026-11-20,Troyes,Le Havre,dc-xi0020-reg002-norho+
 F1_2026-11-20_Troyes_Le-Havre,2026-11-20,Troyes,Le Havre,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.741902,live,2026-11-08,2026-11-17T03:21:58+00:00
 F1_2026-11-20_Troyes_Le-Havre,2026-11-20,Troyes,Le Havre,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.360618,live,2026-11-08,2026-11-17T03:21:58+00:00
 F1_2026-11-20_Troyes_Le-Havre,2026-11-20,Troyes,Le Havre,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.639382,live,2026-11-08,2026-11-17T03:21:58+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-rho+recal1000,1X2,H,0.493988,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-rho+recal1000,1X2,D,0.279695,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-rho+recal1000,1X2,A,0.226316,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-rho+recal1000,1X2,H,0.468157,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-rho+recal1000,1X2,D,0.258054,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-rho+recal1000,1X2,A,0.273789,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-rho+recal1000,1X2,H,0.522981,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-rho+recal1000,1X2,D,0.246953,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-rho+recal1000,1X2,A,0.230066,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-rho+recal1000,1X2,H,0.372960,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-rho+recal1000,1X2,D,0.297218,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-rho+recal1000,1X2,A,0.329822,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-rho+recal1000,1X2,H,0.692598,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-rho+recal1000,1X2,D,0.183695,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-rho+recal1000,1X2,A,0.123706,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-rho+recal1000,1X2,H,0.177131,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-rho+recal1000,1X2,D,0.251188,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-rho+recal1000,1X2,A,0.571680,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-rho+recal1000,1X2,H,0.653145,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-rho+recal1000,1X2,D,0.194236,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-rho+recal1000,1X2,A,0.152619,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-rho+recal1000,1X2,H,0.381800,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-rho+recal1000,1X2,D,0.302179,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-rho+recal1000,1X2,A,0.316021,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-rho+recal1000,1X2,H,0.759285,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-rho+recal1000,1X2,D,0.157026,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-rho+recal1000,1X2,A,0.083689,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-rho+recal1000,1X2,H,0.354244,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-rho+recal1000,1X2,D,0.262565,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-rho+recal1000,1X2,A,0.383191,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-rho+recal1000,1X2,H,0.484729,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-rho+recal1000,1X2,D,0.295720,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-rho+recal1000,1X2,A,0.219551,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-rho+recal1000,1X2,H,0.462511,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-rho+recal1000,1X2,D,0.215219,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-rho+recal1000,1X2,A,0.322270,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-rho+recal1000,1X2,H,0.430189,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-rho+recal1000,1X2,D,0.231247,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-rho+recal1000,1X2,A,0.338564,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-rho+recal1000,1X2,H,0.690494,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-rho+recal1000,1X2,D,0.204100,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-rho+recal1000,1X2,A,0.105406,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-rho+recal1000,1X2,H,0.178642,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-rho+recal1000,1X2,D,0.230290,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-rho+recal1000,1X2,A,0.591068,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-rho+recal1000,1X2,H,0.172588,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-rho+recal1000,1X2,D,0.302670,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-rho+recal1000,1X2,A,0.524741,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-rho+recal1000,1X2,H,0.189302,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-rho+recal1000,1X2,D,0.252304,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-rho+recal1000,1X2,A,0.558394,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-rho+recal1000,1X2,H,0.712107,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-rho+recal1000,1X2,D,0.188962,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-rho+recal1000,1X2,A,0.098932,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-rho+recal1000,1X2,H,0.644046,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-rho+recal1000,1X2,D,0.219362,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-rho+recal1000,1X2,A,0.136592,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-rho+recal1000,1X2,H,0.628668,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-rho+recal1000,1X2,D,0.219474,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-rho+recal1000,1X2,A,0.151859,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-rho+recal1000,1X2,H,0.098902,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-rho+recal1000,1X2,D,0.216033,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-rho+recal1000,1X2,A,0.685066,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-rho+recal1000,1X2,H,0.555538,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-rho+recal1000,1X2,D,0.236323,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-rho+recal1000,1X2,A,0.208139,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-rho+recal1000,1X2,H,0.448001,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-rho+recal1000,1X2,D,0.283588,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-rho+recal1000,1X2,A,0.268411,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-rho+recal1000,1X2,H,0.615879,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-rho+recal1000,1X2,D,0.219911,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-rho+recal1000,1X2,A,0.164210,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-rho+recal1000,1X2,H,0.155662,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-rho+recal1000,1X2,D,0.202858,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-rho+recal1000,1X2,A,0.641479,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-rho+recal1000,1X2,H,0.460847,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-rho+recal1000,1X2,D,0.245007,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-rho+recal1000,1X2,A,0.294146,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.785080,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.214920,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TARJETAS_OU25,OVER,0.664252,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TARJETAS_OU25,UNDER,0.335748,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.591501,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.408499,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TARJETAS_OU35,OVER,0.468458,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TARJETAS_OU35,UNDER,0.531542,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.406112,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.593888,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TARJETAS_OU45,OVER,0.286449,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TARJETAS_OU45,UNDER,0.713551,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.743615,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.256385,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TARJETAS_OU25,OVER,0.664252,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TARJETAS_OU25,UNDER,0.335748,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.540057,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.459943,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TARJETAS_OU35,OVER,0.468458,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TARJETAS_OU35,UNDER,0.531542,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.350209,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.649791,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TARJETAS_OU45,OVER,0.286449,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TARJETAS_OU45,UNDER,0.713551,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.768759,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.231241,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TARJETAS_OU25,OVER,0.664252,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TARJETAS_OU25,UNDER,0.335748,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.570563,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.429437,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TARJETAS_OU35,OVER,0.468458,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TARJETAS_OU35,UNDER,0.531542,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.382604,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.617396,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TARJETAS_OU45,OVER,0.286449,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TARJETAS_OU45,UNDER,0.713551,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.500707,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.499293,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TARJETAS_OU25,OVER,0.664252,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TARJETAS_OU25,UNDER,0.335748,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.320305,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.679695,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TARJETAS_OU35,OVER,0.468458,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TARJETAS_OU35,UNDER,0.531542,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.172194,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.827806,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TARJETAS_OU45,OVER,0.286449,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TARJETAS_OU45,UNDER,0.713551,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.661180,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.338820,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TARJETAS_OU25,OVER,0.664252,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TARJETAS_OU25,UNDER,0.335748,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.452099,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.547901,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TARJETAS_OU35,OVER,0.468458,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TARJETAS_OU35,UNDER,0.531542,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.267841,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.732159,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TARJETAS_OU45,OVER,0.286449,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TARJETAS_OU45,UNDER,0.713551,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.732742,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.267258,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TARJETAS_OU25,OVER,0.664252,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TARJETAS_OU25,UNDER,0.335748,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.527459,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.472541,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TARJETAS_OU35,OVER,0.468458,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TARJETAS_OU35,UNDER,0.531542,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.337435,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.662565,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TARJETAS_OU45,OVER,0.286449,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TARJETAS_OU45,UNDER,0.713551,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.757089,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.242911,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TARJETAS_OU25,OVER,0.664252,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TARJETAS_OU25,UNDER,0.335748,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.556156,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.443844,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TARJETAS_OU35,OVER,0.468458,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TARJETAS_OU35,UNDER,0.531542,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.367039,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.632961,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TARJETAS_OU45,OVER,0.286449,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TARJETAS_OU45,UNDER,0.713551,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.811397,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.188603,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TARJETAS_OU25,OVER,0.845080,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TARJETAS_OU25,UNDER,0.154920,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.650864,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.349136,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TARJETAS_OU35,OVER,0.705048,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TARJETAS_OU35,UNDER,0.294952,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.467657,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.532343,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TARJETAS_OU45,OVER,0.537799,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TARJETAS_OU45,UNDER,0.462201,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.774751,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.225249,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TARJETAS_OU25,OVER,0.845080,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TARJETAS_OU25,UNDER,0.154920,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.608307,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.391693,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TARJETAS_OU35,OVER,0.705048,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TARJETAS_OU35,UNDER,0.294952,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.424384,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.575616,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TARJETAS_OU45,OVER,0.537799,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TARJETAS_OU45,UNDER,0.462201,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.850931,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.149069,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TARJETAS_OU25,OVER,0.845080,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TARJETAS_OU25,UNDER,0.154920,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.701637,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.298363,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TARJETAS_OU35,OVER,0.705048,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TARJETAS_OU35,UNDER,0.294952,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.524771,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.475229,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TARJETAS_OU45,OVER,0.537799,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TARJETAS_OU45,UNDER,0.462201,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.859899,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.140101,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TARJETAS_OU25,OVER,0.845080,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TARJETAS_OU25,UNDER,0.154920,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.714002,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.285998,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TARJETAS_OU35,OVER,0.705048,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TARJETAS_OU35,UNDER,0.294952,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.539690,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.460310,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TARJETAS_OU45,OVER,0.537799,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TARJETAS_OU45,UNDER,0.462201,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.694177,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.305823,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TARJETAS_OU25,OVER,0.713291,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TARJETAS_OU25,UNDER,0.286709,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.491419,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.508581,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TARJETAS_OU35,OVER,0.521474,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TARJETAS_OU35,UNDER,0.478526,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.305121,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.694879,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TARJETAS_OU45,OVER,0.340395,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TARJETAS_OU45,UNDER,0.659605,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.674672,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.325328,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TARJETAS_OU25,OVER,0.713291,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TARJETAS_OU25,UNDER,0.286709,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.472123,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.527877,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TARJETAS_OU35,OVER,0.521474,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TARJETAS_OU35,UNDER,0.478526,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.288417,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.711583,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TARJETAS_OU45,OVER,0.340395,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TARJETAS_OU45,UNDER,0.659605,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.620162,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.379838,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TARJETAS_OU25,OVER,0.713291,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TARJETAS_OU25,UNDER,0.286709,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.422320,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.577680,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TARJETAS_OU35,OVER,0.521474,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TARJETAS_OU35,UNDER,0.478526,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.248556,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.751444,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TARJETAS_OU45,OVER,0.340395,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TARJETAS_OU45,UNDER,0.659605,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.720829,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.279171,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TARJETAS_OU25,OVER,0.713291,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TARJETAS_OU25,UNDER,0.286709,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.519177,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.480823,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TARJETAS_OU35,OVER,0.521474,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TARJETAS_OU35,UNDER,0.478526,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.330424,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.669576,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TARJETAS_OU45,OVER,0.340395,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TARJETAS_OU45,UNDER,0.659605,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.648805,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.351195,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TARJETAS_OU25,OVER,0.713291,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TARJETAS_OU25,UNDER,0.286709,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.447765,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.552235,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TARJETAS_OU35,OVER,0.521474,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TARJETAS_OU35,UNDER,0.478526,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.268340,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.731660,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TARJETAS_OU45,OVER,0.340395,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TARJETAS_OU45,UNDER,0.659605,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.696742,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.303258,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TARJETAS_OU25,OVER,0.713291,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TARJETAS_OU25,UNDER,0.286709,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.494018,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.505982,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TARJETAS_OU35,OVER,0.521474,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TARJETAS_OU35,UNDER,0.478526,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.307426,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.692574,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TARJETAS_OU45,OVER,0.340395,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TARJETAS_OU45,UNDER,0.659605,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.754409,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.245591,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TARJETAS_OU25,OVER,0.817483,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TARJETAS_OU25,UNDER,0.182517,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.574717,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.425283,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TARJETAS_OU35,OVER,0.654079,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TARJETAS_OU35,UNDER,0.345921,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.377132,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.622868,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TARJETAS_OU45,OVER,0.451282,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TARJETAS_OU45,UNDER,0.548718,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.828851,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.171149,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TARJETAS_OU25,OVER,0.817483,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TARJETAS_OU25,UNDER,0.182517,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.662873,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.337127,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TARJETAS_OU35,OVER,0.654079,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TARJETAS_OU35,UNDER,0.345921,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.468751,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.531249,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TARJETAS_OU45,OVER,0.451282,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TARJETAS_OU45,UNDER,0.548718,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.638286,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.361714,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TARJETAS_OU25,OVER,0.817483,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TARJETAS_OU25,UNDER,0.182517,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.464204,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.535796,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TARJETAS_OU35,OVER,0.654079,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TARJETAS_OU35,UNDER,0.345921,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.284615,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.715385,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TARJETAS_OU45,OVER,0.451282,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TARJETAS_OU45,UNDER,0.548718,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.737099,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.262901,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TARJETAS_OU25,OVER,0.817483,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TARJETAS_OU25,UNDER,0.182517,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.556404,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.443596,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TARJETAS_OU35,OVER,0.654079,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TARJETAS_OU35,UNDER,0.345921,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.360176,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.639824,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TARJETAS_OU45,OVER,0.451282,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TARJETAS_OU45,UNDER,0.548718,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.765515,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.234485,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TARJETAS_OU25,OVER,0.730360,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TARJETAS_OU25,UNDER,0.269640,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.564030,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.435970,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TARJETAS_OU35,OVER,0.522301,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TARJETAS_OU35,UNDER,0.477699,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.365761,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.634239,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TARJETAS_OU45,OVER,0.319057,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TARJETAS_OU45,UNDER,0.680943,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.757896,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.242104,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TARJETAS_OU25,OVER,0.730360,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TARJETAS_OU25,UNDER,0.269640,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.555121,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.444879,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TARJETAS_OU35,OVER,0.522301,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TARJETAS_OU35,UNDER,0.477699,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.356645,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.643355,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TARJETAS_OU45,OVER,0.319057,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TARJETAS_OU45,UNDER,0.680943,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.741269,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.258731,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TARJETAS_OU25,OVER,0.730360,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TARJETAS_OU25,UNDER,0.269640,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.536247,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.463753,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TARJETAS_OU35,OVER,0.522301,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TARJETAS_OU35,UNDER,0.477699,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.337897,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.662103,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TARJETAS_OU45,OVER,0.319057,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TARJETAS_OU45,UNDER,0.680943,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.575406,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.424594,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TARJETAS_OU25,OVER,0.730360,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TARJETAS_OU25,UNDER,0.269640,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.381884,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.618116,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TARJETAS_OU35,OVER,0.522301,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TARJETAS_OU35,UNDER,0.477699,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.210838,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.789162,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TARJETAS_OU45,OVER,0.319057,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TARJETAS_OU45,UNDER,0.680943,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,OVER,0.691217,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU25,UNDER,0.308783,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TARJETAS_OU25,OVER,0.730360,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TARJETAS_OU25,UNDER,0.269640,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,OVER,0.483655,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU35,UNDER,0.516345,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TARJETAS_OU35,OVER,0.522301,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TARJETAS_OU35,UNDER,0.477699,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,OVER,0.289492,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+w-5l,TARJETAS_OU45,UNDER,0.710508,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TARJETAS_OU45,OVER,0.319057,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TARJETAS_OU45,UNDER,0.680943,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.497391,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.502609,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,GOLES_OU25,OVER,0.540888,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,GOLES_OU25,UNDER,0.459112,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.511739,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.488261,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,GOLES_OU25,OVER,0.540888,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,GOLES_OU25,UNDER,0.459112,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.527504,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.472496,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,GOLES_OU25,OVER,0.540888,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,GOLES_OU25,UNDER,0.459112,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.523826,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.476174,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,GOLES_OU25,OVER,0.540888,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,GOLES_OU25,UNDER,0.459112,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.554919,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.445081,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,GOLES_OU25,OVER,0.540888,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,GOLES_OU25,UNDER,0.459112,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.502513,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.497487,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,GOLES_OU25,OVER,0.540888,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,GOLES_OU25,UNDER,0.459112,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.621424,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.378576,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,GOLES_OU25,OVER,0.540888,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,GOLES_OU25,UNDER,0.459112,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.413188,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.586812,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,GOLES_OU25,OVER,0.485462,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,GOLES_OU25,UNDER,0.514538,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.551223,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.448777,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,GOLES_OU25,OVER,0.485462,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,GOLES_OU25,UNDER,0.514538,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.516049,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.483951,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,GOLES_OU25,OVER,0.485462,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,GOLES_OU25,UNDER,0.514538,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.414632,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.585368,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,GOLES_OU25,OVER,0.485462,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,GOLES_OU25,UNDER,0.514538,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.698353,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.301647,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,GOLES_OU25,OVER,0.597041,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,GOLES_OU25,UNDER,0.402959,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.679477,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.320523,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,GOLES_OU25,OVER,0.597041,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,GOLES_OU25,UNDER,0.402959,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.510040,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.489960,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,GOLES_OU25,OVER,0.597041,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,GOLES_OU25,UNDER,0.402959,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.595527,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.404473,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,GOLES_OU25,OVER,0.597041,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,GOLES_OU25,UNDER,0.402959,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.450216,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.549784,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,GOLES_OU25,OVER,0.597041,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,GOLES_OU25,UNDER,0.402959,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.577486,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.422514,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,GOLES_OU25,OVER,0.597041,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,GOLES_OU25,UNDER,0.402959,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.480714,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.519286,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,GOLES_OU25,OVER,0.523310,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,GOLES_OU25,UNDER,0.476690,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.461307,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.538693,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,GOLES_OU25,OVER,0.523310,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,GOLES_OU25,UNDER,0.476690,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.496760,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.503240,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,GOLES_OU25,OVER,0.523310,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,GOLES_OU25,UNDER,0.476690,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.459724,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.540276,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,GOLES_OU25,OVER,0.523310,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,GOLES_OU25,UNDER,0.476690,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.517720,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.482280,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,GOLES_OU25,OVER,0.511781,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,GOLES_OU25,UNDER,0.488219,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.452362,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.547638,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,GOLES_OU25,OVER,0.511781,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,GOLES_OU25,UNDER,0.488219,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.574649,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.425351,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,GOLES_OU25,OVER,0.511781,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,GOLES_OU25,UNDER,0.488219,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.554375,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.445625,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,GOLES_OU25,OVER,0.511781,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,GOLES_OU25,UNDER,0.488219,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,OVER,0.603437,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-rho+goles-w-5l,GOLES_OU25,UNDER,0.396563,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,GOLES_OU25,OVER,0.511781,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,GOLES_OU25,UNDER,0.488219,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.558077,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.441923,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.639486,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.360514,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.410172,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.589828,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.505841,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.494159,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.290848,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.709152,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.378037,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Aston-Villa_Sunderland,2026-11-21,Aston Villa,Sunderland,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.621963,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.613334,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.386666,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.639486,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.360514,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.474814,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.525186,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.505841,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.494159,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.348914,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.651086,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.378037,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Bournemouth_Nott'm-Forest,2026-11-21,Bournemouth,Nott'm Forest,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.621963,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.661758,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.338242,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.639486,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.360514,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.535931,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.464069,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.505841,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.494159,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.408110,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.591890,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.378037,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Chelsea_Leeds,2026-11-21,Chelsea,Leeds,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.621963,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.529441,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.470559,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.639486,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.360514,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.378663,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.621337,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.505841,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.494159,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.264222,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.735778,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.378037,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Coventry_Crystal-Palace,2026-11-21,Coventry,Crystal Palace,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.621963,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.639672,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.360328,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.639486,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.360514,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.507508,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.492492,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.505841,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.494159,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.380051,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.619949,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.378037,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Man-City_Fulham,2026-11-21,Man City,Fulham,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.621963,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.562574,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.437426,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.639486,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.360514,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.415243,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.584757,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.505841,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.494159,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.295235,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.704765,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.378037,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Newcastle_Arsenal,2026-11-21,Newcastle,Arsenal,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.621963,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.651869,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.348131,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.639486,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.360514,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.523088,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.476912,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.505841,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.494159,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.395315,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.604685,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.378037,live,2026-11-08,2026-11-18T08:08:34+00:00
+E0_2026-11-21_Tottenham_Ipswich,2026-11-21,Tottenham,Ipswich,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.621963,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.513404,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.486596,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.580833,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.419167,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.372116,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.627884,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.450570,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.549430,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.261537,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.738463,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.335659,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Alaves_La-Coruna,2026-11-21,Alaves,La Coruna,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.664341,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.694462,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.305538,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.580833,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.419167,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.597930,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.402070,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.450570,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.549430,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.479863,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.520137,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.335659,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Real-Madrid_Celta,2026-11-21,Real Madrid,Celta,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.664341,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.631479,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.368521,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.580833,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.419167,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.512407,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.487593,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.450570,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.549430,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.390372,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.609628,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.335659,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Sevilla_Betis,2026-11-21,Sevilla,Betis,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.664341,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.562855,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.437145,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.580833,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.419167,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.428009,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.571991,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.450570,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.549430,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.310301,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.689699,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.335659,live,2026-11-08,2026-11-18T08:08:34+00:00
+SP1_2026-11-21_Vallecano_Valencia,2026-11-21,Vallecano,Valencia,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.664341,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.743911,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.256089,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.710099,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.289901,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.635908,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.364092,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.586477,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.413523,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.516463,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.483537,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.466338,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Ein-Frankfurt_Hoffenheim,2026-11-21,Ein Frankfurt,Hoffenheim,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.533662,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.633479,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.366521,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.710099,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.289901,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.491736,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.508264,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.586477,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.413523,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.370984,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.629016,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.466338,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Elversberg_Freiburg,2026-11-21,Elversberg,Freiburg,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.533662,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.699524,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.300476,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.710099,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.289901,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.575034,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.424966,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.586477,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.413523,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.452094,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.547906,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.466338,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Leverkusen_Paderborn,2026-11-21,Leverkusen,Paderborn,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.533662,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.723414,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.276586,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.710099,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.289901,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.607256,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.392744,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.586477,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.413523,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.485599,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.514401,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.466338,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_M'gladbach_Dortmund,2026-11-21,M'gladbach,Dortmund,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.533662,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.740694,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.259306,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.710099,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.289901,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.631346,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.368654,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.586477,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.413523,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.511479,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.488521,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.466338,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Schalke-04_Stuttgart,2026-11-21,Schalke 04,Stuttgart,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.533662,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.671004,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.328996,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.710099,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.289901,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.538075,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.461925,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.586477,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.413523,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.415152,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.584848,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.466338,live,2026-11-08,2026-11-18T08:08:34+00:00
+D1_2026-11-21_Union-Berlin_RB-Leipzig,2026-11-21,Union Berlin,RB Leipzig,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.533662,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.638310,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.361690,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.668065,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.331935,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.504786,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.495214,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.545688,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.454312,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.380246,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.619754,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.421445,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Como_Cagliari,2026-11-21,Como,Cagliari,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.578555,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.611273,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.388727,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.668065,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.331935,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.471887,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.528113,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.545688,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.454312,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.349428,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.650572,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.421445,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Lazio_Lecce,2026-11-21,Lazio,Lecce,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.578555,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.604684,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.395316,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.668065,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.331935,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.464062,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.535938,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.545688,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.454312,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.342272,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.657728,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.421445,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Napoli_Torino,2026-11-21,Napoli,Torino,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.578555,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.602154,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.397846,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.668065,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.331935,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.461076,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.538924,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.545688,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.454312,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.339559,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.660441,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.421445,live,2026-11-08,2026-11-18T08:08:34+00:00
+I1_2026-11-21_Parma_Roma,2026-11-21,Parma,Roma,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.578555,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.612280,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.387720,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.608464,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.391536,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.485878,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.514122,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.486062,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.513938,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.362631,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.637369,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.360618,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lens_Toulouse,2026-11-21,Lens,Toulouse,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.639382,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.609943,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.390057,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.608464,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.391536,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.482995,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.517005,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.486062,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.513938,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.359884,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.640116,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.360618,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Lille_Lyon,2026-11-21,Lille,Lyon,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.639382,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.664068,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.335932,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.608464,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.391536,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.552334,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.447666,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.486062,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.513938,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.428518,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.571482,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.360618,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Monaco_Auxerre,2026-11-21,Monaco,Auxerre,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.639382,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.741602,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.258398,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.608464,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.391536,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.662640,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.337360,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.486062,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.513938,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.549725,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.450275,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.360618,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Nice_Paris-SG,2026-11-21,Nice,Paris SG,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.639382,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,OVER,0.624926,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU75,UNDER,0.375074,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TIROS_PUERTA_OU75,OVER,0.608464,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TIROS_PUERTA_OU75,UNDER,0.391536,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,OVER,0.501644,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU85,UNDER,0.498356,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TIROS_PUERTA_OU85,OVER,0.486062,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TIROS_PUERTA_OU85,UNDER,0.513938,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,OVER,0.377816,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,dc-xi0020-reg002-norho+sot-w-5l,TIROS_PUERTA_OU95,UNDER,0.622184,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TIROS_PUERTA_OU95,OVER,0.360618,live,2026-11-08,2026-11-18T08:08:34+00:00
+F1_2026-11-21_Strasbourg_Brest,2026-11-21,Strasbourg,Brest,base-freq-v1,TIROS_PUERTA_OU95,UNDER,0.639382,live,2026-11-08,2026-11-18T08:08:34+00:00
